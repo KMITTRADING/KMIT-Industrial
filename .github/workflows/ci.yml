@@ -41,6 +41,9 @@ jobs:
       - name: Physical-direction gate
         run: npm run check:direction
 
+      - name: Copy gate
+        run: npm run check:copy
+
       - name: Formatting
         run: npm run format:check
 
@@ -50,4 +53,15 @@ jobs:
           # The real origin is set per environment. CI only needs a well-formed
           # absolute URL so src/lib/env.ts validates and the build is
           # reproducible.
+          NEXT_PUBLIC_SITE_URL: https://ci.invalid
+
+      - name: Accessibility audit
+        # Runs against the real server output rather than against source, which
+        # is what catches a page shipping two h1 elements because two components
+        # each thought they owned the page heading.
+        run: |
+          npx next start -p 3210 &
+          npx wait-on --timeout 60000 http://localhost:3210/ar
+          npm run audit:a11y -- http://localhost:3210
+        env:
           NEXT_PUBLIC_SITE_URL: https://ci.invalid

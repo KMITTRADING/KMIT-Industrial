@@ -31,7 +31,7 @@ export const TYPICAL_PROPERTIES = [
   },
   {
     id: 'whiteness',
-    value: '95.0 – 98.5',
+    value: '95.0 - 98.5',
     unit: '%',
     method: 'ISO 2470 (Elrepho)',
   },
@@ -61,19 +61,19 @@ export const TYPICAL_PROPERTIES = [
   },
   {
     id: 'ph',
-    value: '8.5 – 9.5',
+    value: '8.5 - 9.5',
     unit: '',
     method: 'ISO 787-9',
   },
   {
     id: 'bulk-density',
-    value: '0.7 – 1.3',
+    value: '0.7 - 1.3',
     unit: 'g/cm³',
     method: 'ISO 787-11',
   },
   {
     id: 'oil-absorption',
-    value: '14 – 24',
+    value: '14 - 24',
     unit: 'g/100g',
     method: 'ISO 787-5',
   },

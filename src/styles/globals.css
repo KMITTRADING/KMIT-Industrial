@@ -4,51 +4,54 @@
 /*
  * Base layer.
  *
- * Everything here is either a direction-agnostic reset or a typographic default
- * that both locales need. Component styling belongs in components; this file
- * stays small on purpose.
+ * Everything here is either a direction-agnostic reset, a typographic default
+ * both locales need, or one of the three motifs that carry the system's
+ * character (eyebrow, hairline rule, scroll reveal). Component styling belongs
+ * in components; this file stays deliberately small.
  */
 
 @layer base {
   :root {
     color-scheme: light;
-    /* Arabic sits lower on the line and needs more leading than Latin at the
-       same size. The layout sets this per locale rather than per element, so
-       every block inherits the right rhythm. */
-    --leading-body: 1.65;
-  }
-
-  :root:lang(ar),
-  [lang='ar-SA'] {
-    --leading-body: 1.77;
-    /* Slightly negative tracking keeps Arabic from feeling loose at display
-       sizes; Latin keeps its default. */
-    --tracking-display: -0.005em;
-  }
-
-  :root:lang(en),
-  [lang='en'] {
     --leading-body: 1.65;
     --tracking-display: -0.018em;
+    --tracking-eyebrow: 0.16em;
+    /* Latin prose reads well at 65-75ch. Arabic sets wider per character and
+       needs a shorter measure to land in the same optical line length. */
+    --measure-prose: 68ch;
+    --measure-lede: 58ch;
+  }
+
+  /*
+   * Locale-aware typography.
+   *
+   * Keyed off `dir` rather than `lang` so a subtree that opts into the other
+   * direction (the styleguide's direction toggle, an embedded LTR data block)
+   * inherits the matching rhythm automatically.
+   *
+   * Arabic: more leading, because the script's ascenders and descenders occupy
+   * more vertical space at the same optical size; less negative tracking,
+   * because Arabic letterforms connect and tightening them damages joins.
+   */
+  [dir='rtl'] {
+    --leading-body: 1.77;
+    --tracking-display: -0.004em;
+    --tracking-eyebrow: 0.08em;
+    --measure-prose: 58ch;
+    --measure-lede: 48ch;
+  }
+
+  [dir='ltr'] {
+    --leading-body: 1.65;
+    --tracking-display: -0.018em;
+    --tracking-eyebrow: 0.16em;
+    --measure-prose: 68ch;
+    --measure-lede: 58ch;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
   }
 
   body {
@@ -70,6 +73,12 @@
     text-wrap: balance;
   }
 
+  /* Arabic display type needs a fraction more leading than Latin even at the
+     same size, or the dots on descenders collide with the line below. */
+  [dir='rtl'] :is(h1, h2, h3, h4) {
+    line-height: 1.26;
+  }
+
   p {
     text-wrap: pretty;
   }
@@ -86,8 +95,8 @@
     text-align: start;
   }
 
-  /* A visible, high-contrast focus ring everywhere, in both directions. The
-     one thing that must never be styled away. */
+  /* A visible, high-contrast focus ring everywhere, in both directions. The one
+     thing that must never be styled away. */
   :focus-visible {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
@@ -98,26 +107,157 @@
     background-color: var(--color-accent-200);
     color: var(--color-accent-900);
   }
+
+  /* Latin numerals in both locales for anything tabular, per CLAUDE.md §5. */
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
 }
 
 @layer components {
-  /* Skip link: off-screen until focused, then pinned to the start edge — which
-     is the right edge in Arabic and the left edge in English, without a single
-     direction-specific rule. */
+  /*
+   * Skip link: off-screen until focused, then pinned to the start edge, which
+   * is the right edge in Arabic and the left edge in English without a single
+   * direction-specific rule.
+   */
   .skip-link {
     position: absolute;
     inset-block-start: 0;
     inset-inline-start: 0;
-    z-index: 100;
+    z-index: var(--z-skip-link);
     transform: translateY(-120%);
     padding: 0.75rem 1.25rem;
     background-color: var(--color-surface-accent);
     color: var(--color-ink-inverse);
     border-end-end-radius: var(--radius-md);
-    transition: transform 120ms ease-out;
+    transition: transform var(--duration-fast) var(--ease-standard);
   }
 
   .skip-link:focus-visible {
     transform: translateY(0);
+  }
+
+  /*
+   * The eyebrow motif: a micro-label above a section title, sitting on a
+   * hairline. Uppercase in Latin, letter-spaced rather than uppercased in
+   * Arabic, because Arabic has no case and faking it with tracking alone is the
+   * only honest equivalent.
+   *
+   * Rationed to at most one per three sections. The rule lives in
+   * docs/design-system.md and is checked by hand at review, because an eyebrow
+   * on every section is the single most recognisable generated-page tell.
+   */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--color-ink-muted);
+  }
+
+  [dir='ltr'] .eyebrow {
+    text-transform: uppercase;
+  }
+
+  .eyebrow::after {
+    content: '';
+    display: block;
+    inline-size: clamp(1.5rem, 4vw, 3rem);
+    block-size: var(--border-hairline);
+    background-color: var(--color-border-default);
+  }
+
+  /*
+   * Scroll reveal.
+   *
+   * Content is visible by default and the reveal only enhances it, so a headless
+   * renderer, a background tab, or a browser without scroll-driven animation
+   * support still ships a complete page. No IntersectionObserver, no scroll
+   * listener, no JavaScript at all.
+   */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: reveal-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 60%;
+      }
+    }
+  }
+
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--translate-reveal));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer utilities {
+  .measure-prose {
+    max-inline-size: var(--measure-prose);
+  }
+
+  .measure-lede {
+    max-inline-size: var(--measure-lede);
+  }
+
+  /*
+   * Duotone treatment for atmospheric photography: the plant, the quarry, the
+   * warehouse. Pushes the image toward the brand accent so a set of stock-lit
+   * photographs reads as one commissioned shoot.
+   *
+   * Never applied to the powder product shot: whiteness is a published product
+   * claim (95.0-98.5% R457) and tinting it would misrepresent the material.
+   */
+  .duotone {
+    filter: grayscale(1) contrast(1.06);
+  }
+
+  .duotone-ground {
+    background-color: var(--color-accent-900);
+  }
+
+  .duotone > * {
+    mix-blend-mode: luminosity;
+    opacity: 0.86;
+  }
+}
+
+/*
+ * Reduced motion. Placed outside the layers so it wins against anything a
+ * component declares, and written as a blanket override rather than a per
+ * animation opt-out so a new component cannot forget to honour it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skeleton shimmer. Declared here rather than in the component so the keyframes
+   exist once, and so the reduced-motion override above reaches it. */
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
   }
 }

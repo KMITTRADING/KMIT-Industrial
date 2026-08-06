@@ -40,6 +40,10 @@ first build needs network access (see `docs/decisions.md` ADR-015).
 `docs/brand-tokens.md` from the logo. Run it if the brand files change; never
 hand-edit `tokens.css`.
 
+`npm run audit:a11y` needs a running server:
+`npm run build && npx next start -p 3123 &` then
+`npm run audit:a11y -- http://localhost:3123`.
+
 ---
 
 ## Where things live
@@ -54,14 +58,15 @@ docs/
   brand-tokens.md          palette derivation and the contrast matrix
   site-architecture.md     routes, navigation, internal linking, conversion paths
   keyword-clusters.md      bilingual intent clusters
-  decisions.md             ADR log — read this before questioning a choice
+  decisions.md             ADR log - read this before questioning a choice
+  design-system.md         per-component contract: variants, states, a11y, do/don't
   skill-map.md             which skill applies in which phase
   prompts/                 the seven build-phase briefs
 assets-source/images/      original drop, untouched
 public/images/             optimised AVIF + WebP masters
 src/
   app/[locale]/            routes
-  components/              brand/, layout/
+  components/              brand/, primitives/, sections/, layout/, styleguide/
   content/                 ar/, en/, data/, schema.ts — typed content and data
   i18n/                    routing, navigation, request config
   lib/                     env, seo, rfq-adapter, utils
@@ -103,6 +108,9 @@ environment change.
 
 ## Build status
 
-Phase 1 (foundation) is complete: asset pipeline, brand tokens, IA, and the
-bilingual scaffold with a foundation home page rendering the grade matrix and
-the property table in both locales. Phases 2–7 are briefed in `docs/prompts/`.
+Phase 1 (foundation) and Phase 2 (design system) are complete. The design system
+lives at `/[locale]/styleguide`: every token, every primitive in every state,
+every domain section, with a direction toggle for reviewing RTL and LTR side by
+side. It is `noindex`.
+
+Phases 3 to 7 are briefed in `docs/prompts/`.

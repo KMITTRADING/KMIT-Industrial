@@ -244,3 +244,133 @@ from the upstream family.
 **Cost:** the build requires network access to Google Fonts. If a future build
 environment is fully offline, switch to `next/font/local` with the woff2 files
 committed under `src/styles/fonts/` — a contained change to one import.
+
+---
+
+## ADR-016 — The process diagram describes the material, not the operator
+
+**Phase 2.** `ProcessDiagram` labels six stages the product passes through: feed,
+milling, classification, surface treatment, quality control, packaging. The copy
+never says who performs them.
+
+Whether KMIT mills its own material or processes and trades sourced material is
+the first open question in `.agents/product-marketing.md` §12, and it is
+positioning-blocking. A diagram captioned "our process" would settle that
+question by implication, which is exactly the kind of claim the constitution
+forbids.
+
+**Cost:** the section is less persuasive than an owned-plant story would be.
+That story can be written the day the answer arrives, and the component does not
+need to change to carry it.
+
+---
+
+## ADR-017 — The icon set is drawn, against the skill guidance
+
+**Phase 2.** `design-taste-frontend` §9.E says "NO hand-rolled SVG icons. Use
+Phosphor / HugeIcons / Radix / Tabler." The Phase 2 brief says the opposite:
+"custom SVG icon set, do not ship a generic icon library look, draw the domain
+icons: mesh screen, silo, jumbo bag, tanker, lab flask, extruder."
+
+The brief wins, on the precedence established in
+`docs/phase-zero-skill-gate.md` (explicit prompt requirements outrank the design
+skills), and on the merits: no general-purpose set ships a mesh screen, an air
+classifier, or a jumbo bag. Substituting a generic box for a jumbo bag on a
+packaging page is worse than drawing one.
+
+The intent behind the skill's rule is honoured. The set is internally
+consistent, drawn on one grid at one stroke weight, and the utility glyphs are
+restrained rather than decorative.
+
+**Cost:** twenty-three glyphs to maintain by hand. Contained: they are one file,
+built from one `Icon` wrapper.
+
+---
+
+## ADR-018 — Specification tables keep their hairlines
+
+**Phase 2.** `design-taste-frontend` §9.F bans `border-t` plus `border-b` on
+every row of a long list or spec table and calls a ten-row hairlined table "the
+laziest layout".
+
+CLAUDE.md §6 asks for the opposite: "dense spec tables as first-class visual
+elements" with "hairline rules". The constitution outranks the skill, and the
+audience settles it: a formulation engineer reads a specification table faster
+than any card layout, and the table markup is what gets extracted into rich
+results and AI answers.
+
+What was taken from the skill: the tables use **one** hairline between rows and
+**one** 2px rule under the header, never a border above and below each row. That
+is the actual defect the rule is aimed at.
+
+---
+
+## ADR-019 — Light theme only, with the architecture ready for dark
+
+**Phase 2.** `design-taste-frontend` §6.C calls dark mode mandatory for any
+consumer-facing page. This site ships light only, with `color-scheme: light`.
+
+Three reasons. The Phase 2 deliverable list does not include a dark theme, and
+neither does CLAUDE.md. The photography is graded for a light ground, and the
+duotone treatment would need re-deriving. And shipping an unreviewed second
+theme means a second contrast matrix and a doubled styleguide, both of which
+would be approved by nobody.
+
+The architecture does not foreclose it: components reference semantic tokens
+(`--color-surface-page`, `--color-ink-secondary`) rather than ramp stops, so a
+dark theme is one additional block remapping those aliases plus a second run of
+the contrast matrix.
+
+**Cost:** a reader with a dark system preference gets a light page. Revisit in
+Phase 6 if the client wants it.
+
+---
+
+## ADR-020 — Em dashes and en dashes are banned from rendered copy, mechanically
+
+**Phase 2.** `scripts/check-copy.mjs` fails the build if an em dash, an en dash
+or a double hyphen appears in a content module or in the asset map's alt text.
+It also fails on more than one middle dot in a line.
+
+Both rules come from the anti-slop skills, where the em dash is called the single
+most-violated tell. The reason to enforce it with a script rather than a
+convention is that the convention does not survive contact with a second author:
+one em dash in one string spreads through a site by imitation.
+
+Ranges use a plain hyphen (`4.5-6.0`, `95.0-98.5%`). A sentence that wants an em
+dash gets a comma, a colon, parentheses, or two sentences.
+
+**Scope:** rendered copy only. Source comments and documentation are written for
+the team, not for a visitor, and are not scanned.
+
+---
+
+## ADR-021 — Navigation is a prop, superseding ADR-014
+
+**Phase 2.** ADR-014 said the header ships without navigation until the routes
+exist. That is now expressed as a prop rather than an absence: `SiteHeader`
+takes `navItems`, the live site passes only routes that exist, and the styleguide
+passes the full Phase 3 set so the mega-menu can be reviewed before those pages
+are built.
+
+Same guarantee as ADR-014 (the live site never links to a 404), without holding
+the component back from review.
+
+---
+
+## ADR-022 — Double-Bezel adapted, not adopted
+
+**Phase 2.** `high-end-visual-design` §4.A requires a nested "Double-Bezel"
+enclosure on every major card, at `rounded-[2rem]` with inset highlights.
+`impeccable` says nested cards are always wrong. CLAUDE.md §5 requires near-square
+radii and a maximum of one soft shadow in the entire system.
+
+Resolution: the constitution sets the geometry, and the nesting idea is used
+once, where it earns its place. The `instrument` card variant is an outer tray
+at radius 6 holding an inner plate at radius 3 (concentric: 6 minus 6px of tray
+padding), with no inset highlight and no shadow. It is used by the grade matrix
+and nothing else, which is what keeps it meaningful.
+
+Also taken from that skill: macro whitespace, custom cubic-bezier easings, press
+feedback on buttons, GPU-safe animation, and z-index discipline. Not taken: pill
+buttons, 2rem radii, glassmorphism, 700ms transitions, 16px entrance travel.

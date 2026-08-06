@@ -61,11 +61,54 @@ export const PACKAGING_IDS = ['paper-valve-bag-25kg', 'jumbo-bag', 'bulk-tanker'
 
 export const COATING_AGENT_IDS = ['stearic-acid'] as const;
 
+/** Standards and schemes named in docs/technical-data.md §6. */
+export const STANDARD_IDS = [
+  'iso-9001',
+  'iso-14001',
+  'iso-45001',
+  'saso',
+  'reach',
+  'rohs',
+] as const;
+
+/** Controlled documents named in docs/technical-data.md §6. */
+export const DOCUMENT_IDS = ['tds', 'msds', 'coa'] as const;
+
+/**
+ * Stages the material passes through, from quarried feed to despatch.
+ *
+ * Written as stages of the product, not as a claim about which of them KMIT
+ * performs in-house: whether KMIT mills its own material or processes sourced
+ * material is an open question (docs/technical-data.md §8). See ADR-016.
+ */
+export const PROCESS_STEP_IDS = [
+  'feed',
+  'milling',
+  'classification',
+  'surface-treatment',
+  'quality-control',
+  'packaging',
+] as const;
+
+export const FAQ_IDS = [
+  'gcc-vs-pcc',
+  'why-coated',
+  'choose-grade',
+  'storage-shelf-life',
+] as const;
+
+export const CONTACT_CHANNEL_IDS = ['phone', 'whatsapp', 'email', 'location'] as const;
+
 export type SectorId = (typeof SECTOR_IDS)[number];
 export type ApplicationId = (typeof APPLICATION_IDS)[number];
 export type ParameterId = (typeof PARAMETER_IDS)[number];
 export type PackagingId = (typeof PACKAGING_IDS)[number];
 export type CoatingAgentId = (typeof COATING_AGENT_IDS)[number];
+export type StandardId = (typeof STANDARD_IDS)[number];
+export type DocumentId = (typeof DOCUMENT_IDS)[number];
+export type ProcessStepId = (typeof PROCESS_STEP_IDS)[number];
+export type FaqId = (typeof FAQ_IDS)[number];
+export type ContactChannelId = (typeof CONTACT_CHANNEL_IDS)[number];
 
 /**
  * Which §4 sector each §3 application rolls up into. Used to link a grade to
@@ -236,12 +279,109 @@ export const contentSchema = z.object({
     percent: nonEmpty,
   }),
 
+  standards: labelMap(STANDARD_IDS),
+  standardScopes: labelMap(STANDARD_IDS),
+  documents: labelMap(DOCUMENT_IDS),
+  documentDescriptions: labelMap(DOCUMENT_IDS),
+  processSteps: labelMap(PROCESS_STEP_IDS),
+  processStepDetails: labelMap(PROCESS_STEP_IDS),
+  faqQuestions: labelMap(FAQ_IDS),
+  faqAnswers: labelMap(FAQ_IDS),
+  contactChannels: labelMap(CONTACT_CHANNEL_IDS),
+
+  /**
+   * Section-level copy for the domain components. Each block is what a real
+   * page passes in; the styleguide renders the same strings so the review is of
+   * production copy, not of sample text.
+   */
+  sections: z.object({
+    certificationsHeading: nonEmpty,
+    certificationsIntro: nonEmpty,
+    certificationsColumnStandard: nonEmpty,
+    certificationsColumnScope: nonEmpty,
+    certificationsColumnCertificate: nonEmpty,
+    certificatePending: nonEmpty,
+
+    packagingHeading: nonEmpty,
+    packagingIntro: nonEmpty,
+    storageHeading: nonEmpty,
+    storageBody: nonEmpty,
+    shelfLifeUncoated: nonEmpty,
+    shelfLifeCoated: nonEmpty,
+
+    processHeading: nonEmpty,
+    processIntro: nonEmpty,
+
+    logisticsHeading: nonEmpty,
+    logisticsIntro: nonEmpty,
+    logisticsHqLabel: nonEmpty,
+    logisticsMarketsLabel: nonEmpty,
+    logisticsLeadTimePending: nonEmpty,
+
+    documentsHeading: nonEmpty,
+    documentsIntro: nonEmpty,
+    documentRequest: nonEmpty,
+    documentOnRequest: nonEmpty,
+
+    faqHeading: nonEmpty,
+    faqIntro: nonEmpty,
+
+    contactHeading: nonEmpty,
+    contactIntro: nonEmpty,
+    contactPending: nonEmpty,
+
+    rfqTeaserHeading: nonEmpty,
+    rfqTeaserBody: nonEmpty,
+
+    applicationGradesLabel: nonEmpty,
+    applicationViewSector: nonEmpty,
+
+    gradeMatrixFilterLabel: nonEmpty,
+    gradeMatrixFilterAll: nonEmpty,
+    gradeMatrixShowing: nonEmpty,
+    gradeMatrixEmpty: nonEmpty,
+    gradeMatrixReset: nonEmpty,
+    gradeMatrixScrollHint: nonEmpty,
+  }),
+
+  /**
+   * Interface chrome used by the primitives. Separate from `sections` because
+   * these strings belong to the component library rather than to any page.
+   */
+  ui: z.object({
+    close: nonEmpty,
+    dismiss: nonEmpty,
+    loading: nonEmpty,
+    expand: nonEmpty,
+    collapse: nonEmpty,
+    openMenu: nonEmpty,
+    closeMenu: nonEmpty,
+    sortAscending: nonEmpty,
+    sortDescending: nonEmpty,
+    sortNone: nonEmpty,
+    previousPage: nonEmpty,
+    nextPage: nonEmpty,
+    pagination: nonEmpty,
+    pageStatus: nonEmpty,
+    breadcrumb: nonEmpty,
+    required: nonEmpty,
+    optional: nonEmpty,
+    chooseFile: nonEmpty,
+    noFileChosen: nonEmpty,
+    infoLabel: nonEmpty,
+    successLabel: nonEmpty,
+    warningLabel: nonEmpty,
+    dangerLabel: nonEmpty,
+  }),
+
   footer: z.object({
     headquarters: nonEmpty,
     marketsServed: nonEmpty,
-    compliance: nonEmpty,
     dataProvenance: nonEmpty,
     rights: nonEmpty,
+    complianceHeading: nonEmpty,
+    navHeading: nonEmpty,
+    productsHeading: nonEmpty,
   }),
 
   styleguide: z.object({

@@ -418,8 +418,53 @@ ${semantic
   --radius-md: 4px;
   --radius-lg: 6px;
 
-  /* ---- the one soft shadow permitted in the entire system ---- */
-  --shadow-raised: 0 1px 2px oklch(0% 0 0 / 0.04), 0 8px 24px -12px oklch(0% 0 0 / 0.12);
+  /* ---- border widths ----
+     Hierarchy in this system is carried by rules, not by elevation, so the
+     widths are few and deliberate. 'hairline' is the workhorse, 'rule' marks a
+     group boundary, and 'emphasis' is only ever the underline of an active tab
+     or the start-edge marker on a pull quote. */
+  --border-hairline: 1px;
+  --border-rule: 2px;
+  --border-emphasis: 3px;
+
+  /* ---- the one soft shadow permitted in the entire system ----
+     Reserved for elements that genuinely float above the page: the dialog, the
+     mega-menu, the tooltip. Cards do not get it. */
+  --shadow-raised: 0 1px 2px oklch(17.8% 0.013 275.5 / 0.05),
+    0 8px 24px -12px oklch(17.8% 0.013 275.5 / 0.16);
+
+  /* ---- motion ----
+     Durations follow the perceived-responsiveness table: press feedback is
+     almost instant, overlays are allowed a little more room, and nothing in the
+     system exceeds 300ms. The standard curve is an ease-out expo: all of the
+     movement happens in the first third, so the interface answers immediately
+     and settles afterwards. Nothing uses linear or ease-in-out. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-standard: var(--ease-out-expo);
+
+  --duration-press: 120ms;
+  --duration-fast: 160ms;
+  --duration-base: 200ms;
+  --duration-slow: 260ms;
+  --duration-reveal: 300ms;
+
+  /* Exit is roughly two thirds of enter, so dismissing never feels sticky. */
+  --duration-exit: 140ms;
+
+  /* Maximum travel for any entrance. Beyond this the movement reads as a page
+     rebuilding itself rather than content arriving. */
+  --translate-reveal: 12px;
+
+  /* ---- z-index: a semantic ladder, never an arbitrary number ---- */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-overlay: 300;
+  --z-dialog: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+  --z-skip-link: 700;
 }
 `;
 }
