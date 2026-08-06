@@ -1,0 +1,148 @@
+{
+  "generatedBy": "scripts/optimize-assets.mjs",
+  "assets": [
+    {
+      "source": "assets-source/images/1.Mining & Extraction/1.Open-Pit-Quarry.png",
+      "avif": "public/images/extraction/open-pit-quarry.avif",
+      "webp": "public/images/extraction/open-pit-quarry.webp",
+      "section": "extraction",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 11071559,
+      "avifBytes": 592542,
+      "webpBytes": 1210846
+    },
+    {
+      "source": "assets-source/images/1.Mining & Extraction/2.Underground-Mining.png",
+      "avif": "public/images/extraction/underground-mining.avif",
+      "webp": "public/images/extraction/underground-mining.webp",
+      "section": "extraction",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 9572862,
+      "avifBytes": 332539,
+      "webpBytes": 641804
+    },
+    {
+      "source": "assets-source/images/2.Processing & Manufacturing/1.Kiln-&-Plant.png",
+      "avif": "public/images/processing/kiln-and-plant.avif",
+      "webp": "public/images/processing/kiln-and-plant.webp",
+      "section": "processing",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 9766412,
+      "avifBytes": 274263,
+      "webpBytes": 596490
+    },
+    {
+      "source": "assets-source/images/2.Processing & Manufacturing/2.Grinding-Mills-&-Micronizers.png",
+      "avif": "public/images/processing/grinding-mills-and-micronizers.avif",
+      "webp": "public/images/processing/grinding-mills-and-micronizers.webp",
+      "section": "processing",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 7911927,
+      "avifBytes": 110312,
+      "webpBytes": 240558
+    },
+    {
+      "source": "assets-source/images/2.Processing & Manufacturing/3.Powder-Texture.png",
+      "avif": "public/images/product/caco3-powder-mound.avif",
+      "webp": "public/images/product/caco3-powder-mound.webp",
+      "section": "product",
+      "width": 1200,
+      "height": 896,
+      "originalBytes": 1021051,
+      "avifBytes": 14221,
+      "webpBytes": 24648
+    },
+    {
+      "source": "assets-source/images/3.Quality Control & Lab/1.Lab-&-QC-Testing.png",
+      "avif": "public/images/quality/lab-and-qc-testing.avif",
+      "webp": "public/images/quality/lab-and-qc-testing.webp",
+      "section": "quality",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 7434215,
+      "avifBytes": 117869,
+      "webpBytes": 218518
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/1.Plastics-&-Masterbatch.png",
+      "avif": "public/images/applications/plastics-and-masterbatch.avif",
+      "webp": "public/images/applications/plastics-and-masterbatch.webp",
+      "section": "applications",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 7199238,
+      "avifBytes": 106390,
+      "webpBytes": 196472
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/2.Paints-&-Coatings.png",
+      "avif": "public/images/applications/paints-and-coatings.avif",
+      "webp": "public/images/applications/paints-and-coatings.webp",
+      "section": "applications",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 6890194,
+      "avifBytes": 46897,
+      "webpBytes": 82246
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/3.Oil-&-Gas-Drilling.png",
+      "avif": "public/images/applications/oil-and-gas-drilling.avif",
+      "webp": "public/images/applications/oil-and-gas-drilling.webp",
+      "section": "applications",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 8653024,
+      "avifBytes": 268124,
+      "webpBytes": 552000
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/4.Paper-&-Packaging.png",
+      "avif": "public/images/applications/paper-and-paperboard.avif",
+      "webp": "public/images/applications/paper-and-paperboard.webp",
+      "section": "applications",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 9208077,
+      "avifBytes": 267353,
+      "webpBytes": 573864
+    },
+    {
+      "source": "assets-source/images/5.Packaging & Logistics/1.Paper-Valve-Bags-on-Pallets.png",
+      "avif": "public/images/packaging/paper-valve-bags-on-pallets.avif",
+      "webp": "public/images/packaging/paper-valve-bags-on-pallets.webp",
+      "section": "packaging",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 9161481,
+      "avifBytes": 284723,
+      "webpBytes": 613788
+    },
+    {
+      "source": "assets-source/images/5.Packaging & Logistics/2.Jumbo-Bags-Storage.png",
+      "avif": "public/images/packaging/jumbo-bags-storage.avif",
+      "webp": "public/images/packaging/jumbo-bags-storage.webp",
+      "section": "packaging",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 9436999,
+      "avifBytes": 287244,
+      "webpBytes": 578576
+    },
+    {
+      "source": "assets-source/images/5.Packaging & Logistics/3.Bulk-Silo-Tanker-Truck.png",
+      "avif": "public/images/packaging/bulk-silo-tanker-truck.avif",
+      "webp": "public/images/packaging/bulk-silo-tanker-truck.webp",
+      "section": "packaging",
+      "width": 2752,
+      "height": 1536,
+      "originalBytes": 7531967,
+      "avifBytes": 161995,
+      "webpBytes": 317886
+    }
+  ]
+}

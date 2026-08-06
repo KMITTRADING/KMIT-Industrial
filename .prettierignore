@@ -1,0 +1,20 @@
+.next
+out
+build
+node_modules
+package-lock.json
+assets-source
+public/images
+.preview
+docs/asset-optimization-report.json
+src/styles/tokens.css
+src/components/brand/Logo.tsx
+
+# Supplied reference documents and the project constitution are kept verbatim:
+# reformatting the source of truth makes it harder to diff against what the
+# client actually provided.
+CLAUDE.md
+docs/technical-data.md
+docs/keyword-clusters.md
+docs/skill-map.md
+docs/prompts

@@ -1,0 +1,43 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# local preview renders produced by scripts/optimize-assets.mjs --preview
+/.preview/
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+*.pem
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files — NEXT_PUBLIC_SITE_URL and the RFQ driver credentials are
+# environment configuration, never repository content. See .env.example.
+.env
+.env*.local
+.env.production
+
+# typescript
+*.tsbuildinfo
+
+# vercel
+.vercel

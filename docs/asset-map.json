@@ -1,0 +1,299 @@
+{
+  "$comment": "Generated in Phase 1 (asset recon). Every raster asset in assets-source/ is classified here, with the section it serves, its bilingual alt text, and any defect that constrains how it may be used. Regenerate the optimised masters with `npm run assets:optimize`. Sections with no usable photograph are listed under `gaps` — design a non-photographic treatment for those, never source or invent an image.",
+  "generatedAt": "2026-08-06",
+  "sourceRoot": "assets-source/images",
+  "outputRoot": "public/images",
+  "conventions": {
+    "master": "One optimised master per original at native resolution, in AVIF (referenced by code) and WebP (fallback master).",
+    "responsiveWidths": "Produced by the Next.js image optimiser from the AVIF master — not pre-generated. See docs/decisions.md ADR-006.",
+    "naming": "public/images/<section>/<kebab-case-name>.<ext>"
+  },
+  "assets": [
+    {
+      "source": "assets-source/images/1.Mining & Extraction/1.Open-Pit-Quarry.png",
+      "target": "public/images/extraction/open-pit-quarry.avif",
+      "targetWebp": "public/images/extraction/open-pit-quarry.webp",
+      "section": "process.extraction",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 11071559,
+      "avifBytes": 592542,
+      "alt_ar": "منظر جوي لمحجر مكشوف لاستخراج الحجر الجيري، بمصاطب متدرجة وشاحنات نقل ثقيلة ووحدة كسّارة في الخلفية",
+      "alt_en": "Aerial view of an open-pit limestone quarry with stepped benches, haul trucks working the floor, and a crushing plant on the rim",
+      "notes": "Widest and most detailed photograph in the drop; the strongest LCP candidate for the home hero. Landscape-only crop — will not survive a portrait mobile hero without losing the benches. Duotone treatment toward the brand accent recommended so the warm dust tone does not fight the palette.",
+      "webpBytes": 1210846
+    },
+    {
+      "source": "assets-source/images/1.Mining & Extraction/2.Underground-Mining.png",
+      "target": "public/images/extraction/underground-mining.avif",
+      "targetWebp": "public/images/extraction/underground-mining.webp",
+      "section": "process.extraction",
+      "role": "secondary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 9572862,
+      "avifBytes": 332539,
+      "alt_ar": "جبهة تعدين تحت الأرض بأعمدة صخرية داعمة وحفّارة جامبو تعمل تحت إضاءة خطية",
+      "alt_en": "Underground room-and-pillar mining face with rock support pillars and a jumbo drill rig working under linear lighting",
+      "notes": "Very dark image — do not place body text over it without a scrim. Useful as a full-bleed section divider or as the second frame in a process sequence.",
+      "webpBytes": 641804
+    },
+    {
+      "source": "assets-source/images/2.Processing & Manufacturing/1.Kiln-&-Plant.png",
+      "target": "public/images/processing/kiln-and-plant.avif",
+      "targetWebp": "public/images/processing/kiln-and-plant.webp",
+      "section": "process.plant",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 9766412,
+      "avifBytes": 274263,
+      "alt_ar": "صالة إنتاج داخلية بصوامع وخزانات من الفولاذ المقاوم للصدأ وشبكة أنابيب نقل ومنصة تحكم",
+      "alt_en": "Interior of a processing hall with stainless silos, classifier cones, conveying pipework and a control platform",
+      "notes": "Bright, cool-toned and symmetrical — reads as 'facility' rather than 'mine'. Good hero for the facility page and for any capability or capacity section.",
+      "webpBytes": 596490
+    },
+    {
+      "source": "assets-source/images/2.Processing & Manufacturing/2.Grinding-Mills-&-Micronizers.png",
+      "target": "public/images/processing/grinding-mills-and-micronizers.avif",
+      "targetWebp": "public/images/processing/grinding-mills-and-micronizers.webp",
+      "section": "process.milling",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 7911927,
+      "avifBytes": 110312,
+      "alt_ar": "وحدة طحن ميكروني بمطحنة نفاثة ومصنّف هوائي ومقاييس ضغط، مع تفريغ مسحوق أبيض في وعاء التجميع",
+      "alt_en": "Micronizing line — jet mill, air classifier and pressure gauges, with white powder discharging into a collection vessel",
+      "notes": "The only asset that visually explains particle-size control. Pair it with the D50 / PSD data rather than with generic copy.",
+      "webpBytes": 240558
+    },
+    {
+      "source": "assets-source/images/2.Processing & Manufacturing/3.Powder-Texture.png",
+      "target": "public/images/product/caco3-powder-mound.avif",
+      "targetWebp": "public/images/product/caco3-powder-mound.webp",
+      "section": "product.material",
+      "role": "primary",
+      "width": 1200,
+      "height": 896,
+      "aspectRatio": "1.34",
+      "originalBytes": 1021051,
+      "avifBytes": 14221,
+      "alt_ar": "كومة من مسحوق كربونات الكالسيوم الأبيض الناعم على خلفية فاتحة، تُظهر نعومة الحبيبات ودرجة البياض",
+      "alt_en": "Mound of fine white calcium carbonate powder on a light background, showing particle fineness and whiteness",
+      "notes": "DEFECT — 1200px wide, well below the 1600px hero threshold; must never be used full-bleed. Correctly classified as a product photograph, not a texture: it is a lit studio shot on white, not a tileable surface. Small generative sparkle artefact in the lower-end corner — crop it out. Best use is a contained product card or an inline figure beside the whiteness/purity table.",
+      "webpBytes": 24648
+    },
+    {
+      "source": "assets-source/images/3.Quality Control & Lab/1.Lab-&-QC-Testing.png",
+      "target": "public/images/quality/lab-and-qc-testing.avif",
+      "targetWebp": "public/images/quality/lab-and-qc-testing.webp",
+      "section": "quality.lab",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 7434215,
+      "avifBytes": 117869,
+      "alt_ar": "فنية مختبر تُحمّل عينة مسحوق في جهاز تحليل، وعلى الشاشة منحنى توزيع حجم الجسيمات",
+      "alt_en": "Laboratory technician loading a powder sample into an analyser, with a particle-size distribution curve on the screen",
+      "notes": "The only asset that carries the QC proof story, and the only one showing a person. Screen shows a distribution curve — appropriate next to the test-method table. Cool blue cast will need colour grading toward the accent to sit with the rest of the set.",
+      "webpBytes": 218518
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/1.Plastics-&-Masterbatch.png",
+      "target": "public/images/applications/plastics-and-masterbatch.avif",
+      "targetWebp": "public/images/applications/plastics-and-masterbatch.webp",
+      "section": "applications.plastics",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 7199238,
+      "avifBytes": 106390,
+      "alt_ar": "حبيبات ماستر باتش بيضاء تنساب من حاوية أمام آلة حقن بلاستيك",
+      "alt_en": "White filler-masterbatch pellets pouring from a container in front of an injection moulding machine",
+      "notes": "DEFECT — the container carries burned-in English label text ('WHITE MASTERBATCH FILLER'). It is legible at hero scale and cannot be localised for the Arabic page. Either crop the container out, or use the image only below 900px wide where the text is not resolvable.",
+      "webpBytes": 196472
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/2.Paints-&-Coatings.png",
+      "target": "public/images/applications/paints-and-coatings.avif",
+      "targetWebp": "public/images/applications/paints-and-coatings.webp",
+      "section": "applications.paints",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 6890194,
+      "avifBytes": 46897,
+      "alt_ar": "تناثر طلاء أبيض كثيف في الهواء على خلفية رمادية داكنة",
+      "alt_en": "Splash of thick white paint suspended in air against a dark grey background",
+      "notes": "Studio splash on a near-solid dark background — the one asset in the set that composites cleanly with type laid directly over it. Small generative sparkle artefact in the lower-end corner; crop or clone out. Least 'photographic' of the set, so keep it away from the plant imagery.",
+      "webpBytes": 82246
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/3.Oil-&-Gas-Drilling.png",
+      "target": "public/images/applications/oil-and-gas-drilling.avif",
+      "targetWebp": "public/images/applications/oil-and-gas-drilling.webp",
+      "section": "applications.oil-gas",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 8653024,
+      "avifBytes": 268124,
+      "alt_ar": "موقع حفر صحراوي عند الغروب، بأبراج حفر وأحواض خلط طين الحفر وأكياس جامبو من مواد سوائل الحفر",
+      "alt_en": "Desert drilling site at sunset with rigs, mud mixing tanks, and jumbo bags of drilling-fluid materials in the foreground",
+      "notes": "DEFECT — burned-in English annotation text across the lower band ('DRILLING FLUID MATERIALS SUPPLY', 'MUD MIXING PLANT') plus lettering on equipment. Untranslatable and it makes the image read as a diagram. Crop the lower band before use, or restrict to a small inline figure. Warm sunset palette is the furthest from the brand accent of anything in the drop.",
+      "webpBytes": 552000
+    },
+    {
+      "source": "assets-source/images/4.Industrial Applications/4.Paper-&-Packaging.png",
+      "target": "public/images/applications/paper-and-paperboard.avif",
+      "targetWebp": "public/images/applications/paper-and-paperboard.webp",
+      "section": "applications.paper",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 9208077,
+      "avifBytes": 267353,
+      "alt_ar": "آلة إنتاج ورق عالية السرعة مع بكرات ورق كبيرة وجسر رافع علوي داخل صالة إنتاج",
+      "alt_en": "High-speed paper machine with large paper reels and an overhead gantry crane inside a production hall",
+      "notes": "Small burned-in English signage on the far wall, but it is not legible at any realistic render width — usable as-is. Bright and high-key; pairs well with the kiln/plant image.",
+      "webpBytes": 573864
+    },
+    {
+      "source": "assets-source/images/5.Packaging & Logistics/1.Paper-Valve-Bags-on-Pallets.png",
+      "target": "public/images/packaging/paper-valve-bags-on-pallets.avif",
+      "targetWebp": "public/images/packaging/paper-valve-bags-on-pallets.webp",
+      "section": "packaging.bags-25kg",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 9161481,
+      "avifBytes": 284723,
+      "alt_ar": "أكياس ورقية صمامية سعة 25 كجم من كربونات الكالسيوم، مرصوصة على منصات نقل وملفوفة بغلاف انكماشي داخل مستودع",
+      "alt_en": "25 kg paper valve bags of calcium carbonate stacked on pallets and shrink-wrapped in a warehouse",
+      "notes": "Bags are printed 'CALCIUM CARBONATE / 25kg' in English only. Here the text is an asset rather than a defect — it corroborates the packaging claim — but it does mean the Arabic page shows English packaging. Acceptable: this is how the trade actually labels export bags.",
+      "webpBytes": 613788
+    },
+    {
+      "source": "assets-source/images/5.Packaging & Logistics/2.Jumbo-Bags-Storage.png",
+      "target": "public/images/packaging/jumbo-bags-storage.avif",
+      "targetWebp": "public/images/packaging/jumbo-bags-storage.webp",
+      "section": "packaging.jumbo-bags",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 9436999,
+      "avifBytes": 287244,
+      "alt_ar": "صفوف من الأكياس الجامبو البيضاء على منصات خشبية داخل مستودع واسع، مع رافعة شوكية في الممر",
+      "alt_en": "Rows of white jumbo bags on wooden pallets in a large warehouse, with a forklift in the aisle",
+      "notes": "Reads as inventory depth and shipping readiness — the single most useful trust image for a procurement manager. Strong one-point perspective; do not crop the vanishing point out.",
+      "webpBytes": 578576
+    },
+    {
+      "source": "assets-source/images/5.Packaging & Logistics/3.Bulk-Silo-Tanker-Truck.png",
+      "target": "public/images/packaging/bulk-silo-tanker-truck.avif",
+      "targetWebp": "public/images/packaging/bulk-silo-tanker-truck.webp",
+      "section": "packaging.bulk-tanker",
+      "role": "primary",
+      "width": 2752,
+      "height": 1536,
+      "aspectRatio": "1.79",
+      "originalBytes": 7531967,
+      "avifBytes": 161995,
+      "alt_ar": "شاحنة صهريج صومعي لنقل كربونات الكالسيوم السائبة على طريق سريع صحراوي عند الغروب",
+      "alt_en": "Silo tanker truck for bulk calcium carbonate on a desert highway at sunset",
+      "notes": "The only asset that localises the company geographically — Saudi highway signage and Arabic/English tanker lettering. Use it for the logistics and lead-time story. Small generative sparkle artefact in the lower-end corner; crop out.",
+      "webpBytes": 317886
+    }
+  ],
+  "gaps": [
+    {
+      "section": "applications.rubber",
+      "reason": "docs/technical-data.md §4.4 defines rubber and elastomers as a target sector, but the drop contains no rubber, tyre, conveyor-belt or extrusion imagery.",
+      "suggested_treatment": "Typographic application panel: sector name, the technical-value statements from §4.4, and the recommended grade codes pulled from the grades dataset. No photograph. Use the powder product shot as a small inline figure if a visual is unavoidable."
+    },
+    {
+      "section": "quality.certifications",
+      "reason": "No certificate, audit, or accreditation imagery, and no certificate numbers exist yet (see TODO(data)).",
+      "suggested_treatment": "Standards table — standard, scope, issuing body, certificate number, validity — rendered as a real <table>. Set in the brand accent with hairline rules. Never render a certificate badge that has not been issued."
+    },
+    {
+      "section": "company.team",
+      "reason": "No leadership, sales-team, or office photography in the drop.",
+      "suggested_treatment": "Omit the team section entirely in v1. A stock-feeling team photo is worse than no photo for a technical buyer. Replace with a named contact route: technical enquiries vs commercial enquiries."
+    },
+    {
+      "section": "company.headquarters",
+      "reason": "No exterior building, office, or Jeddah location photography.",
+      "suggested_treatment": "Map panel built in SVG plus the address block. Do not substitute a generic skyline."
+    },
+    {
+      "section": "social-proof.clients",
+      "reason": "No client logos, and no named references cleared for publication (see TODO(data)).",
+      "suggested_treatment": "Sector-served list rather than a logo wall — the sectors are documented in §4 of the technical data and can be stated without permission."
+    },
+    {
+      "section": "product.grade-comparison",
+      "reason": "No macro photography differentiating coarse from micronised grades — a single powder shot cannot carry a five-grade matrix.",
+      "suggested_treatment": "Build the PSD comparison as an SVG chart from the D50 values in the grades dataset. This also gives an extractable data surface for AI answer engines, which a photograph does not."
+    },
+    {
+      "section": "home.hero-portrait",
+      "reason": "Every photograph in the drop is 2752x1536 landscape (1.79:1). There is no portrait or square crop for a mobile hero or an OG/social card.",
+      "suggested_treatment": "Art-direct the mobile hero with a non-photographic composition — accent-tinted panel plus the grade matrix — rather than centre-cropping a landscape frame. Generate OG cards from the token layer, not from these photographs."
+    },
+    {
+      "section": "resources.documents",
+      "reason": "No TDS, MSDS, or COA PDF files supplied.",
+      "suggested_treatment": "Build the resources page against the real document schema and render each entry in a requestable state, wired to the RFQ adapter. Never publish a download link to a file that does not exist."
+    }
+  ],
+  "vectorAssets": [
+    {
+      "source": "public/brand/logo.svg",
+      "role": "brand.wordmark",
+      "viewBox": "0 0 1920 648.6",
+      "colours": ["#2b3073"],
+      "notes": "KMIT wordmark above the words INDUSTRIAL SOLUTIONS, single fill. Implemented as src/components/brand/Logo.tsx with variant=\"full\". The file is kept in public/ for favicon and OG generation."
+    },
+    {
+      "source": "public/brand/icon.svg",
+      "role": "brand.mark",
+      "viewBox": "0 0 655.3 648.6",
+      "colours": ["#2b3073"],
+      "notes": "The K mark alone. Implemented as variant=\"mark\". Contains one stray zero-width <line fill=\"none\"> left over from the Illustrator export; dropped in the React implementation."
+    },
+    {
+      "source": "public/contact-icons/phone.svg",
+      "role": "icon.contact",
+      "notes": "Reused as-is for the contact block; to be inlined as a React icon component in Phase 2 so it inherits currentColor."
+    },
+    {
+      "source": "public/contact-icons/mail.svg",
+      "role": "icon.contact",
+      "notes": "As above."
+    },
+    {
+      "source": "public/contact-icons/whatsapp.svg",
+      "role": "icon.contact",
+      "notes": "As above. WhatsApp is a primary B2B contact channel in the GCC — keep it in the header, not only the footer."
+    },
+    {
+      "source": "public/contact-icons/location.svg",
+      "role": "icon.contact",
+      "notes": "As above."
+    }
+  ]
+}
