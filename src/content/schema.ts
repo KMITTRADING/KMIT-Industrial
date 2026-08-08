@@ -102,6 +102,29 @@ export const FAQ_IDS = [
   'storage-shelf-life',
 ] as const;
 
+/** Grade codes, as ids. Mirrors `GRADES` in src/content/data/grades.ts. */
+export const GRADE_CODES = ['GCC-200', 'GCC-400', 'GCC-800', 'GCC-1250', 'GCC-2500'] as const;
+
+/**
+ * The three decision and comparison guides.
+ *
+ * These are the informational surface: `docs/keyword-clusters.md` cluster 4 is
+ * what an engineer types into an assistant rather than into a search box, and
+ * these three pages are where those questions get answered. Slugs are written
+ * as the comparison itself, because that is the query.
+ */
+export const GUIDE_IDS = ['grade-selection', 'coated-vs-uncoated', 'gcc-vs-pcc'] as const;
+
+/**
+ * Images that carry alt text from the content tree rather than from the page.
+ *
+ * Alt text is copy: it is read aloud, it is indexed, and it has to be written
+ * natively in each locale rather than translated. Keeping it here means the
+ * i18n gate catches a missing Arabic alt the same way it catches a missing
+ * heading, which a literal in a `.tsx` file never was.
+ */
+export const IMAGE_IDS = ['quarry', 'plant', 'milling', 'lab'] as const;
+
 export const CONTACT_CHANNEL_IDS = ['phone', 'whatsapp', 'email', 'location'] as const;
 
 /**
@@ -131,6 +154,9 @@ export type DocumentId = (typeof DOCUMENT_IDS)[number];
 export type ProcessStepId = (typeof PROCESS_STEP_IDS)[number];
 export type FaqId = (typeof FAQ_IDS)[number];
 export type ContactChannelId = (typeof CONTACT_CHANNEL_IDS)[number];
+export type GradeCodeId = (typeof GRADE_CODES)[number];
+export type GuideId = (typeof GUIDE_IDS)[number];
+export type ImageId = (typeof IMAGE_IDS)[number];
 
 /**
  * Which §4 sector each §3 application rolls up into. Used to link a grade to
@@ -203,6 +229,17 @@ export type Grade = z.infer<typeof gradeSchema>;
 
 /* ---------------------------------------------------------------- content */
 
+/** ≤ 60 characters, per CLAUDE.md §8. Enforced, not merely documented. */
+const titleString = z.string().trim().min(1).max(60);
+/** ≤ 155 characters, per CLAUDE.md §8. */
+const descriptionString = z.string().trim().min(1).max(155);
+/**
+ * The answer-first paragraph every page opens with: 40-60 words, stating what
+ * the page delivers. Bounded here in characters, because a word count that
+ * works for English does not transfer to Arabic.
+ */
+const answerFirstString = z.string().trim().min(180).max(560);
+
 /** Builds `{ [id]: string }` with one required, non-empty entry per id. */
 function labelMap<const T extends readonly string[]>(ids: T) {
   return z.object(
@@ -212,16 +249,85 @@ function labelMap<const T extends readonly string[]>(ids: T) {
   );
 }
 
-/** ≤ 60 characters, per CLAUDE.md §8. Enforced, not merely documented. */
-const titleString = z.string().trim().min(1).max(60);
-/** ≤ 155 characters, per CLAUDE.md §8. */
-const descriptionString = z.string().trim().min(1).max(155);
+/** Builds `{ [id]: <schema> }` with one required entry per id. */
+function mapOf<const T extends readonly string[], S extends z.ZodTypeAny>(ids: T, schema: S) {
+  return z.object(Object.fromEntries(ids.map((id) => [id, schema])) as { [K in T[number]]: S });
+}
+
 /**
- * The answer-first paragraph every page opens with: 40–60 words, stating what
- * the page delivers. Bounded here in characters, because a word count that
- * works for English does not transfer to Arabic.
+ * One question and its answer.
+ *
+ * The answer is bounded at the top because an FAQ answer that runs past a
+ * screen stops being an answer, and because these are the passages an answer
+ * engine lifts whole: a 40 to 90 word block survives extraction, a page of
+ * prose does not.
  */
-const answerFirstString = z.string().trim().min(180).max(560);
+const faqEntrySchema = z.object({
+  question: z.string().trim().min(10).max(160),
+  answer: z.string().trim().min(80).max(700),
+});
+
+/**
+ * A set of questions for one grade or one sector.
+ *
+ * Keyed by a topic slug rather than positional, so `npm run check:i18n` diffs
+ * question ids across locales: an Arabic set that quietly loses a question the
+ * English set still answers is a build failure. Six is the floor because fewer
+ * than that is a gesture at an FAQ rather than one; ten is the ceiling because
+ * past it the page is a knowledge base and should be split.
+ */
+const faqSetSchema = z
+  .record(z.string(), faqEntrySchema)
+  .refine((set) => Object.keys(set).length >= 6 && Object.keys(set).length <= 10, {
+    message: 'An FAQ set carries between 6 and 10 questions',
+  });
+
+export type FaqEntry = z.infer<typeof faqEntrySchema>;
+export type FaqSet = z.infer<typeof faqSetSchema>;
+
+/** Rows of the coated versus uncoated comparison table. */
+export const COATING_COMPARISON_IDS = [
+  'surface',
+  'dispersion',
+  'moisture',
+  'throughput',
+  'shelf-life',
+  'grades',
+  'when-not-worth-it',
+] as const;
+
+/** Rows of the GCC versus PCC comparison table. */
+export const GCC_PCC_COMPARISON_IDS = [
+  'production',
+  'morphology',
+  'particle-size',
+  'whiteness',
+  'typical-use',
+] as const;
+
+export type CoatingComparisonId = (typeof COATING_COMPARISON_IDS)[number];
+export type GccPccComparisonId = (typeof GCC_PCC_COMPARISON_IDS)[number];
+
+/** One row of a two-column comparison: the aspect, then each side of it. */
+const comparisonRowSchema = z.object({
+  aspect: nonEmpty,
+  left: nonEmpty,
+  right: nonEmpty,
+});
+
+export type ComparisonRow = z.infer<typeof comparisonRowSchema>;
+
+/** Fields every guide carries, whatever its body looks like. */
+const guideChromeSchema = {
+  title: titleString,
+  description: descriptionString,
+  h1: nonEmpty,
+  answerFirst: answerFirstString,
+  /** Short label for navigation and for the card on the guides index. */
+  navLabel: nonEmpty,
+  /** One sentence on the index card, stating what the guide settles. */
+  cardSummary: nonEmpty,
+};
 
 export const contentSchema = z.object({
   meta: z.object({
@@ -250,6 +356,8 @@ export const contentSchema = z.object({
     applications: nonEmpty,
     /** The sustainability-and-facility route. */
     facility: nonEmpty,
+    /** The three decision and comparison guides. */
+    guides: nonEmpty,
     resources: nonEmpty,
     contact: nonEmpty,
     rfq: nonEmpty,
@@ -311,6 +419,18 @@ export const contentSchema = z.object({
   faqQuestions: labelMap(FAQ_IDS),
   faqAnswers: labelMap(FAQ_IDS),
   contactChannels: labelMap(CONTACT_CHANNEL_IDS),
+  imageAlt: labelMap(IMAGE_IDS),
+
+  /**
+   * Questions an engineer asks about one specific grade, before requesting a
+   * sample. Six to ten per grade, and deliberately not the same six: what you
+   * ask about a 200 mesh bridging agent is not what you ask about a coated
+   * 2500 mesh masterbatch filler.
+   */
+  gradeFaqs: mapOf(GRADE_CODES, faqSetSchema),
+
+  /** The same, for a sector: process behaviour rather than specification. */
+  sectorFaqs: mapOf(SECTOR_IDS, faqSetSchema),
 
   /**
    * Section-level copy for the domain components. Each block is what a real
@@ -506,11 +626,93 @@ export const contentSchema = z.object({
     homePackagingHeading: nonEmpty,
     homeCtaTds: nonEmpty,
 
+    guidesTitle: titleString,
+    guidesDescription: descriptionString,
+    guidesH1: nonEmpty,
+    guidesAnswerFirst: answerFirstString,
+    guidesReadGuide: nonEmpty,
+
     errorTitle: titleString,
     errorH1: nonEmpty,
     errorBody: nonEmpty,
     errorRetry: nonEmpty,
     loadingLabel: nonEmpty,
+  }),
+
+  /* --------------------------------------------------------------- guides */
+
+  /**
+   * The three decision and comparison guides.
+   *
+   * Each one is shaped to its own argument rather than poured into a shared
+   * template: choosing a grade is a decision path, and the two comparisons are
+   * tables with an honest verdict underneath. A single generic guide schema
+   * would have forced all three into the same shape and made each of them
+   * slightly wrong.
+   */
+  guides: z.object({
+    'grade-selection': z.object({
+      ...guideChromeSchema,
+      pathHeading: nonEmpty,
+      pathIntro: nonEmpty,
+      step1Heading: nonEmpty,
+      step1Body: nonEmpty,
+      step2Heading: nonEmpty,
+      step2Body: nonEmpty,
+      step3Heading: nonEmpty,
+      step3Body: nonEmpty,
+      selectorHeading: nonEmpty,
+      selectorIntro: nonEmpty,
+      selectorLabel: nonEmpty,
+      selectorAll: nonEmpty,
+      selectorResultHeading: nonEmpty,
+      /** Shown before an application has been chosen. */
+      selectorPrompt: nonEmpty,
+      /** Shown if a chosen application has no grade behind it in the dataset. */
+      selectorEmpty: nonEmpty,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnApplication: nonEmpty,
+      columnD50: nonEmpty,
+      columnGrade: nonEmpty,
+      columnCoating: nonEmpty,
+      closingHeading: nonEmpty,
+      closingBody: nonEmpty,
+    }),
+
+    'coated-vs-uncoated': z.object({
+      ...guideChromeSchema,
+      whatHeading: nonEmpty,
+      whatBody: nonEmpty,
+      effectHeading: nonEmpty,
+      effectBody: nonEmpty,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnAspect: nonEmpty,
+      columnUncoated: nonEmpty,
+      columnCoated: nonEmpty,
+      rows: mapOf(COATING_COMPARISON_IDS, comparisonRowSchema),
+      verdictHeading: nonEmpty,
+      verdictBody: nonEmpty,
+      shelfLifeHeading: nonEmpty,
+      shelfLifeBody: nonEmpty,
+    }),
+
+    'gcc-vs-pcc': z.object({
+      ...guideChromeSchema,
+      processHeading: nonEmpty,
+      processBody: nonEmpty,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnAspect: nonEmpty,
+      columnGcc: nonEmpty,
+      columnPcc: nonEmpty,
+      rows: mapOf(GCC_PCC_COMPARISON_IDS, comparisonRowSchema),
+      fitHeading: nonEmpty,
+      fitBody: nonEmpty,
+      supplyHeading: nonEmpty,
+      supplyBody: nonEmpty,
+    }),
   }),
 
   /* ---------------------------------------------------------- rfq form */

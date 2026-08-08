@@ -449,3 +449,94 @@ in use and none of them can be polyfilled.
 
 Declaring it explicitly stops Lightning CSS from emitting fallbacks for browsers
 that could not render the design system anyway.
+
+---
+
+## ADR-028 — Positioning derives from product-marketing.md, not from market research
+
+**Phase 4.** The Phase 4 brief names `docs/research-input.md` as an input and
+says to stop and ask for it if it is absent. It is absent, and the human
+confirmed no market research exists.
+
+Positioning therefore derives from `.agents/product-marketing.md`, which was
+written in Phase 1 from `docs/technical-data.md` and `docs/keyword-clusters.md`
+and already carries the personas, the objection map, the customer language list
+and the brand voice. That file is the positioning source of record for this
+project until research replaces it.
+
+What this costs: the competitive framing in §5 of that file stays marked
+unverified and no competitor is named on the site, the priority order of the
+supply arguments is reasoned rather than measured, and the keyword clusters are
+untested. All three are revisited against Search Console after 60 days, as
+`docs/keyword-clusters.md` already specifies.
+
+---
+
+## ADR-029 — FAQ sets are per grade and per sector, keyed and rendered open
+
+**Phase 4.** Sixty question and answer pairs per locale: eight per grade and
+six or seven per sector, replacing the four site-wide questions from Phase 2.
+
+Three decisions inside that:
+
+- **Keyed, not positional.** Each question carries a topic slug, so
+  `npm run check:i18n` diffs question ids across locales and an Arabic set that
+  quietly loses a question is a build failure. An array would have been one leaf
+  to the mirror check.
+- **Different questions per grade.** What an engineer asks about a 45 micron
+  bridging agent is not what they ask about a coated 2500 mesh masterbatch
+  filler. A shared template would have produced fifty answers that say the same
+  thing five times.
+- **Rendered open, not in an accordion.** These are the most extractable
+  passages on the site: what an answer engine lifts and what a buyer skims
+  before requesting a sample. Collapsing them buys vertical space and costs the
+  page its reason for existing. `FaqList` is a description list with real
+  headings; `FaqAccordion` stays for the styleguide.
+
+Where an honest answer is "the data does not say", the answer says so and names
+what would settle it. Minimum order quantity, sampling policy and loading level
+are all answered that way rather than omitted, because a buyer who cannot find
+the question assumes it was dodged.
+
+---
+
+## ADR-030 — Guides live in the footer, not in the header
+
+**Phase 4.** Three decision and comparison guides now exist: grade selection,
+coated versus uncoated, and GCC versus PCC. The header stays at five items.
+
+A reader arrives on a guide from a search or an assistant rather than by
+navigating to it, and the five header slots belong to the pages a returning
+buyer navigates to on purpose. Spending one on the guides would have cost either
+the facility page or the document library. Every guide is linked from the pages
+whose readers need it, and all three are in the footer.
+
+`/guides/grade-selection` reads `?application=` and so renders per request. The
+full fourteen-row table renders inside the same boundary and is never filtered
+away, so every recommendation is reachable with no JavaScript and no query
+string, which is what the brief means by a crawlable static fallback.
+
+---
+
+## ADR-031 — Alt text is content, not markup
+
+**Phase 4.** The four plant photographs on the facility page had their alt text
+written as literals in the page component, keyed by locale. It now lives in the
+content tree under `imageAlt`.
+
+Alt text is copy: it is read aloud, it is indexed, and it has to be written
+natively in each locale rather than translated. Moving it means the i18n gate
+catches a missing Arabic alt exactly as it catches a missing heading, which a
+literal in a `.tsx` file never was.
+
+---
+
+## ADR-032 — The copy gate now fails on filler
+
+**Phase 4.** `scripts/check-copy.mjs` gained a third rule: seventeen banned
+phrases in both languages, drawn from CLAUDE.md §6 and
+`.agents/product-marketing.md` §9.
+
+The Phase 4 brief asks for a grep result proving no filler survives. A grep
+proves it once; a gate proves it on every commit. Every phrase on the list is a
+substitute for a figure, and this project has the figures.

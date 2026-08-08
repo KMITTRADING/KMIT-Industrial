@@ -1,7 +1,7 @@
 /**
  * Copy gate.
  *
- * Two mechanical checks over everything that reaches a reader's eyes: the
+ * Three mechanical checks over everything that reaches a reader's eyes: the
  * localised content tree and the alt text in the asset map.
  *
  * 1. No em dash, no en dash, no double hyphen. The em dash is the single most
@@ -13,6 +13,12 @@
  *    typographic choice; four in a row is a generated-page signature. A list
  *    with more than one dot should be a real list, with hairlines or columns
  *    doing the separating.
+ *
+ * 3. No filler superlatives. CLAUDE.md §6 and .agents/product-marketing.md §9
+ *    list the phrases a technical buyer reads as an admission that no number
+ *    exists. Every one of them is a substitute for a figure, and this project
+ *    has the figures. Checked in both languages, because "world-class quality"
+ *    and "جودة عالمية" fail for the same reason.
  *
  * This deliberately does NOT scan source comments or documentation. Those are
  * written for the team, not rendered to a visitor. The gate is about the page.
@@ -28,6 +34,31 @@ const ASSET_MAP = path.join(ROOT, 'docs', 'asset-map.json');
 
 const BANNED_DASH = /[\u2014\u2013]|(?<![-\w])--(?![-\w])/;
 const DOT_PILE_UP = /(·[^·\n]*){2,}·/;
+
+/**
+ * Filler that stands in for a figure. Each entry is matched case-insensitively
+ * against rendered copy. The list is the union of CLAUDE.md §6 and
+ * .agents/product-marketing.md §9, in both languages.
+ */
+const BANNED_PHRASES = [
+  'innovative',
+  'world-class',
+  'world class',
+  'trusted partner',
+  'cutting-edge',
+  'cutting edge',
+  'premium quality',
+  'best prices',
+  'state-of-the-art',
+  'best in class',
+  'best-in-class',
+  'حلول مبتكرة',
+  'شريكك الموثوق',
+  'الأفضل في المجال',
+  'جودة عالمية',
+  'أفضل الأسعار',
+  'جودة ممتازة',
+];
 
 const failures = [];
 
@@ -74,6 +105,16 @@ function check(where, value) {
       detail: `more than one middle dot on a line: "${value.slice(0, 90)}"`,
     });
   }
+  const lowered = value.toLowerCase();
+  for (const phrase of BANNED_PHRASES) {
+    if (lowered.includes(phrase)) {
+      failures.push({
+        where,
+        rule: 'filler',
+        detail: `banned phrase "${phrase}": "${value.slice(0, 90)}"`,
+      });
+    }
+  }
 }
 
 for (const file of await walk(CONTENT_DIR)) {
@@ -97,9 +138,12 @@ if (failures.length > 0) {
   }
   console.error(
     '\nUse a plain hyphen for ranges and compounds. For a sentence break use a comma,\n' +
-      'a colon, parentheses, or two sentences. For lists, use a real list.',
+      'a colon, parentheses, or two sentences. For lists, use a real list.\n' +
+      'For a filler phrase, state the number, the standard or the test method instead.',
   );
   process.exit(1);
 }
 
-console.log('check:copy passed - no banned dashes or separator pile-ups in rendered copy.');
+console.log(
+  'check:copy passed - no banned dashes, separator pile-ups or filler phrases in rendered copy.',
+);

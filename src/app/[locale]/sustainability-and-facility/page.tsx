@@ -14,6 +14,7 @@ import { PageShell } from '@/components/layout';
 import { localeAlternates } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
+import type { ImageId } from '@/content/schema';
 import type { Locale } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
@@ -30,44 +31,33 @@ import type { Metadata } from 'next';
  * frame where the equipment and the sample need to look like themselves.
  */
 
+/**
+ * Source and intrinsic dimensions per image. The alt text is not here: it is
+ * copy, it is read aloud and indexed, and it belongs in the content tree where
+ * the i18n gate can catch a missing Arabic version. See `imageAlt`.
+ */
 const IMAGES = {
   quarry: {
     src: '/images/extraction/open-pit-quarry.avif',
     width: 2752,
     height: 1536,
-    alt: {
-      ar: 'منظر جوي لمحجر مكشوف لاستخراج الحجر الجيري، بمصاطب متدرجة وشاحنات نقل ثقيلة ووحدة كسّارة في الخلفية',
-      en: 'Aerial view of an open-pit limestone quarry with stepped benches, haul trucks working the floor, and a crushing plant on the rim',
-    },
   },
   plant: {
     src: '/images/processing/kiln-and-plant.avif',
     width: 2752,
     height: 1536,
-    alt: {
-      ar: 'صالة إنتاج داخلية بصوامع وخزانات من الفولاذ المقاوم للصدأ وشبكة أنابيب نقل ومنصة تحكم',
-      en: 'Interior of a processing hall with stainless silos, classifier cones, conveying pipework and a control platform',
-    },
   },
   milling: {
     src: '/images/processing/grinding-mills-and-micronizers.avif',
     width: 2752,
     height: 1536,
-    alt: {
-      ar: 'وحدة طحن ميكروني بمطحنة نفاثة ومصنّف هوائي ومقاييس ضغط، مع تفريغ مسحوق أبيض في وعاء التجميع',
-      en: 'Micronizing line: jet mill, air classifier and pressure gauges, with white powder discharging into a collection vessel',
-    },
   },
   lab: {
     src: '/images/quality/lab-and-qc-testing.avif',
     width: 2752,
     height: 1536,
-    alt: {
-      ar: 'فنية مختبر تُحمّل عينة مسحوق في جهاز تحليل، وعلى الشاشة منحنى توزيع حجم الجسيمات',
-      en: 'Laboratory technician loading a powder sample into an analyser, with a particle-size distribution curve on the screen',
-    },
   },
-} as const;
+} as const satisfies Record<ImageId, { src: string; width: number; height: number }>;
 
 export async function generateMetadata({
   params,
@@ -120,7 +110,7 @@ export default async function FacilityPage({
         <div className="duotone">
           <Image
             src={IMAGES.quarry.src}
-            alt={IMAGES.quarry.alt[typedLocale]}
+            alt={t('imageAlt.quarry')}
             width={IMAGES.quarry.width}
             height={IMAGES.quarry.height}
             priority
@@ -140,15 +130,20 @@ export default async function FacilityPage({
         <ProcessDiagram className="mt-10" />
 
         <div className="mt-10 grid gap-4 md:grid-cols-2">
-          {[IMAGES.plant, IMAGES.milling].map((image) => (
+          {(
+            [
+              { id: 'plant', ...IMAGES.plant },
+              { id: 'milling', ...IMAGES.milling },
+            ] as const
+          ).map((image) => (
             <figure
-              key={image.src}
+              key={image.id}
               className="duotone-ground overflow-hidden rounded-md border border-accent-700"
             >
               <div className="duotone">
                 <Image
                   src={image.src}
-                  alt={image.alt[typedLocale]}
+                  alt={t(`imageAlt.${image.id}`)}
                   width={image.width}
                   height={image.height}
                   sizes="(min-width: 768px) 38rem, 100vw"
@@ -174,7 +169,7 @@ export default async function FacilityPage({
           <figure className="overflow-hidden rounded-md border border-border-subtle">
             <Image
               src={IMAGES.lab.src}
-              alt={IMAGES.lab.alt[typedLocale]}
+              alt={t('imageAlt.lab')}
               width={IMAGES.lab.width}
               height={IMAGES.lab.height}
               sizes="(min-width: 1024px) 44rem, 100vw"

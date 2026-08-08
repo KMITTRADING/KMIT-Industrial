@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowInlineEndIcon, Badge, Breadcrumbs, SectionHeader } from '@/components/primitives';
 import {
   DocumentDownloadRow,
-  FaqAccordion,
+  FaqList,
   ParticleSizeChart,
   RfqTeaser,
   SpecTable,
@@ -15,9 +15,11 @@ import { APPLICATION_SECTOR, PACKAGING_IDS } from '@/content/schema';
 import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { formatInteger, formatRange } from '@/lib/utils';
+import { getContent } from '@/content';
 import { localeAlternates } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
+import type { GradeCodeId } from '@/content/schema';
 import type { Locale } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
@@ -231,10 +233,19 @@ export default async function GradePage({
         <DocumentDownloadRow grade={grade.code} className="mt-8" />
       </section>
 
-      {/* ------------------------------------------------------------ FAQ */}
+      {/*
+        FAQ. Grade-specific and rendered open rather than behind an accordion:
+        these answers are the most extractable passages on the page, and the
+        engineer skimming before they request a sample is reading them, not
+        clicking through them.
+      */}
       <section aria-labelledby="faq-heading" className="mt-section">
         <SectionHeader id="faq-heading" title={t('pages.gradeFaqHeading')} />
-        <FaqAccordion className="mt-8" />
+        <FaqList
+          className="mt-4"
+          idPrefix={`faq-${gradeSlug(grade.code)}`}
+          faqs={getContent(typedLocale).gradeFaqs[grade.code as GradeCodeId]}
+        />
       </section>
 
       {/* -------------------------------------------------------- related */}
