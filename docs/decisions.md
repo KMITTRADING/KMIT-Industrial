@@ -704,6 +704,15 @@ The residual risk is that an injected inline script would execute; the mitigatio
 is that there is no user-generated content on this site and every rendered value
 comes from a typed content tree or a zod-validated dataset.
 
+Withholding `'unsafe-eval'` costs a Lighthouse Best Practices point, and that is
+the header working rather than failing. next-intl's formatter probes for eval
+support with `try { Function('') }` and takes a non-eval path when it throws.
+The fallback is correct and the end-to-end suite passes under this policy, but
+Chrome logs the blocked probe in its Issues panel and Lighthouse's
+`inspector-issues` audit counts any issue against the category. Granting
+`'unsafe-eval'` would recover the point by removing the mitigation, which is the
+wrong direction.
+
 Revisit if a CMS is introduced in a later phase. User-generated content changes
 this calculation completely.
 

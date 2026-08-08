@@ -141,9 +141,17 @@ Three changes produced that:
 | Performance ≥ 95                  | 92 median, 95 on the best run  | **no**                  |
 | Lighthouse Accessibility 100      | 100                            | yes                     |
 | Lighthouse SEO 100                | 100                            | yes                     |
-| Lighthouse Best Practices 100     | 100                            | yes                     |
+| Lighthouse Best Practices 100     | 96                             | **no**, see below       |
 | Zero physical-direction utilities | 0                              | yes                     |
 | axe violations                    | 0                              | yes                     |
+
+Best Practices is 96 rather than 100 because the Content Security Policy
+withholds `'unsafe-eval'`. next-intl's formatter probes for eval support with
+`try { Function('') }` and falls back correctly when it throws; Chrome logs the
+blocked probe as an Issue, and Lighthouse's `inspector-issues` audit counts any
+issue against the category. The four points are the price of the mitigation, and
+granting `'unsafe-eval'` to recover them would be trading a real protection for
+a number. See ADR-041.
 
 INP is a field metric and cannot be produced by a lab run. TBT is its lab proxy
 and is reported above; a real INP figure needs traffic and RUM, which is what

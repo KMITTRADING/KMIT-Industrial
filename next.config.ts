@@ -42,7 +42,16 @@ const nextConfig: NextConfig = {
    * alternative requires rendering every route dynamically, which would undo
    * the static generation this site is built on. `'unsafe-eval'` is *not*
    * granted, `object-src` is closed, and `frame-ancestors` blocks framing
-   * outright. Recorded as ADR-041.
+   * outright.
+   *
+   * Withholding `'unsafe-eval'` costs a Lighthouse Best Practices point, and
+   * that is the header working rather than failing. next-intl's formatter
+   * probes for eval support with `try { Function('') }` and falls back to a
+   * non-eval path when it throws. The fallback is correct and the end-to-end
+   * suite passes under this policy; Chrome still logs the blocked probe as an
+   * Issue, and Lighthouse counts any inspector issue against the category.
+   * Granting `'unsafe-eval'` to recover the point would trade a real mitigation
+   * for a number. See ADR-041.
    */
   async headers() {
     const csp = [
@@ -79,6 +88,9 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
           },
+          // Redundant with `frame-ancestors` for every browser above the
+          // browserslist floor, and kept anyway: it costs one header and covers
+          // anything older that ignores CSP.
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
         ],
