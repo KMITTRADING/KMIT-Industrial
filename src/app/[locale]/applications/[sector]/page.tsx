@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { ArrowInlineEndIcon, Badge, Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { ArrowInlineEndIcon, Badge, SectionHeader } from '@/components/primitives';
 import { APPLICATION_SECTOR, SECTOR_IDS } from '@/content/schema';
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { Link } from '@/i18n/navigation';
@@ -10,6 +10,7 @@ import { PageShell } from '@/components/layout';
 import { FaqList, RfqTeaser } from '@/components/sections';
 import { formatInteger, formatRange } from '@/lib/utils';
 import { getContent } from '@/content';
+import { faqPageJsonLd, itemListJsonLd } from '@/lib/jsonld';
 import { localeAlternates } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
@@ -79,18 +80,23 @@ export default async function SectorPage({
     .filter((application, index, all) => all.indexOf(application) === index);
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[
-            { label: t('nav.home'), href: '/' },
-            { label: t('nav.applications'), href: '/applications' },
-            { label: t(`sectors.${sector}`) },
-          ]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[
+        { name: t('nav.applications'), path: '/applications' },
+        { name: t(`sectors.${sector}`) },
+      ]}
+      jsonLd={[
+        faqPageJsonLd(getContent(typedLocale).sectorFaqs[sector]),
+        itemListJsonLd(
+          typedLocale,
+          grades.map((grade) => ({
+            name: grade.code,
+            path: `/products/${gradeSlug(grade.code)}`,
+          })),
+        ),
+      ]}
+    >
       <header className="pt-8">
         <h1 className="measure-lede text-4xl font-semibold text-ink-primary">
           {t(`sectors.${sector}`)}

@@ -13,6 +13,7 @@ import {
   TableRow,
   TableRowHeader,
   TableScroll,
+  TrackedLink,
 } from '@/components/primitives';
 import { APPLICATION_SECTOR, SECTOR_IDS } from '@/content/schema';
 import { GRADES, gradeSlug } from '@/content/data/grades';
@@ -194,7 +195,9 @@ export async function GradeExplorer({ industry, compare }: GradeExplorerProps) {
                           </TableCell>
                           <TableCell>
                             {inComparison || !atLimit ? (
-                              <Link
+                              <TrackedLink
+                                event="grade_compared"
+                                params={{ grade: grade.code, count: nextCompare.length }}
                                 href={{
                                   pathname: '/products',
                                   query: query({ industry, compare: nextCompare }),
@@ -211,7 +214,7 @@ export async function GradeExplorer({ industry, compare }: GradeExplorerProps) {
                                 {inComparison
                                   ? t('pages.productsComparisonClear')
                                   : t('pages.productsComparisonSelect')}
-                              </Link>
+                              </TrackedLink>
                             ) : (
                               <span className="text-xs text-ink-muted">
                                 {t('pages.productsComparisonLimit')}

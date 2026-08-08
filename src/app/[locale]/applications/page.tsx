@@ -3,9 +3,10 @@ import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
 import { ApplicationCard, RfqTeaser } from '@/components/sections';
-import { Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { SectionHeader } from '@/components/primitives';
 import { PageShell } from '@/components/layout';
 import { SECTOR_IDS } from '@/content/schema';
+import { itemListJsonLd } from '@/lib/jsonld';
 import { localeAlternates } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
@@ -50,14 +51,19 @@ export default async function ApplicationsPage({
   const t = await getTranslations();
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[{ label: t('nav.home'), href: '/' }, { label: t('nav.applications') }]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[{ name: t('nav.applications') }]}
+      jsonLd={[
+        itemListJsonLd(
+          typedLocale,
+          SECTOR_IDS.map((sector) => ({
+            name: t(`sectors.${sector}`),
+            path: `/applications/${sector}`,
+          })),
+        ),
+      ]}
+    >
       <div className="pt-8">
         <SectionHeader
           as="h1"

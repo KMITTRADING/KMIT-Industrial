@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { Breadcrumbs, SectionHeader, TableSkeleton } from '@/components/primitives';
+import { SectionHeader, TableSkeleton } from '@/components/primitives';
 import { DOCUMENT_IDS } from '@/content/schema';
 import { GRADES } from '@/content/data/grades';
 import { PageShell } from '@/components/layout';
@@ -91,14 +91,7 @@ export default async function ResourcesPage({
   const t = await getTranslations();
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[{ label: t('nav.home'), href: '/' }, { label: t('nav.resources') }]}
-        />
-      </div>
-
+    <PageShell locale={typedLocale} crumbs={[{ name: t('nav.resources') }]}>
       <div className="pt-8">
         <SectionHeader
           as="h1"

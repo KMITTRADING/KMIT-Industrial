@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/i18n/navigation';
 import { localeNames, locales } from '@/i18n/routing';
+import { track } from '@/lib/analytics';
 
 import type { Locale } from '@/i18n/routing';
 
@@ -35,6 +36,9 @@ export function LocaleSwitcher({ current }: { current: Locale }) {
             lang={locale}
             dir={locale === 'ar' ? 'rtl' : 'ltr'}
             aria-current={isCurrent ? 'true' : undefined}
+            onClick={() => {
+              if (!isCurrent) track('locale_switched', { locale });
+            }}
             className={
               isCurrent
                 ? 'rounded-sm bg-accent-50 px-2.5 py-1.5 text-sm font-medium text-ink-accent'

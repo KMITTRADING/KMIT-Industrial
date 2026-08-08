@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { SectionHeader } from '@/components/primitives';
 import { ContactBlock, LogisticsMap, RfqTeaser } from '@/components/sections';
 import { PageShell } from '@/components/layout';
 import { localeAlternates } from '@/lib/seo';
@@ -50,14 +50,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const t = await getTranslations();
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[{ label: t('nav.home'), href: '/' }, { label: t('nav.contact') }]}
-        />
-      </div>
-
+    <PageShell locale={typedLocale} crumbs={[{ name: t('nav.contact') }]}>
       <div className="pt-8">
         <SectionHeader
           as="h1"

@@ -1,3 +1,5 @@
+export { AnalyticsConsent } from './AnalyticsConsent';
+export type { AnalyticsConsentProps } from './AnalyticsConsent';
 export { LocaleSwitcher } from './LocaleSwitcher';
 export { PageShell } from './PageShell';
 export type { PageShellProps } from './PageShell';

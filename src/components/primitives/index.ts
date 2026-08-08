@@ -65,5 +65,11 @@ export type {
 export { Tabs } from './Tabs';
 export type { TabItem, TabsProps } from './Tabs';
 
+export { TrackedAnchor } from './TrackedAnchor';
+export type { TrackedAnchorProps } from './TrackedAnchor';
+
+export { TrackedLink } from './TrackedLink';
+export type { TrackedLinkProps } from './TrackedLink';
+
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';

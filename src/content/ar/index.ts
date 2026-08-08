@@ -69,6 +69,7 @@ export const ar = {
     columnMesh: 'المش',
     columnD50: 'D50',
     columnCoating: 'المعالجة السطحية',
+    columnShelfLife: 'العمر الافتراضي',
     columnApplications: 'التطبيقات الأساسية',
     coated: 'معالجة سطحياً',
     uncoated: 'غير معالجة',
@@ -1134,6 +1135,21 @@ export const ar = {
     dataProvenance:
       'القيم الفنية المنشورة قيم نموذجية مقترنة بطرق اختبارها. تُرفق شهادة تحليل (COA) مع كل دفعة إنتاج.',
     rights: '© {year} KMIT. جميع الحقوق محفوظة.',
+  },
+
+  consent: {
+    heading: 'القياس',
+    body: 'نودّ تسجيل الصفحات والدرجات التي تُقرأ، لتحسين التوثيق الفني. لا بيانات شخصية، ولا يُسجَّل شيء دون موافقتك.',
+    accept: 'أوافق',
+    decline: 'لا أوافق',
+  },
+
+  jsonld: {
+    addressLocality: 'جدة',
+    areaServedCountry: 'المملكة العربية السعودية',
+    areaServedRegion: 'دول مجلس التعاون الخليجي',
+    material: 'كربونات الكالسيوم (CaCO3)',
+    productCategory: 'الحشوات والموسّعات المعدنية الصناعية',
   },
 
   styleguide: {

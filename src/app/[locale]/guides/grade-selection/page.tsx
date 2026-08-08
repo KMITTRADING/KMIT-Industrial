@@ -4,7 +4,7 @@ import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
 import { APPLICATION_IDS } from '@/content/schema';
-import { Breadcrumbs, SectionHeader, TableSkeleton } from '@/components/primitives';
+import { SectionHeader, TableSkeleton } from '@/components/primitives';
 import { GradeSelector, ParticleSizeChart, RfqTeaser } from '@/components/sections';
 import { PageShell } from '@/components/layout';
 import { localeAlternates } from '@/lib/seo';
@@ -83,18 +83,13 @@ export default async function GradeSelectionGuide({
   const steps = [1, 2, 3] as const;
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[
-            { label: t('nav.home'), href: '/' },
-            { label: t('nav.guides'), href: '/guides' },
-            { label: t('guides.grade-selection.navLabel') },
-          ]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[
+        { name: t('nav.guides'), path: '/guides' },
+        { name: t('guides.grade-selection.navLabel') },
+      ]}
+    >
       <div className="pt-8">
         <SectionHeader
           as="h1"

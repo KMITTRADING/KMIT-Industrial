@@ -19,8 +19,18 @@ const siteUrlSchema = z
 
 const rfqDriverSchema = z.enum(['console', 'resend', 'webhook']).default('console');
 
+/**
+ * Analytics provider. `none` is the default and the current state: no
+ * measurement ID has been issued, so nothing loads and nothing is sent. The
+ * consent machinery ships anyway, because retrofitting consent onto a live
+ * property is how a site ends up having collected data it should not have.
+ */
+const analyticsProviderSchema = z.enum(['none', 'ga4', 'plausible']).default('none');
+
 const serverSchema = z.object({
   NEXT_PUBLIC_SITE_URL: siteUrlSchema.default('http://localhost:3000'),
+  NEXT_PUBLIC_ANALYTICS_PROVIDER: analyticsProviderSchema,
+  NEXT_PUBLIC_ANALYTICS_ID: z.string().optional(),
   RFQ_DRIVER: rfqDriverSchema,
   RESEND_API_KEY: z.string().optional(),
   RFQ_TO_EMAIL: z.email().optional(),
@@ -36,6 +46,8 @@ const serverSchema = z.object({
  */
 const parsed = serverSchema.safeParse({
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  NEXT_PUBLIC_ANALYTICS_PROVIDER: process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER,
+  NEXT_PUBLIC_ANALYTICS_ID: process.env.NEXT_PUBLIC_ANALYTICS_ID,
   RFQ_DRIVER: process.env.RFQ_DRIVER,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   RFQ_TO_EMAIL: process.env.RFQ_TO_EMAIL,
@@ -55,6 +67,10 @@ const raw = parsed.data;
 
 export const env = {
   siteUrl: raw.NEXT_PUBLIC_SITE_URL,
+  analytics: {
+    provider: raw.NEXT_PUBLIC_ANALYTICS_PROVIDER,
+    id: raw.NEXT_PUBLIC_ANALYTICS_ID,
+  },
   rfq: {
     driver: raw.RFQ_DRIVER,
     resend: {

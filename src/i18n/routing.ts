@@ -13,6 +13,15 @@ import { defineRouting } from 'next-intl/routing';
  *    deterministic. A procurement manager forwarding a link to a colleague in
  *    another country must land them on the same page they were reading, and a
  *    crawler must see one stable document per URL.
+ * 3. `alternateLinks: false` — next-intl otherwise emits its own
+ *    `Link: rel="alternate"` response header, and it disagrees with the cluster
+ *    `src/lib/seo.ts` writes into the document: it labels Arabic `ar` rather
+ *    than `ar-SA` and points `x-default` at the unprefixed path, which is
+ *    itself a redirect. Two conflicting hreflang declarations for one page is
+ *    worse than one, so the document is the single source. See ADR-033.
+ * 4. `localeCookie: false` — with detection off the cookie changes no routing
+ *    decision, and a `Set-Cookie` on every response makes the whole site
+ *    uncacheable at a CDN edge for no benefit.
  */
 export const locales = ['ar', 'en'] as const;
 
@@ -25,6 +34,8 @@ export const routing = defineRouting({
   defaultLocale,
   localePrefix: 'always',
   localeDetection: false,
+  alternateLinks: false,
+  localeCookie: false,
 });
 
 /** Document direction per locale. Applied to `<html dir>` in the root layout. */

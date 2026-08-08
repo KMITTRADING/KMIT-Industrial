@@ -540,3 +540,94 @@ phrases in both languages, drawn from CLAUDE.md §6 and
 The Phase 4 brief asks for a grep result proving no filler survives. A grep
 proves it once; a gate proves it on every commit. Every phrase on the list is a
 substitute for a figure, and this project has the figures.
+
+---
+
+## ADR-033 — hreflang is declared in the document, once
+
+**Phase 5.** next-intl's middleware emits its own `Link: rel="alternate"`
+response header, and it disagreed with the cluster `src/lib/seo.ts` writes into
+the `<head>`: it labelled Arabic `ar` rather than `ar-SA`, and pointed
+`x-default` at the unprefixed path, which is itself a redirect.
+
+Two conflicting hreflang declarations for one page are worse than one, and the
+brief requires the cluster to be built centrally so no page can omit it.
+`alternateLinks: false` turns the header off; the document is the single source.
+
+`localeCookie: false` came with it. Detection is off, so the cookie changed no
+routing decision, and a `Set-Cookie` on every response makes the site
+uncacheable at a CDN edge for nothing.
+
+---
+
+## ADR-034 — The unprefixed root redirects permanently
+
+**Phase 5.** next-intl answers `/` with a 307. A temporary redirect tells a
+crawler to keep requesting the old URL and to leave the link equity where it
+was, which on this site root is exactly wrong: `/` is never going to serve a
+document and `/ar` is permanently the home page.
+
+`src/proxy.ts` now handles unprefixed paths itself and answers 308, delegating
+everything else to next-intl. 308 rather than 301 so the method and body
+survive, which matters for the one POST target on the site.
+
+---
+
+## ADR-035 — Open Graph cards carry Latin technical content only
+
+**Phase 5.** `opengraph-image.tsx` renders through Satori, which needs a font
+supplied as a parsed buffer. The design system's Alexandria is loaded by
+`next/font` as woff2, which Satori cannot read, and fetching a TTF at build time
+to render Arabic would make every build depend on a third-party font host.
+
+It is not needed. Grade codes, mesh sizes, D50 ranges, percentages and standard
+numbers are Latin in both locales under CLAUDE.md §7, so the card carries
+identical and correct information for an Arabic reader and an English one.
+Localised prose stays in `og:title` and `og:description`, which are text and
+need no font at all.
+
+Two cards ship: a default for the site, and one per grade carrying the code and
+the four numbers that decide whether it is the right grade. A single static card
+for the whole site was the thing the brief specifically ruled out.
+
+---
+
+## ADR-036 — No Offer, and no HowTo
+
+**Phase 5.** Two schema types the brief lists are deliberately absent.
+
+`Offer` requires a price and an availability. This is enquiry-led B2B supply
+where price is a function of grade, volume, packaging and destination, and there
+is no published price. Emitting `"price": "0"` to satisfy a rich-result
+checklist would publish a false commercial term. The brief already says to omit
+rather than fake it.
+
+`HowTo` is not forced either, which the brief also permits. The storage guidance
+in docs/technical-data.md §5 is two sentences of conditions, not a procedure
+with ordered steps, and breaking it into `HowToStep` nodes would invent a
+structure the source does not have. Google also retired HowTo rich results in
+2023, so the invention would buy nothing.
+
+---
+
+## ADR-037 — Three new gates, because the source-only ones were not enough
+
+**Phase 5.** `check:copy` reads string literals in `src/content`. It had passed
+for four phases while every rendered D50 range shipped an en dash, because
+`formatRange` built the separator at runtime and no literal contained it. The
+ban was real, the gate was looking in the wrong place.
+
+Three gates now read the served HTML instead of the source:
+
+- **`check:dom`** — the dash ban applied to rendered text and metadata, one
+  canonical per page matching its own URL, and a complete reciprocal hreflang
+  cluster. 26 routes.
+- **`check:crawl`** — follows links from the root as a crawler does, and asserts
+  that every sitemap URL is reachable within three clicks and that nothing
+  reachable is missing from the sitemap. 42 URLs.
+- **`check:schema`** — required properties per type, `@id` resolution inside the
+  graph, no `Offer` without a price, no null or empty values, and `FAQPage`
+  questions and answers actually present in the document. 11 routes.
+
+The rule generalises: a gate that reads source catches what was written, and a
+gate that reads output catches what was built. This project needed both.

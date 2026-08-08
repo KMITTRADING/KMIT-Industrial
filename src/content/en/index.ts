@@ -66,6 +66,7 @@ export const en = {
     columnMesh: 'Mesh',
     columnD50: 'D50',
     columnCoating: 'Surface coating',
+    columnShelfLife: 'Shelf life',
     columnApplications: 'Primary applications',
     coated: 'Coated',
     uncoated: 'Uncoated',
@@ -1141,6 +1142,21 @@ export const en = {
     dataProvenance:
       'Published technical values are typical values, stated with their test methods. A Certificate of Analysis accompanies every production batch.',
     rights: '© {year} KMIT. All rights reserved.',
+  },
+
+  consent: {
+    heading: 'Measurement',
+    body: 'We would like to record which pages and grades get read, so the technical documentation can be improved. No personal data, and nothing is recorded unless you agree.',
+    accept: 'Agree',
+    decline: 'Decline',
+  },
+
+  jsonld: {
+    addressLocality: 'Jeddah',
+    areaServedCountry: 'Saudi Arabia',
+    areaServedRegion: 'Gulf Cooperation Council',
+    material: 'Calcium carbonate (CaCO3)',
+    productCategory: 'Industrial mineral fillers and extenders',
   },
 
   styleguide: {

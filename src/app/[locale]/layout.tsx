@@ -3,7 +3,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { SkipLink } from '@/components/layout';
+import { AnalyticsConsent, SkipLink } from '@/components/layout';
 import { getContent } from '@/content';
 import { env } from '@/lib/env';
 import { localeAlternates } from '@/lib/seo';
@@ -56,8 +56,19 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       siteName: content.meta.siteName,
-      locale: localeHtmlLang[locale],
+      // Open Graph wants underscored BCP-47, not the hyphenated form used by
+      // `hreflang` and `<html lang>`. The alternate list is every other locale,
+      // which is what tells a share preview that a counterpart document exists.
+      locale: localeHtmlLang[locale].replace('-', '_'),
+      alternateLocale: locales
+        .filter((candidate) => candidate !== locale)
+        .map((candidate) => localeHtmlLang[candidate].replace('-', '_')),
       url: `${env.siteUrl}/${locale}`,
+      title: content.meta.defaultTitle,
+      description: content.meta.defaultDescription,
+    },
+    twitter: {
+      card: 'summary_large_image',
       title: content.meta.defaultTitle,
       description: content.meta.defaultDescription,
     },
@@ -97,6 +108,10 @@ export default async function LocaleLayout({
               their own. */}
           <SkipLink />
           {children}
+          <AnalyticsConsent
+            provider={env.analytics.provider}
+            measurementId={env.analytics.id}
+          />
         </NextIntlClientProvider>
       </body>
     </html>

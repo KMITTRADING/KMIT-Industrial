@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { SectionHeader } from '@/components/primitives';
 import { ComparisonTable, RfqTeaser } from '@/components/sections';
 import { PageShell } from '@/components/layout';
 import { getContent } from '@/content';
@@ -57,18 +57,10 @@ export default async function CoatedVsUncoatedGuide({
   const guide = getContent(typedLocale).guides['coated-vs-uncoated'];
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[
-            { label: t('nav.home'), href: '/' },
-            { label: t('nav.guides'), href: '/guides' },
-            { label: guide.navLabel },
-          ]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[{ name: t('nav.guides'), path: '/guides' }, { name: guide.navLabel }]}
+    >
       <div className="pt-8">
         <SectionHeader as="h1" size="lg" title={guide.h1} lede={guide.answerFirst} />
       </div>

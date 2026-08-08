@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
-import { ArrowInlineEndIcon, Badge, DocumentIcon } from '@/components/primitives';
+import { ArrowInlineEndIcon, Badge, DocumentIcon, TrackedLink } from '@/components/primitives';
 import { DOCUMENT_IDS } from '@/content/schema';
 import { GRADES } from '@/content/data/grades';
 import { Link } from '@/i18n/navigation';
@@ -129,7 +129,9 @@ export async function ResourceLibrary({ grade, type, className }: ResourceLibrar
               key={`${row.grade}-${row.documentType}`}
               className="border-b border-border-subtle"
             >
-              <Link
+              <TrackedLink
+                event="tds_download"
+                params={{ grade: row.grade, document: row.documentType }}
                 href={{
                   pathname: '/rfq',
                   query: { document: row.documentType, grade: row.grade },
@@ -155,7 +157,7 @@ export async function ResourceLibrary({ grade, type, className }: ResourceLibrar
                   {t('sections.documentRequest')}
                   <ArrowInlineEndIcon className="size-4 transition-transform duration-[var(--duration-fast)] ease-[var(--ease-standard)] group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" />
                 </span>
-              </Link>
+              </TrackedLink>
             </li>
           ))}
         </ul>
