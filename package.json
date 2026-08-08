@@ -17,8 +17,10 @@
     "typecheck": "tsc --noEmit",
     "check:i18n": "tsx scripts/check-i18n.ts",
     "check:direction": "node scripts/check-direction.mjs",
-    "check": "npm run lint && npm run typecheck && npm run check:i18n && npm run check:direction",
-    "assets:optimize": "node scripts/optimize-assets.mjs"
+    "check": "npm run lint && npm run typecheck && npm run check:i18n && npm run check:direction && npm run check:copy",
+    "assets:optimize": "node scripts/optimize-assets.mjs",
+    "check:copy": "node scripts/check-copy.mjs",
+    "audit:a11y": "node scripts/audit-a11y.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -40,11 +42,13 @@
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.0",
     "eslint-config-prettier": "^10.1.8",
+    "node-html-parser": "^9.0.1",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "sharp": "^0.35.3",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.9",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wait-on": "^9.1.0"
   }
 }

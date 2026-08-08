@@ -1,8 +1,9 @@
 import { Alexandria } from 'next/font/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
+import { SkipLink } from '@/components/layout';
 import { getContent } from '@/content';
 import { env } from '@/lib/env';
 import { localeAlternates } from '@/lib/seo';
@@ -78,7 +79,6 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   const typedLocale: Locale = locale;
-  const t = await getTranslations('a11y');
 
   return (
     <html
@@ -89,9 +89,10 @@ export default async function LocaleLayout({
     >
       <body className="min-h-dvh bg-surface-page text-ink-primary antialiased">
         <NextIntlClientProvider>
-          <a className="skip-link" href="#main">
-            {t('skipToContent')}
-          </a>
+          {/* One skip link for the whole app, rendered before anything else so
+              it is the first focusable element on every page. Pages must not add
+              their own. */}
+          <SkipLink />
           {children}
         </NextIntlClientProvider>
       </body>

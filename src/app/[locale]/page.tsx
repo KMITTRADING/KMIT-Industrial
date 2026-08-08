@@ -117,9 +117,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                         : t('grades.uncoated')}
                     </td>
                     <td className="py-4 text-ink-secondary">
-                      {grade.applications
-                        .map((application) => t(`applications.${application}`))
-                        .join(' · ')}
+                      {/* A list, not a dot-joined run of text: it wraps
+                          predictably and a screen reader announces the items
+                          separately. */}
+                      <ul className="flex flex-col gap-1">
+                        {grade.applications.map((application) => (
+                          <li key={application}>{t(`applications.${application}`)}</li>
+                        ))}
+                      </ul>
                     </td>
                   </tr>
                 ))}
