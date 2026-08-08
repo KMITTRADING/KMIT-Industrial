@@ -1,3 +1,4 @@
+import { NextIntlClientProvider } from 'next-intl';
 import { Suspense } from 'react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
@@ -9,6 +10,7 @@ import { GRADES } from '@/content/data/grades';
 import { PageShell } from '@/components/layout';
 import { RfqForm } from '@/components/sections/RfqForm';
 import { localeAlternates } from '@/lib/seo';
+import { routeMessages } from '@/i18n/client-messages';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -61,13 +63,20 @@ async function FormPanel({
     : undefined;
 
   return (
-    <RfqForm
-      className="mt-section-sm max-w-3xl"
-      locale={locale}
-      {...(grade ? { grade } : {})}
-      {...(sector ? { sector } : {})}
-      {...(document ? { document } : {})}
-    />
+    /*
+      The form reads seven namespaces the base client payload does not carry.
+      Nesting a provider here rather than widening the base list keeps that cost
+      on the one route that needs it. See src/i18n/client-messages.ts.
+    */
+    <NextIntlClientProvider messages={routeMessages(locale, 'components/sections/RfqForm')}>
+      <RfqForm
+        className="mt-section-sm max-w-3xl"
+        locale={locale}
+        {...(grade ? { grade } : {})}
+        {...(sector ? { sector } : {})}
+        {...(document ? { document } : {})}
+      />
+    </NextIntlClientProvider>
   );
 }
 

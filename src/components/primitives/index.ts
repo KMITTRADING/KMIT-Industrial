@@ -53,14 +53,10 @@ export {
   TableHeaderCell,
   TableRow,
   TableRowHeader,
-  TableScroll,
 } from './Table';
-export type {
-  SortDirection,
-  TableCellProps,
-  TableHeaderCellProps,
-  TableScrollProps,
-} from './Table';
+export { TableScroll } from './TableScroll';
+export type { SortDirection, TableCellProps, TableHeaderCellProps } from './Table';
+export type { TableScrollProps } from './TableScroll';
 
 export { Tabs } from './Tabs';
 export type { TabItem, TabsProps } from './Tabs';

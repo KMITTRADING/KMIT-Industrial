@@ -3,11 +3,10 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/primitives/Badge';
+import { Button } from '@/components/primitives/Button';
+import { Card, CardPlate } from '@/components/primitives/Card';
 import {
-  Badge,
-  Button,
-  Card,
-  CardPlate,
   Table,
   TableBody,
   TableCaption,
@@ -16,8 +15,8 @@ import {
   TableHeaderCell,
   TableRow,
   TableRowHeader,
-  TableScroll,
-} from '@/components/primitives';
+} from '@/components/primitives/Table';
+import { TableScroll } from '@/components/primitives/TableScroll';
 import { GRADES } from '@/content/data/grades';
 import { cn, formatInteger, formatRange } from '@/lib/utils';
 

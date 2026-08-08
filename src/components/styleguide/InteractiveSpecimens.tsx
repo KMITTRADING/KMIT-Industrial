@@ -3,15 +3,13 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { Accordion } from '@/components/primitives/Accordion';
+import { Alert } from '@/components/primitives/Alert';
+import { Button } from '@/components/primitives/Button';
+import { Dialog } from '@/components/primitives/Dialog';
+import { Field, FileInput, Select, TextArea, TextInput } from '@/components/primitives/Field';
+import { Pagination } from '@/components/primitives/Pagination';
 import {
-  Accordion,
-  Alert,
-  Button,
-  Dialog,
-  Field,
-  FileInput,
-  Pagination,
-  Select,
   Table,
   TableBody,
   TableCaption,
@@ -20,12 +18,10 @@ import {
   TableHeaderCell,
   TableRow,
   TableRowHeader,
-  TableScroll,
-  Tabs,
-  TextArea,
-  TextInput,
-  Tooltip,
-} from '@/components/primitives';
+} from '@/components/primitives/Table';
+import { TableScroll } from '@/components/primitives/TableScroll';
+import { Tabs } from '@/components/primitives/Tabs';
+import { Tooltip } from '@/components/primitives/Tooltip';
 import { Specimen } from './Specimen';
 import { TYPICAL_PROPERTIES } from '@/content/data/grades';
 

@@ -1,7 +1,3 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-
 import { SortIcon } from './IconSet';
 import { cn } from '@/lib/utils';
 
@@ -22,74 +18,12 @@ import type { HTMLAttributes, ReactNode, TdHTMLAttributes, ThHTMLAttributes } fr
  *   as a spreadsheet export.
  * - Sticky header, so the parameter names stay visible while a long property
  *   table scrolls.
- * - Horizontal scrolling is announced rather than left to be discovered. The
- *   scroll container is focusable and labelled so it can be reached and panned
- *   from the keyboard, and the hint disappears once the table fits or has been
- *   scrolled to the end.
+ * - Horizontal scrolling is announced rather than left to be discovered, by
+ *   `TableScroll`, which is the one part of this system that runs on the
+ *   client. Everything in this file is markup and stays on the server.
  * - Figures are tabular everywhere, and numeric cells are forced LTR: `4.5-6.0`
  *   is a measurement, not a phrase, and must not reorder inside Arabic text.
  */
-
-/* ----------------------------------------------------------- scroll shell */
-
-export type TableScrollProps = HTMLAttributes<HTMLDivElement> & {
-  /** Accessible name for the scroll region. */
-  label: string;
-  /** Shown while the table overflows and has not been panned to the end. */
-  hint?: string;
-};
-
-export function TableScroll({ label, hint, className, children, ...props }: TableScrollProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [overflowing, setOverflowing] = useState(false);
-  const [atEnd, setAtEnd] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const measure = () => {
-      const overflows = node.scrollWidth - node.clientWidth > 2;
-      setOverflowing(overflows);
-      // scrollLeft is negative in RTL in every current engine, so compare on
-      // magnitude rather than assuming a direction.
-      const travelled = Math.abs(node.scrollLeft);
-      setAtEnd(!overflows || travelled >= node.scrollWidth - node.clientWidth - 2);
-    };
-
-    measure();
-    node.addEventListener('scroll', measure, { passive: true });
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-
-    return () => {
-      node.removeEventListener('scroll', measure);
-      observer.disconnect();
-    };
-  }, []);
-
-  return (
-    <div className={cn('relative', className)} {...props}>
-      <div
-        ref={ref}
-        // A scrollable region must be reachable by keyboard. tabIndex only when
-        // it actually scrolls, so a fitting table does not add a stop.
-        tabIndex={overflowing ? 0 : -1}
-        role={overflowing ? 'region' : undefined}
-        aria-label={overflowing ? label : undefined}
-        className="overflow-x-auto overscroll-x-contain"
-      >
-        {children}
-      </div>
-
-      {hint && overflowing && !atEnd ? (
-        <p aria-hidden className="mt-2 text-2xs text-ink-muted">
-          {hint}
-        </p>
-      ) : null}
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------ table */
 

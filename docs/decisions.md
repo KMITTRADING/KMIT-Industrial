@@ -631,3 +631,94 @@ Three gates now read the served HTML instead of the source:
 
 The rule generalises: a gate that reads source catches what was written, and a
 gate that reads output catches what was built. This project needed both.
+
+---
+
+## ADR-038 — The home page grade matrix is a document, not a component
+
+**Phase 6.** `GradeMatrix` is a client component, and hydrating it was the
+largest single contributor to total blocking time on the most-visited page on
+the site. The home page now renders `GradeTable`: the same five rows, server
+rendered, no JavaScript.
+
+What was given up is filtering and sorting five rows, and it was duplicated
+anyway. `/products` does both properly with the state in the URL, so a filtered
+view is shareable and crawlable, and the home page already links there. Two
+filtering mechanisms for one five-row dataset was the redundancy; this removes
+the weaker one rather than paying to hydrate it.
+
+`GradeMatrix` still exists and is still exercised in the styleguide. The
+interactive behaviour is part of the design system even where no page needs it.
+
+---
+
+## ADR-039 — Client components import modules, not barrels
+
+**Phase 6.** Every client component imported from `@/components/primitives`.
+A barrel re-exports every primitive including the client ones, so importing one
+icon put Dialog, Tabs, Tooltip, Accordion and Pagination into the client graph
+of whichever route pulled it. The header does that on every page.
+
+The same defect was recorded in Phase 3 for `RfqForm` and the server action, and
+fixed there by one comment. It came back through a different door, which is the
+argument for a rule rather than a note: client components import from the module
+that defines the symbol.
+
+`TableScroll` moved out of `Table.tsx` for the same reason. One `'use client'`
+directive at the top of the table system was making every page with any table
+ship and hydrate a scroll observer, when only the scroll shell needs the client.
+
+---
+
+## ADR-040 — Client messages are scoped, in two tiers
+
+**Phase 6.** `NextIntlClientProvider` with no `messages` prop serialises the
+entire catalogue into the RSC payload of every page: 57.5 KB of Arabic on a
+242 KB document, of which client components use 10.6 KB. The rest was every FAQ
+answer, every guide body and every sector page's prose, shipped to a browser
+that renders none of it and parsed on the main thread before the page settles.
+
+Eight namespaces ship everywhere. The RFQ form and the styleguide nest their own
+providers for the extra namespaces they read, so that cost lands on those routes
+only. The document dropped from 242 KB to 163 KB.
+
+The risk this creates is a runtime error: a client component reading a namespace
+outside its scope throws where it renders, on one route, in one locale.
+`scripts/check-client-messages.mjs` scans every client component for the
+namespaces it reads and fails the build if one is not covered, in either
+direction. It found four real cases the moment it was written.
+
+---
+
+## ADR-041 — The CSP carries 'unsafe-inline' for scripts, deliberately
+
+**Phase 6.** Next.js inlines the RSC flight data and the hydration bootstrap as
+inline `<script>` elements. The nonce-based alternative requires reading a
+per-request header, which forces every route to render dynamically and undoes
+the static generation this site is built on.
+
+The trade taken: `script-src` allows `'unsafe-inline'` and the analytics hosts,
+and nothing else. `'unsafe-eval'` is not granted, `object-src` is `'none'`,
+`base-uri` and `form-action` are `'self'`, and `frame-ancestors` is `'none'`.
+The residual risk is that an injected inline script would execute; the mitigation
+is that there is no user-generated content on this site and every rendered value
+comes from a typed content tree or a zod-validated dataset.
+
+Revisit if a CMS is introduced in a later phase. User-generated content changes
+this calculation completely.
+
+---
+
+## ADR-042 — The performance gate budgets bytes, not scores
+
+**Phase 6.** Lighthouse's Performance number on a shared CI runner swings ten
+points between identical runs of the same build. Repeated runs here scored 88 to 95. A merge gate on that number would either block good work at random or be set
+so loose it blocks nothing.
+
+`scripts/check-budget.mjs` asserts what the site ships instead: compressed
+document size, script request count, total script weight, and the named message
+namespaces that must not appear in a content page's payload. All four are
+deterministic, so a failure always means somebody added weight.
+
+The Lighthouse numbers are still measured and still reported, in
+`docs/qa-report.md`. They are evidence, not a gate.

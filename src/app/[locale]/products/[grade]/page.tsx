@@ -135,11 +135,23 @@ export default async function GradePage({
           <Badge variant={grade.coated ? 'certification' : 'neutral'}>{coatingSentence}</Badge>
         </div>
 
+        {/*
+          `t.rich` rather than `t`, so the D50 range can be a React node instead
+          of a string. In an Arabic paragraph the bidi algorithm resolves the
+          hyphen between two numbers to the paragraph direction and renders
+          "4.5 - 6.0" as "6.0 - 4.5". An explicit LTR island is the fix, and
+          scripts/check-rtl.mjs fails the build if one goes missing again.
+        */}
         <p className="measure-prose mt-6 text-lg text-ink-secondary">
-          {t('pages.gradeAnswerFirstTemplate', {
+          {t.rich('pages.gradeAnswerFirstTemplate', {
             code: grade.code,
             mesh: grade.mesh,
             d50: formatRange(grade.d50Min, grade.d50Max),
+            ltr: (chunks) => (
+              <span dir="ltr" className="tabular-nums">
+                {chunks}
+              </span>
+            ),
             coating: grade.coatingLevel
               ? t('pages.gradeCoatingHeading') + ': ' + coatingSentence + '.'
               : t('grades.uncoated') + '.',

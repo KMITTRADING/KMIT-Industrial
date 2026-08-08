@@ -44,6 +44,14 @@ jobs:
       - name: Copy gate
         run: npm run check:copy
 
+      - name: Client message scope
+        # A namespace read by a client component but absent from the allowlist
+        # throws at runtime, on one route, in one locale. Static check instead.
+        run: npm run check:client-messages
+
+      - name: Unit tests
+        run: npm run test:unit
+
       - name: Formatting
         run: npm run format:check
 
@@ -55,13 +63,97 @@ jobs:
           # reproducible.
           NEXT_PUBLIC_SITE_URL: https://ci.invalid
 
-      - name: Accessibility audit
-        # Runs against the real server output rather than against source, which
-        # is what catches a page shipping two h1 elements because two components
-        # each thought they owned the page heading.
+      - name: Runtime gates
+        # Everything that reads served HTML rather than source: the static
+        # accessibility audit, the rendered dash and hreflang checks, the crawl
+        # reconciliation, the structured-data requirements and the RTL bidi
+        # isolation. A source scan cannot see any of them.
         run: |
           npx next start -p 3210 &
           npx wait-on --timeout 60000 http://localhost:3210/ar
           npm run audit:a11y -- http://localhost:3210
+          node scripts/check-dom.mjs http://localhost:3210
+          node scripts/check-crawl.mjs http://localhost:3210
+          node scripts/check-schema.mjs http://localhost:3210
+          node scripts/check-rtl.mjs http://localhost:3210
+        env:
+          NEXT_PUBLIC_SITE_URL: https://ci.invalid
+
+  e2e:
+    name: axe · flows
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        # Chromium only. Safari and Firefox coverage is a documented gap; see
+        # docs/qa-report.md.
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://ci.invalid
+
+      - name: End-to-end
+        # Real axe-core on every route in both locales, plus the RFQ, locale
+        # switch, filter and document flows.
+        run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_SITE_URL: https://ci.invalid
+          # CI installs its own matched browser, so let Playwright resolve it.
+          PLAYWRIGHT_CHROMIUM_PATH: ''
+
+      - name: Upload failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+
+  budget:
+    name: performance budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://ci.invalid
+
+      - name: Lighthouse budget
+        # Fails on regression rather than on an absolute target. The absolute
+        # numbers are environment-bound and a shared runner is noisy; what is
+        # worth blocking a merge on is a page getting materially worse.
+        run: |
+          npx next start -p 3310 &
+          npx wait-on --timeout 60000 http://localhost:3310/ar
+          node scripts/check-budget.mjs http://localhost:3310
         env:
           NEXT_PUBLIC_SITE_URL: https://ci.invalid

@@ -90,28 +90,33 @@ export async function LogisticsMap({ className }: { className?: string }) {
           </svg>
         </div>
 
+        {/*
+          A `<dl>` may contain `<dt>`/`<dd>` pairs or `<div>` wrappers that
+          directly contain them, and nothing else. The icon therefore sits
+          inside the `<dt>` rather than beside it in an extra wrapper, and the
+          pending-lead-time note is a sibling of the list rather than a `<p>`
+          inside it. Both were axe violations before Phase 6.
+        */}
         <dl className="flex flex-col gap-6">
-          <div className="flex items-start gap-3">
-            <LocationIcon className="mt-0.5 size-5 shrink-0 text-ink-accent" />
-            <div>
-              <dt className="text-2xs font-medium text-ink-muted">
-                {t('sections.logisticsHqLabel')}
-              </dt>
-              <dd className="text-sm text-ink-primary">{t('footer.headquarters')}</dd>
-            </div>
+          <div>
+            <dt className="flex items-center gap-2 text-2xs font-medium text-ink-muted">
+              <LocationIcon className="size-4 shrink-0 text-ink-accent" />
+              {t('sections.logisticsHqLabel')}
+            </dt>
+            <dd className="mt-1 text-sm text-ink-primary">{t('footer.headquarters')}</dd>
           </div>
 
           <div className="border-t border-border-subtle pt-6">
             <dt className="text-2xs font-medium text-ink-muted">
               {t('sections.logisticsMarketsLabel')}
             </dt>
-            <dd className="text-sm text-ink-primary">{t('footer.marketsServed')}</dd>
+            <dd className="mt-1 text-sm text-ink-primary">{t('footer.marketsServed')}</dd>
           </div>
-
-          <p className="border-t border-border-subtle pt-6 text-sm text-ink-muted">
-            {t('sections.logisticsLeadTimePending')}
-          </p>
         </dl>
+
+        <p className="mt-6 border-t border-border-subtle pt-6 text-sm text-ink-muted">
+          {t('sections.logisticsLeadTimePending')}
+        </p>
       </div>
     </div>
   );

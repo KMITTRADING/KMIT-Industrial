@@ -6,7 +6,7 @@ import { ArrowInlineEndIcon, SectionHeader } from '@/components/primitives';
 import {
   ApplicationCard,
   CertificationStrip,
-  GradeMatrix,
+  GradeTable,
   Hero,
   PackagingOptions,
   RfqTeaser,
@@ -198,7 +198,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             title={t('home.gradesHeading')}
             lede={t('home.gradesIntro')}
           />
-          <GradeMatrix className="mt-10" />
+          <GradeTable className="mt-10" />
           <p className="mt-6">
             <Link
               href="/products"
