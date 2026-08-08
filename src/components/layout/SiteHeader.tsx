@@ -33,7 +33,7 @@ import type { Locale } from '@/i18n/routing';
 
 export type NavItem = {
   /** Key into the `nav` content namespace. */
-  key: 'products' | 'applications' | 'quality' | 'resources' | 'contact';
+  key: 'products' | 'applications' | 'facility' | 'resources' | 'contact';
   href: string;
   /** Products opens the grade mega-menu; everything else is a plain link. */
   mega?: 'grades';
@@ -198,21 +198,24 @@ export function SiteHeader({
             ) : null}
 
             {navItems.length > 0 ? (
+              // The name is on the button, not on the glyph inside it. The
+              // closed state draws three bars in an aria-hidden wrapper, and a
+              // label nested inside that wrapper would be hidden along with it.
               <button
                 type="button"
                 aria-expanded={mobileOpen}
                 aria-controls="header-mobile-nav"
+                aria-label={mobileOpen ? t('ui.closeMenu') : t('ui.openMenu')}
                 onClick={() => setMobileOpen((open) => !open)}
                 className="flex size-11 items-center justify-center rounded-sm text-ink-secondary transition-colors duration-[var(--duration-fast)] ease-[var(--ease-standard)] hover:text-ink-primary lg:hidden"
               >
                 {mobileOpen ? (
-                  <CloseIcon className="size-5" title={t('ui.closeMenu')} />
+                  <CloseIcon className="size-5" />
                 ) : (
                   <span aria-hidden className="flex w-5 flex-col gap-1">
                     <span className="h-px w-full bg-current" />
                     <span className="h-px w-full bg-current" />
                     <span className="h-px w-full bg-current" />
-                    <span className="sr-only">{t('ui.openMenu')}</span>
                   </span>
                 )}
               </button>

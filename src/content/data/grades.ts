@@ -161,8 +161,15 @@ export const GRADES = [
 
 export type GradeCode = (typeof GRADES)[number]['code'];
 
-/** URL slug for a grade page: `/[locale]/products/gcc-1250`. */
-export const gradeSlug = (code: GradeCode): string => code.toLowerCase();
+/**
+ * URL slug for a grade page: `/[locale]/products/gcc-1250`.
+ *
+ * Takes a plain string rather than `GradeCode`, because callers reach it from
+ * filtered arrays where TypeScript has widened the literal union back to
+ * `string`, and casting at every call site to satisfy a transform that only
+ * lowercases is noise.
+ */
+export const gradeSlug = (code: string): string => code.toLowerCase();
 
 export function findGrade(code: string): Grade | undefined {
   return GRADES.find((grade) => grade.code.toLowerCase() === code.toLowerCase());

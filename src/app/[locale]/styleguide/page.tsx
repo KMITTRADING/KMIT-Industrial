@@ -119,7 +119,7 @@ const RADIUS_SPECIMENS = [
 const DEMO_NAV: NavItem[] = [
   { key: 'products', href: '/products', mega: 'grades' },
   { key: 'applications', href: '/applications' },
-  { key: 'quality', href: '/quality' },
+  { key: 'facility', href: '/sustainability-and-facility' },
   { key: 'resources', href: '/resources' },
   { key: 'contact', href: '/contact' },
 ];
@@ -669,7 +669,7 @@ export default async function StyleguidePage({
                   navLinks={[
                     { key: 'products', href: '/products' },
                     { key: 'applications', href: '/applications' },
-                    { key: 'quality', href: '/quality' },
+                    { key: 'facility', href: '/sustainability-and-facility' },
                     { key: 'resources', href: '/resources' },
                     { key: 'contact', href: '/contact' },
                     { key: 'rfq', href: '/rfq' },

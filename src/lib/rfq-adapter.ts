@@ -2,7 +2,13 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { APPLICATION_IDS, PACKAGING_IDS } from '@/content/schema';
+import {
+  APPLICATION_IDS,
+  DOCUMENT_IDS,
+  PACKAGING_IDS,
+  SECTOR_IDS,
+  STANDARD_IDS,
+} from '@/content/schema';
 import { GRADES } from '@/content/data/grades';
 import { env } from '@/lib/env';
 import { locales } from '@/i18n/routing';
@@ -41,7 +47,21 @@ export const rfqPayloadSchema = z.object({
   grade: z.enum(gradeCodes).nullable(),
   /** Prefilled from the application page the enquiry started on. */
   application: z.enum(APPLICATION_IDS).nullable(),
+  /** Prefilled from a sector page, where the buyer knows the sector not the grade. */
+  sector: z.enum(SECTOR_IDS).nullable(),
   packaging: z.enum(PACKAGING_IDS).nullable(),
+
+  /** Which controlled documents the buyer wants with the quote. */
+  documents: z.array(z.enum(DOCUMENT_IDS)).default([]),
+  /** Standards the buyer must see evidence of before qualifying a supplier. */
+  certifications: z.array(z.enum(STANDARD_IDS)).default([]),
+  /** ISO date. Approximate by design: it drives scheduling, not a contract. */
+  startDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .default(null),
 
   /** Tonnes per order or per month — the buyer decides which, and says so in `message`. */
   quantityTonnes: z.number().positive().max(100_000).nullable(),
@@ -112,10 +132,14 @@ const resendDriver: RfqDriver = async (payload, reference) => {
     `Contact: ${payload.contactName}`,
     `Email: ${payload.email}`,
     `Phone: ${payload.phone}`,
-    `Grade: ${payload.grade ?? '—'}`,
-    `Application: ${payload.application ?? '—'}`,
-    `Packaging: ${payload.packaging ?? '—'}`,
-    `Quantity (t): ${payload.quantityTonnes ?? '—'}`,
+    `Grade: ${payload.grade ?? 'not decided'}`,
+    `Application: ${payload.application ?? 'not decided'}`,
+    `Sector: ${payload.sector ?? 'not stated'}`,
+    `Packaging: ${payload.packaging ?? 'not decided'}`,
+    `Quantity (t): ${payload.quantityTonnes ?? 'not stated'}`,
+    `Documents requested: ${payload.documents.join(', ') || 'none'}`,
+    `Certifications required: ${payload.certifications.join(', ') || 'none'}`,
+    `Target start: ${payload.startDate ?? 'not stated'}`,
     `Destination: ${payload.destinationCity}, ${payload.destinationCountry}`,
     '',
     payload.message || '(no message)',

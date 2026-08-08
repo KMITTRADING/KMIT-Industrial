@@ -22,6 +22,12 @@
     "check:copy": "node scripts/check-copy.mjs",
     "audit:a11y": "node scripts/audit-a11y.mjs"
   },
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 128",
+    "safari >= 16.4"
+  ],
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

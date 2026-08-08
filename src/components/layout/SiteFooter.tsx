@@ -27,7 +27,7 @@ import type { Locale } from '@/i18n/routing';
  */
 
 export type FooterLink = {
-  key: 'products' | 'applications' | 'quality' | 'resources' | 'contact' | 'rfq';
+  key: 'products' | 'applications' | 'facility' | 'resources' | 'contact' | 'rfq';
   href: string;
 };
 

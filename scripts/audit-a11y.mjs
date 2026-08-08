@@ -20,7 +20,26 @@ import process from 'node:process';
 import { parse } from 'node-html-parser';
 
 const ORIGIN = process.argv[2] ?? 'http://localhost:3000';
-const ROUTES = ['/ar', '/en', '/ar/styleguide', '/en/styleguide'];
+/**
+ * Every route in the tree, in both locales. Parameterised routes are audited
+ * through one representative: the grade pages differ only in their numbers and
+ * the sector pages only in their copy, so a second instance of either would
+ * exercise the same markup twice.
+ */
+const PATHS = [
+  '',
+  '/products',
+  '/products/gcc-1250',
+  '/applications',
+  '/applications/plastics-masterbatch',
+  '/sustainability-and-facility',
+  '/resources',
+  '/contact',
+  '/rfq',
+  '/styleguide',
+];
+
+const ROUTES = ['/ar', '/en'].flatMap((locale) => PATHS.map((path) => `${locale}${path}`));
 
 const findings = [];
 
@@ -102,6 +121,20 @@ function auditDocument(route, html) {
   const labelFor = new Set(
     root.querySelectorAll('label[for]').map((label) => label.getAttribute('for')),
   );
+
+  /**
+   * A control nested inside a `<label>` is labelled by that label's text, with
+   * no `for`/`id` pair involved. HTML calls this an implicit label and it is
+   * exactly what the checkbox chips in the RFQ form use, so an auditor that
+   * only understands `label[for]` reports them all as unlabelled.
+   */
+  function implicitlyLabelled(control) {
+    for (let node = control.parentNode; node; node = node.parentNode) {
+      if (node.rawTagName === 'label') return textOf(node).length > 0;
+    }
+    return false;
+  }
+
   for (const control of root.querySelectorAll('input, select, textarea')) {
     const type = control.getAttribute('type');
     if (type === 'hidden') continue;
@@ -110,7 +143,8 @@ function auditDocument(route, html) {
       (id && labelFor.has(id)) ||
       control.getAttribute('aria-label') ||
       control.getAttribute('aria-labelledby') ||
-      control.getAttribute('title');
+      control.getAttribute('title') ||
+      implicitlyLabelled(control);
     if (!named) {
       report(
         route,
