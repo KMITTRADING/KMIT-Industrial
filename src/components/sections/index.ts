@@ -31,6 +31,9 @@ export type { GradeExplorerProps } from './GradeExplorer';
 export { GradeSelector } from './GradeSelector';
 export type { GradeSelectorProps } from './GradeSelector';
 
+export { GradeTable } from './GradeTable';
+export type { GradeTableProps } from './GradeTable';
+
 export { GradeMatrix } from './GradeMatrix';
 export type { GradeMatrixProps } from './GradeMatrix';
 

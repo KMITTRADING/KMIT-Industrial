@@ -34,6 +34,8 @@ import {
 } from '@/components/sections';
 import { DirectionFrame, DirectionProvider } from '@/components/styleguide/DirectionToggle';
 import { InteractiveSpecimens } from '@/components/styleguide/InteractiveSpecimens';
+import { NextIntlClientProvider } from 'next-intl';
+import { routeMessages } from '@/i18n/client-messages';
 import { SiteFooter, SiteHeader } from '@/components/layout';
 import { Specimen, SpecimenSection, SwatchRow } from '@/components/styleguide/Specimen';
 import { SECTOR_IDS } from '@/content/schema';
@@ -500,7 +502,17 @@ export default async function StyleguidePage({
               </div>
             </Specimen>
 
-            <InteractiveSpecimens />
+            {/*
+              The specimens and the interactive grade matrix read namespaces the
+              base client payload does not carry. This is an internal, noindex
+              route, so it is the right place to pay for them and the wrong place
+              to widen the list every page ships.
+            */}
+            <NextIntlClientProvider
+              messages={routeMessages(typedLocale, 'components/styleguide')}
+            >
+              <InteractiveSpecimens />
+            </NextIntlClientProvider>
           </SpecimenSection>
 
           {/* -------------------------------------------------- sections */}
@@ -563,7 +575,11 @@ export default async function StyleguidePage({
               description="the signature element: filter, sort, sticky header"
             >
               <div className="w-full">
-                <GradeMatrix />
+                <NextIntlClientProvider
+                  messages={routeMessages(typedLocale, 'components/sections/GradeMatrix')}
+                >
+                  <GradeMatrix />
+                </NextIntlClientProvider>
               </div>
             </Specimen>
 

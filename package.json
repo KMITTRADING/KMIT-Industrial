@@ -24,7 +24,14 @@
     "check:dom": "node scripts/check-dom.mjs",
     "check:crawl": "node scripts/check-crawl.mjs",
     "check:schema": "node scripts/check-schema.mjs",
-    "check:seo": "npm run check:dom && npm run check:crawl && npm run check:schema"
+    "check:seo": "npm run check:dom && npm run check:crawl && npm run check:schema",
+    "check:client-messages": "node scripts/check-client-messages.mjs",
+    "check:rtl": "node scripts/check-rtl.mjs",
+    "test:e2e": "playwright test",
+    "test:unit": "vitest run",
+    "test": "npm run test:unit && npm run test:e2e",
+    "check:budget": "node scripts/check-budget.mjs",
+    "check:runtime": "npm run audit:a11y && npm run check:dom && npm run check:crawl && npm run check:schema && npm run check:rtl && npm run check:budget"
   },
   "browserslist": [
     "chrome >= 111",
@@ -44,11 +51,14 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/eslintrc": "^3.3.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.19.0",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.0",
     "eslint-config-prettier": "^10.1.8",
@@ -59,6 +69,7 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.9",
     "typescript": "^5.9.3",
+    "vitest": "^4.1.10",
     "wait-on": "^9.1.0"
   }
 }

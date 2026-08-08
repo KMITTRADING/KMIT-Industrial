@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { AnalyticsConsent, SkipLink } from '@/components/layout';
+import { baseMessages } from '@/i18n/client-messages';
 import { getContent } from '@/content';
 import { env } from '@/lib/env';
 import { localeAlternates } from '@/lib/seo';
@@ -102,7 +103,7 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="min-h-dvh bg-surface-page text-ink-primary antialiased">
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={baseMessages(typedLocale)}>
           {/* One skip link for the whole app, rendered before anything else so
               it is the first focusable element on every page. Pages must not add
               their own. */}

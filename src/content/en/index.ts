@@ -790,7 +790,7 @@ export const en = {
     gradeDescriptionTemplate:
       '{code}: {mesh} mesh, median particle size {d50} microns, with chemical values, test methods and applications.',
     gradeAnswerFirstTemplate:
-      '{code} is a ground calcium carbonate at {mesh} mesh with a median particle size (D50) of {d50} microns. {coating} It serves {applications}. The values below are typical for the product family, each stated with the test method that produced it, and a Certificate of Analysis carrying the measured values is issued with every production batch.',
+      '{code} is a ground calcium carbonate at {mesh} mesh with a median particle size (D50) of <ltr>{d50}</ltr> microns. {coating} It serves {applications}. The values below are typical for the product family, each stated with the test method that produced it, and a Certificate of Analysis carrying the measured values is issued with every production batch.',
     gradePsdHeading: 'Where this grade sits in the range',
     gradePsdIntro:
       'Each bar is one grade median particle-size range, on a logarithmic scale. The grade on this page is highlighted.',

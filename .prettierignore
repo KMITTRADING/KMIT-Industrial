@@ -19,3 +19,8 @@ docs/keyword-clusters.md
 docs/skill-map.md
 docs/prompts
 docs/phase-zero-skill-gate.md
+
+# Playwright artefacts
+test-results/
+playwright-report/
+blob-report/

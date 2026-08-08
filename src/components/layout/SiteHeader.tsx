@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-import { ArrowInlineEndIcon, ChevronDownIcon, CloseIcon } from '@/components/primitives';
+import {
+  ArrowInlineEndIcon,
+  ChevronDownIcon,
+  CloseIcon,
+} from '@/components/primitives/IconSet';
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { Link, usePathname } from '@/i18n/navigation';
 import { Logo } from '@/components/brand/Logo';

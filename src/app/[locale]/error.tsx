@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/primitives';
+import { Button } from '@/components/primitives/Button';
 
 /**
  * Route-segment error boundary.

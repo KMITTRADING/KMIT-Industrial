@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/primitives';
+import { Button } from '@/components/primitives/Button';
 import { readConsent, writeConsent } from '@/lib/analytics';
 
 import type { ConsentState, QueuedEvent } from '@/lib/analytics';

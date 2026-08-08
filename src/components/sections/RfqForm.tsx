@@ -4,16 +4,10 @@ import { useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-import {
-  Alert,
-  Button,
-  CheckIcon,
-  Field,
-  FileInput,
-  Select,
-  TextArea,
-  TextInput,
-} from '@/components/primitives';
+import { Alert } from '@/components/primitives/Alert';
+import { Button } from '@/components/primitives/Button';
+import { Field, FileInput, Select, TextArea, TextInput } from '@/components/primitives/Field';
+import { CheckIcon } from '@/components/primitives/IconSet';
 import {
   APPLICATION_IDS,
   DOCUMENT_IDS,
