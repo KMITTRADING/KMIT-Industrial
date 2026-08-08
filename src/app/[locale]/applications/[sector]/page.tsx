@@ -7,8 +7,9 @@ import { APPLICATION_SECTOR, SECTOR_IDS } from '@/content/schema';
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
-import { RfqTeaser } from '@/components/sections';
+import { FaqList, RfqTeaser } from '@/components/sections';
 import { formatInteger, formatRange } from '@/lib/utils';
+import { getContent } from '@/content';
 import { localeAlternates } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
@@ -175,6 +176,24 @@ export default async function SectorPage({
         <p className="measure-prose mt-6 text-ink-secondary">
           {t('pages.sectorLoadingPending')}
         </p>
+      </section>
+
+      {/*
+        FAQ. Sector questions are about process behaviour rather than about the
+        specification: what moves on the line, what fails, and what the answer
+        depends on. The grade pages carry the specification questions.
+      */}
+      <section aria-labelledby="faq-heading" className="mt-section">
+        <SectionHeader
+          id="faq-heading"
+          title={t('sections.faqHeading')}
+          lede={t('sections.faqIntro')}
+        />
+        <FaqList
+          className="mt-4"
+          idPrefix={`faq-${sector}`}
+          faqs={getContent(typedLocale).sectorFaqs[sector]}
+        />
       </section>
 
       <RfqTeaser className="mt-section" application={sector} />

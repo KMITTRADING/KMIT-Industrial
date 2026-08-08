@@ -11,6 +11,9 @@ export type { ApplicationCardProps } from './ApplicationCard';
 
 export { CertificationStrip } from './CertificationStrip';
 
+export { ComparisonTable } from './ComparisonTable';
+export type { ComparisonTableProps } from './ComparisonTable';
+
 export { ContactBlock } from './ContactBlock';
 export type { ContactChannel } from './ContactBlock';
 
@@ -19,8 +22,14 @@ export type { DocumentDownloadRowProps } from './DocumentDownloadRow';
 
 export { FaqAccordion } from './FaqAccordion';
 
+export { FaqList } from './FaqList';
+export type { FaqListProps } from './FaqList';
+
 export { GradeExplorer, COMPARISON_LIMIT } from './GradeExplorer';
 export type { GradeExplorerProps } from './GradeExplorer';
+
+export { GradeSelector } from './GradeSelector';
+export type { GradeSelectorProps } from './GradeSelector';
 
 export { GradeMatrix } from './GradeMatrix';
 export type { GradeMatrixProps } from './GradeMatrix';
