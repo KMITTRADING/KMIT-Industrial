@@ -12,6 +12,12 @@
  *    sitemap, and every URL the sitemap advertises is reachable and returns
  *    200. A sitemap entry pointing at a 404 is a trust signal spent for nothing.
  *
+ * Comparison is by path, not by absolute URL. The sitemap is built from
+ * `NEXT_PUBLIC_SITE_URL`, which is deliberately independent of the host the
+ * site is being served from: in CI it says `https://ci.invalid` while the server
+ * answers on localhost. Matching on origin would compare the configuration
+ * against the test harness rather than the sitemap against the site.
+ *
  * Usage:
  *   npm run build && npx next start -p 3000 &
  *   node scripts/check-crawl.mjs http://localhost:3000
@@ -54,9 +60,18 @@ if (!sitemapResponse.ok) {
   process.exit(1);
 }
 const sitemapXml = await sitemapResponse.text();
-const sitemapUrls = new Set(
+/** Path only, so a configured origin does not have to match the served one. */
+function pathOf(href) {
+  try {
+    return new URL(href).pathname.replace(/\/$/, '') || '/';
+  } catch {
+    return undefined;
+  }
+}
+
+const sitemapPaths = new Set(
   [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-    .map((match) => normalise(match[1]))
+    .map((match) => pathOf(match[1]))
     .filter(Boolean),
 );
 
@@ -95,29 +110,35 @@ while (queue.length > 0) {
 
 /* ------------------------------------------------------------ reconcile */
 
-for (const url of sitemapUrls) {
-  if (!depths.has(url)) {
+const reachablePaths = new Map();
+for (const [url, depth] of depths) {
+  const path = pathOf(url);
+  if (path !== undefined) reachablePaths.set(path, depth);
+}
+
+for (const path of sitemapPaths) {
+  if (!reachablePaths.has(path)) {
     findings.push({
       rule: 'unreachable',
-      detail: `${url} is in the sitemap but not reachable within ${MAX_DEPTH} clicks of /`,
+      detail: `${path} is in the sitemap but not reachable within ${MAX_DEPTH} clicks of /`,
     });
   }
 }
 
-for (const [url, depth] of depths) {
+for (const [path, depth] of reachablePaths) {
   // The styleguide is deliberately excluded from the sitemap and from indexing;
   // it is not linked from any page either, so it should never appear here.
-  if (url.includes('/styleguide')) {
+  if (path.includes('/styleguide')) {
     findings.push({
       rule: 'noindex-linked',
-      detail: `${url} is linked from an indexable page`,
+      detail: `${path} is linked from an indexable page`,
     });
     continue;
   }
-  if (!sitemapUrls.has(url)) {
+  if (!sitemapPaths.has(path)) {
     findings.push({
       rule: 'missing-from-sitemap',
-      detail: `${url} is reachable at depth ${depth} but absent from the sitemap`,
+      detail: `${path} is reachable at depth ${depth} but absent from the sitemap`,
     });
   }
 }
@@ -133,5 +154,5 @@ if (findings.length > 0) {
 
 const deepest = Math.max(...[...depths.values()]);
 console.log(
-  `check:crawl passed - ${sitemapUrls.size} sitemap URLs, all reachable, deepest at ${deepest} click(s) from /.`,
+  `check:crawl passed - ${sitemapPaths.size} sitemap URLs, all reachable, deepest at ${deepest} click(s) from /.`,
 );
