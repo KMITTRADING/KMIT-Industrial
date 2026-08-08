@@ -19,6 +19,9 @@ export type { DocumentDownloadRowProps } from './DocumentDownloadRow';
 
 export { FaqAccordion } from './FaqAccordion';
 
+export { GradeExplorer, COMPARISON_LIMIT } from './GradeExplorer';
+export type { GradeExplorerProps } from './GradeExplorer';
+
 export { GradeMatrix } from './GradeMatrix';
 export type { GradeMatrixProps } from './GradeMatrix';
 
@@ -29,7 +32,21 @@ export { LogisticsMap } from './LogisticsMap';
 
 export { PackagingOptions } from './PackagingOptions';
 
+export { ParticleSizeChart } from './ParticleSizeChart';
+export type { ParticleSizeChartProps } from './ParticleSizeChart';
+
 export { ProcessDiagram } from './ProcessDiagram';
+
+export { ResourceLibrary } from './ResourceLibrary';
+export type { ResourceLibraryProps } from './ResourceLibrary';
+
+/*
+ * RfqForm is deliberately NOT exported here. It imports the RFQ server action,
+ * which calls `headers()`, and re-exporting it through the barrel drags that
+ * call into the module graph of every page that imports anything from this
+ * file. The visible symptom is the entire route tree switching from static to
+ * dynamic. Import it directly from './RfqForm' on the one route that needs it.
+ */
 
 export { RfqTeaser } from './RfqTeaser';
 export type { RfqTeaserProps } from './RfqTeaser';

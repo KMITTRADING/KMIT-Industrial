@@ -28,10 +28,22 @@ import type { SectorId } from '@/content/schema';
 export type ApplicationCardProps = {
   sector: SectorId;
   href?: string;
+  /**
+   * Heading level for the sector name. `h3` suits the home page, where the card
+   * grid sits under a section `h2`. The applications index has no such section
+   * heading between its `h1` and these cards, so it passes `h2` and the
+   * document outline stays contiguous.
+   */
+  headingAs?: 'h2' | 'h3';
   className?: string;
 };
 
-export async function ApplicationCard({ sector, href, className }: ApplicationCardProps) {
+export async function ApplicationCard({
+  sector,
+  href,
+  headingAs: Heading = 'h3',
+  className,
+}: ApplicationCardProps) {
   const t = await getTranslations();
 
   const grades = GRADES.filter((grade) =>
@@ -41,7 +53,9 @@ export async function ApplicationCard({ sector, href, className }: ApplicationCa
   const body = (
     <>
       <div className="flex flex-col gap-3">
-        <h3 className="text-lg font-semibold text-ink-primary">{t(`sectors.${sector}`)}</h3>
+        <Heading className="text-lg font-semibold text-ink-primary">
+          {t(`sectors.${sector}`)}
+        </Heading>
         <p className="text-sm text-ink-secondary">
           {grades
             .flatMap((grade) =>

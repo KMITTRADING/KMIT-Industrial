@@ -19,12 +19,17 @@ const nonEmpty = z.string().trim().min(1);
 
 /* ------------------------------------------------------------------- ids */
 
+/**
+ * Sector ids double as URL slugs, so they are written out in the form the
+ * Phase 3 brief specifies rather than abbreviated. `rubber-elastomers` also
+ * disambiguates the sector from the `rubber` application id.
+ */
 export const SECTOR_IDS = [
-  'plastics',
-  'paints-construction',
-  'oil-gas',
-  'rubber',
-  'paper',
+  'plastics-masterbatch',
+  'paints-coatings-construction',
+  'oil-gas-drilling',
+  'rubber-elastomers',
+  'paper-paperboard',
 ] as const;
 
 export const APPLICATION_IDS = [
@@ -99,6 +104,23 @@ export const FAQ_IDS = [
 
 export const CONTACT_CHANNEL_IDS = ['phone', 'whatsapp', 'email', 'location'] as const;
 
+/**
+ * The four reasons an in-Kingdom source beats an import, on the home page.
+ *
+ * Each one is attached to a documented fact. `lead-time` is deliberately in the
+ * set even though no lead-time data exists: the argument is incomplete without
+ * it, and stating that it is pending is more useful to a buyer than quietly
+ * omitting the strongest reason to buy locally.
+ */
+export const SUPPLY_ARGUMENT_IDS = [
+  'in-kingdom',
+  'compliance',
+  'published-specification',
+  'packaging-match',
+] as const;
+
+export type SupplyArgumentId = (typeof SUPPLY_ARGUMENT_IDS)[number];
+
 export type SectorId = (typeof SECTOR_IDS)[number];
 export type ApplicationId = (typeof APPLICATION_IDS)[number];
 export type ParameterId = (typeof PARAMETER_IDS)[number];
@@ -115,20 +137,20 @@ export type ContactChannelId = (typeof CONTACT_CHANNEL_IDS)[number];
  * its application pages without restating the relationship in copy.
  */
 export const APPLICATION_SECTOR: Record<ApplicationId, SectorId> = {
-  construction: 'paints-construction',
-  'drilling-muds': 'oil-gas',
-  asphalt: 'paints-construction',
-  'tile-adhesives': 'paints-construction',
-  'basic-paints': 'paints-construction',
-  rubber: 'rubber',
-  'pvc-pipes': 'plastics',
-  cables: 'plastics',
-  'emulsion-paints': 'paints-construction',
-  'pvc-fittings': 'plastics',
-  masterbatch: 'plastics',
-  'pe-films': 'plastics',
-  'high-end-masterbatch': 'plastics',
-  'fine-coatings': 'paints-construction',
+  construction: 'paints-coatings-construction',
+  'drilling-muds': 'oil-gas-drilling',
+  asphalt: 'paints-coatings-construction',
+  'tile-adhesives': 'paints-coatings-construction',
+  'basic-paints': 'paints-coatings-construction',
+  rubber: 'rubber-elastomers',
+  'pvc-pipes': 'plastics-masterbatch',
+  cables: 'plastics-masterbatch',
+  'emulsion-paints': 'paints-coatings-construction',
+  'pvc-fittings': 'plastics-masterbatch',
+  masterbatch: 'plastics-masterbatch',
+  'pe-films': 'plastics-masterbatch',
+  'high-end-masterbatch': 'plastics-masterbatch',
+  'fine-coatings': 'paints-coatings-construction',
 };
 
 /* -------------------------------------------------------------- data */
@@ -226,7 +248,8 @@ export const contentSchema = z.object({
     home: nonEmpty,
     products: nonEmpty,
     applications: nonEmpty,
-    quality: nonEmpty,
+    /** The sustainability-and-facility route. */
+    facility: nonEmpty,
     resources: nonEmpty,
     contact: nonEmpty,
     rfq: nonEmpty,
@@ -372,6 +395,183 @@ export const contentSchema = z.object({
     successLabel: nonEmpty,
     warningLabel: nonEmpty,
     dangerLabel: nonEmpty,
+  }),
+
+  /* ------------------------------------------------------------ sectors */
+
+  /** The technical problem the filler solves in this sector. */
+  sectorProblems: labelMap(SECTOR_IDS),
+  /** What it does once it is in the formulation. */
+  sectorValue: labelMap(SECTOR_IDS),
+  /** Process considerations: dispersion, extrusion, vulcanisation, and so on. */
+  sectorProcess: labelMap(SECTOR_IDS),
+  /** Why the recommended grades are the recommended ones. */
+  sectorGradeReasoning: labelMap(SECTOR_IDS),
+
+  supplyArguments: labelMap(SUPPLY_ARGUMENT_IDS),
+  supplyArgumentDetails: labelMap(SUPPLY_ARGUMENT_IDS),
+
+  /* -------------------------------------------------------------- pages */
+
+  pages: z.object({
+    productsTitle: titleString,
+    productsDescription: descriptionString,
+    productsH1: nonEmpty,
+    productsAnswerFirst: answerFirstString,
+    productsFilterHeading: nonEmpty,
+    productsFilterIndustry: nonEmpty,
+    productsFilterAllIndustries: nonEmpty,
+    productsComparisonHeading: nonEmpty,
+    productsComparisonIntro: nonEmpty,
+    productsComparisonSelect: nonEmpty,
+    productsComparisonLimit: nonEmpty,
+    productsComparisonClear: nonEmpty,
+    productsComparisonEmpty: nonEmpty,
+
+    gradeTitleTemplate: nonEmpty,
+    gradeDescriptionTemplate: nonEmpty,
+    gradeAnswerFirstTemplate: nonEmpty,
+    gradePsdHeading: nonEmpty,
+    gradePsdIntro: nonEmpty,
+    gradePsdCaption: nonEmpty,
+    gradePsdAxisSize: nonEmpty,
+    gradePsdAxisGrade: nonEmpty,
+    gradePropertiesHeading: nonEmpty,
+    gradeApplicationsHeading: nonEmpty,
+    gradePackagingHeading: nonEmpty,
+    gradeDocumentsHeading: nonEmpty,
+    gradeFaqHeading: nonEmpty,
+    gradeRelatedHeading: nonEmpty,
+    gradeRelatedFiner: nonEmpty,
+    gradeRelatedCoarser: nonEmpty,
+    gradeCoatingHeading: nonEmpty,
+
+    applicationsTitle: titleString,
+    applicationsDescription: descriptionString,
+    applicationsH1: nonEmpty,
+    applicationsAnswerFirst: answerFirstString,
+
+    sectorTitleTemplate: nonEmpty,
+    sectorDescriptionTemplate: nonEmpty,
+    sectorProblemHeading: nonEmpty,
+    sectorValueHeading: nonEmpty,
+    sectorProcessHeading: nonEmpty,
+    sectorGradesHeading: nonEmpty,
+    sectorLoadingHeading: nonEmpty,
+    sectorLoadingPending: nonEmpty,
+
+    facilityTitle: titleString,
+    facilityDescription: descriptionString,
+    facilityH1: nonEmpty,
+    facilityAnswerFirst: answerFirstString,
+    facilityLabHeading: nonEmpty,
+    facilityLabBody: nonEmpty,
+    facilityHseHeading: nonEmpty,
+    facilityHseBody: nonEmpty,
+    facilityEnvironmentHeading: nonEmpty,
+    facilityEnvironmentBody: nonEmpty,
+
+    resourcesTitle: titleString,
+    resourcesDescription: descriptionString,
+    resourcesH1: nonEmpty,
+    resourcesAnswerFirst: answerFirstString,
+    resourcesFilterGrade: nonEmpty,
+    resourcesFilterType: nonEmpty,
+    resourcesFilterAll: nonEmpty,
+    resourcesEmpty: nonEmpty,
+    resourcesPendingNote: nonEmpty,
+
+    rfqTitle: titleString,
+    rfqDescription: descriptionString,
+    rfqH1: nonEmpty,
+    rfqAnswerFirst: answerFirstString,
+
+    contactTitle: titleString,
+    contactDescription: descriptionString,
+    contactH1: nonEmpty,
+    contactAnswerFirst: answerFirstString,
+    contactTechnicalHeading: nonEmpty,
+    contactTechnicalBody: nonEmpty,
+    contactCommercialHeading: nonEmpty,
+    contactCommercialBody: nonEmpty,
+    contactHoursHeading: nonEmpty,
+    contactHoursPending: nonEmpty,
+
+    homeSupplyHeading: nonEmpty,
+    homeSupplyIntro: nonEmpty,
+    homeGradeStripHeading: nonEmpty,
+    homeApplicationsHeading: nonEmpty,
+    homeApplicationsIntro: nonEmpty,
+    homeQualityHeading: nonEmpty,
+    homePackagingHeading: nonEmpty,
+    homeCtaTds: nonEmpty,
+
+    errorTitle: titleString,
+    errorH1: nonEmpty,
+    errorBody: nonEmpty,
+    errorRetry: nonEmpty,
+    loadingLabel: nonEmpty,
+  }),
+
+  /* ---------------------------------------------------------- rfq form */
+
+  rfqForm: z.object({
+    sectionRequirement: nonEmpty,
+    sectionDelivery: nonEmpty,
+    sectionContact: nonEmpty,
+    sectionRequirementHint: nonEmpty,
+    sectionDeliveryHint: nonEmpty,
+    sectionContactHint: nonEmpty,
+
+    labelGrade: nonEmpty,
+    labelTonnage: nonEmpty,
+    labelApplication: nonEmpty,
+    labelPackaging: nonEmpty,
+    labelCity: nonEmpty,
+    labelCountry: nonEmpty,
+    labelCertifications: nonEmpty,
+    labelStartDate: nonEmpty,
+    labelCompany: nonEmpty,
+    labelContactName: nonEmpty,
+    labelEmail: nonEmpty,
+    labelPhone: nonEmpty,
+    labelNotes: nonEmpty,
+    labelUpload: nonEmpty,
+
+    hintGrade: nonEmpty,
+    hintTonnage: nonEmpty,
+    hintCertifications: nonEmpty,
+    hintStartDate: nonEmpty,
+    hintNotes: nonEmpty,
+    hintUpload: nonEmpty,
+    hintPhone: nonEmpty,
+
+    placeholderSelect: nonEmpty,
+    notSure: nonEmpty,
+
+    errorRequired: nonEmpty,
+    errorEmail: nonEmpty,
+    errorPhone: nonEmpty,
+    errorTonnage: nonEmpty,
+    errorTooLong: nonEmpty,
+    errorSummary: nonEmpty,
+
+    submit: nonEmpty,
+    submitting: nonEmpty,
+    continueToDelivery: nonEmpty,
+    continueToContact: nonEmpty,
+    back: nonEmpty,
+
+    successHeading: nonEmpty,
+    successBody: nonEmpty,
+    successReference: nonEmpty,
+    successNext1: nonEmpty,
+    successNext2: nonEmpty,
+    successNext3: nonEmpty,
+    successAgain: nonEmpty,
+
+    failureHeading: nonEmpty,
+    failureBody: nonEmpty,
   }),
 
   footer: z.object({

@@ -374,3 +374,78 @@ and nothing else, which is what keeps it meaningful.
 Also taken from that skill: macro whitespace, custom cubic-bezier easings, press
 feedback on buttons, GPU-safe animation, and z-index discipline. Not taken: pill
 buttons, 2rem radii, glassmorphism, 700ms transitions, 16px entrance travel.
+
+---
+
+## ADR-023 — Sector slugs are short, not descriptive sentences
+
+**Phase 3.** The sector ids double as URL segments, so they are the shortest
+phrase that still names the sector unambiguously: `plastics-masterbatch`,
+`paints-coatings-construction`, `oil-gas-drilling`, `rubber-elastomers`,
+`paper-paperboard`.
+
+They are ids in `src/content/schema.ts` first and URLs second, which is what
+keeps `APPLICATION_SECTOR` able to roll each application in the dataset up to a
+sector without a second mapping table. Renaming one is therefore a schema change
+that the i18n gate catches, not a silent URL edit.
+
+---
+
+## ADR-024 — Documents are gated on an RFQ, not served as files
+
+**Phase 3.** `docs/technical-data.md` carries the numbers for every grade but no
+PDF files, and `public/documents/` is empty. The resource library therefore
+lists all fifteen documents (five grades by TDS, MSDS, COA) with their real
+scope, and every row routes to the RFQ form prefilled with the grade and
+document type rather than to a download.
+
+This is the honest state of the data and also the right commercial behaviour for
+a COA, which is batch-specific and cannot be a static file. When real PDFs
+arrive, TDS and MSDS rows become direct downloads and only the COA keeps the
+gate. Tracked as `TODO(data): document files`.
+
+---
+
+## ADR-025 — Rate limiting is per-instance and best-effort
+
+**Phase 3.** `src/lib/rate-limit.ts` is a fixed-window counter in module memory,
+five submissions per ten minutes per client key. On a single instance it stops
+the obvious abuse; across several instances each holds its own window, so the
+effective limit multiplies by the instance count.
+
+`clientKeyFromHeaders` falls back to one shared bucket when no forwarding header
+is present, so a missing header throttles harder rather than not at all. This is
+deliberate: the failure mode of a shared limiter is a rejected legitimate
+request, and the failure mode of no limiter is an open relay into the sales
+inbox.
+
+Replace with a durable store when the RFQ endpoint moves behind a real backend.
+
+---
+
+## ADR-026 — Streaming boundaries live in pages, not in `loading.tsx`
+
+**Phase 3.** A `loading.tsx` applies to its whole segment subtree, and a segment
+that streams is a segment that is not prerendered. One at the locale root turned
+every route in the site into a per-request render; one under `products/` did the
+same to the ten grade pages, which have nothing per-request about them.
+
+Only three routes read `searchParams` and so cannot be static under any
+arrangement: `/products`, `/resources`, `/rfq`. Each now awaits the query string
+inside a `<Suspense>` boundary in the page itself, so the page shell is sent
+before the query is parsed and the boundary cannot reach a sibling segment.
+
+This also fixes a duplicate landmark: a `loading.tsx` fallback carries its own
+`<main>`, and the streamed HTML ends up holding two.
+
+---
+
+## ADR-027 — A modern browserslist floor
+
+**Phase 3.** `package.json` declares Chrome 111, Edge 111, Firefox 128,
+Safari 16.4. That is Tailwind 4's own baseline, which the token layer already
+depends on: `@theme`, OKLCH colour, `:has()` and CSS logical properties are all
+in use and none of them can be polyfilled.
+
+Declaring it explicitly stops Lightning CSS from emitting fallbacks for browsers
+that could not render the design system anyway.

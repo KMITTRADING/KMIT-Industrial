@@ -49,6 +49,9 @@ export async function generateMetadata({
     },
     description: content.meta.defaultDescription,
     applicationName: content.meta.siteName,
+    // Declaring the icon stops the browser probing /favicon.ico, which is a
+    // 404 in the console on every page load if nothing claims the slot.
+    icons: { icon: [{ url: '/brand/icon.svg', type: 'image/svg+xml' }] },
     alternates: localeAlternates(locale),
     openGraph: {
       type: 'website',
