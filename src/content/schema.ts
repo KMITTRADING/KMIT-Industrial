@@ -382,6 +382,7 @@ export const contentSchema = z.object({
     columnMesh: nonEmpty,
     columnD50: nonEmpty,
     columnCoating: nonEmpty,
+    columnShelfLife: nonEmpty,
     columnApplications: nonEmpty,
     coated: nonEmpty,
     uncoated: nonEmpty,
@@ -784,6 +785,33 @@ export const contentSchema = z.object({
     complianceHeading: nonEmpty,
     navHeading: nonEmpty,
     productsHeading: nonEmpty,
+  }),
+
+  /**
+   * Strings that exist only inside structured data.
+   *
+   * They are in the content tree rather than in `src/lib/jsonld.ts` because
+   * they are localised prose that a machine reader will surface to a human,
+   * and because the i18n gate should catch a missing Arabic value here exactly
+   * as it does for a heading.
+   */
+  /** The analytics consent prompt. Shown only when a provider is configured. */
+  consent: z.object({
+    heading: nonEmpty,
+    body: nonEmpty,
+    accept: nonEmpty,
+    decline: nonEmpty,
+  }),
+
+  jsonld: z.object({
+    /** City, for the Organization postal address. */
+    addressLocality: nonEmpty,
+    areaServedCountry: nonEmpty,
+    areaServedRegion: nonEmpty,
+    /** `Product.material`. */
+    material: nonEmpty,
+    /** `Product.category`. */
+    productCategory: nonEmpty,
   }),
 
   styleguide: z.object({

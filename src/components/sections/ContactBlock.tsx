@@ -1,6 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 
-import { ChatIcon, LocationIcon, MailIcon, PhoneIcon } from '@/components/primitives';
+import {
+  ChatIcon,
+  LocationIcon,
+  MailIcon,
+  PhoneIcon,
+  TrackedAnchor,
+} from '@/components/primitives';
 import { CONTACT_CHANNEL_IDS } from '@/content/schema';
 
 import type { ComponentType } from 'react';
@@ -62,13 +68,14 @@ export async function ContactBlock({
                   {t(`contactChannels.${channel.id}`)}
                 </p>
                 {channel.value && channel.href ? (
-                  <a
+                  <TrackedAnchor
+                    event={channel.id === 'whatsapp' ? 'whatsapp_click' : 'contact_click'}
                     href={channel.href}
                     dir="ltr"
                     className="mt-1 block text-start text-sm text-ink-accent underline-offset-4 hover:underline"
                   >
                     {channel.value}
-                  </a>
+                  </TrackedAnchor>
                 ) : channel.value ? (
                   <p dir="ltr" className="mt-1 text-start text-sm text-ink-primary">
                     {channel.value}

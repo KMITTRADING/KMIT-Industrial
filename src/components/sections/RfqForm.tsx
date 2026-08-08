@@ -23,6 +23,7 @@ import {
 } from '@/content/schema';
 import { GRADES } from '@/content/data/grades';
 import { cn } from '@/lib/utils';
+import { track } from '@/lib/analytics';
 import { submitRfqAction } from '@/app/[locale]/rfq/actions';
 
 import type { Locale } from '@/i18n/routing';
@@ -160,9 +161,25 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
     };
   }, [t]);
 
+  /**
+   * `rfq_started` fires once, on the first edit rather than on page view. A
+   * form that counts a start for everybody who scrolled past it cannot measure
+   * abandonment, which is the only thing the funnel is for.
+   */
+  const started = useRef(false);
+
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    if (!started.current) {
+      started.current = true;
+      track('rfq_started', { ...(grade ? { grade } : {}), ...(sector ? { sector } : {}) });
+    }
     setState((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [key]: undefined }));
+  };
+
+  /** The field name only. A field's value can be a company name or an email. */
+  const fieldCompleted = (field: keyof FormState) => {
+    if (state[field]) track('rfq_field_completed', { field, step });
   };
 
   const toggle = (key: 'certifications' | 'documents', value: string) =>
@@ -195,6 +212,10 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
     if (!validate('contact')) return;
 
     setPending(true);
+    track('rfq_submitted', {
+      ...(state.grade ? { grade: state.grade } : {}),
+      ...(state.sector ? { sector: state.sector } : {}),
+    });
     const response = await submitRfqAction({
       locale,
       company: state.company,
@@ -363,6 +384,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               dir="ltr"
               value={state.quantityTonnes}
               onChange={(event) => set('quantityTonnes', event.target.value)}
+              onBlur={() => fieldCompleted('quantityTonnes')}
             />
           )}
         </Field>
@@ -430,6 +452,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               autoComplete="address-level2"
               value={state.destinationCity}
               onChange={(event) => set('destinationCity', event.target.value)}
+              onBlur={() => fieldCompleted('destinationCity')}
             />
           )}
         </Field>
@@ -448,6 +471,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               autoComplete="country-name"
               value={state.destinationCountry}
               onChange={(event) => set('destinationCountry', event.target.value)}
+              onBlur={() => fieldCompleted('destinationCountry')}
             />
           )}
         </Field>
@@ -521,6 +545,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               autoComplete="organization"
               value={state.company}
               onChange={(event) => set('company', event.target.value)}
+              onBlur={() => fieldCompleted('company')}
             />
           )}
         </Field>
@@ -539,6 +564,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               autoComplete="name"
               value={state.contactName}
               onChange={(event) => set('contactName', event.target.value)}
+              onBlur={() => fieldCompleted('contactName')}
             />
           )}
         </Field>
@@ -560,6 +586,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               dir="ltr"
               value={state.email}
               onChange={(event) => set('email', event.target.value)}
+              onBlur={() => fieldCompleted('email')}
             />
           )}
         </Field>
@@ -582,6 +609,7 @@ export function RfqForm({ locale, grade, sector, document, className }: RfqFormP
               dir="ltr"
               value={state.phone}
               onChange={(event) => set('phone', event.target.value)}
+              onBlur={() => fieldCompleted('phone')}
             />
           )}
         </Field>

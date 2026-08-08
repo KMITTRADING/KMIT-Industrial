@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { SectionHeader } from '@/components/primitives';
 import {
   CertificationStrip,
   LogisticsMap,
@@ -89,14 +89,7 @@ export default async function FacilityPage({
   const t = await getTranslations();
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[{ label: t('nav.home'), href: '/' }, { label: t('nav.facility') }]}
-        />
-      </div>
-
+    <PageShell locale={typedLocale} crumbs={[{ name: t('nav.facility') }]}>
       <div className="pt-8">
         <SectionHeader
           as="h1"

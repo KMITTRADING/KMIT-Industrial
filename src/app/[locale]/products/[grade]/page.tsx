@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { ArrowInlineEndIcon, Badge, Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { ArrowInlineEndIcon, Badge, SectionHeader } from '@/components/primitives';
 import {
   DocumentDownloadRow,
   FaqList,
@@ -16,6 +16,7 @@ import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { formatInteger, formatRange } from '@/lib/utils';
 import { getContent } from '@/content';
+import { faqPageJsonLd, productJsonLd } from '@/lib/jsonld';
 import { localeAlternates } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
@@ -105,18 +106,21 @@ export default async function GradePage({
     : t('grades.uncoated');
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[
-            { label: t('nav.home'), href: '/' },
-            { label: t('nav.products'), href: '/products' },
-            { label: grade.code },
-          ]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[{ name: t('nav.products'), path: '/products' }, { name: grade.code }]}
+      jsonLd={[
+        productJsonLd(typedLocale, grade, {
+          description: t('pages.gradeDescriptionTemplate', {
+            code: grade.code,
+            mesh: grade.mesh,
+            d50: formatRange(grade.d50Min, grade.d50Max),
+          }),
+          canonicalPath: `/products/${gradeSlug(grade.code)}`,
+        }),
+        faqPageJsonLd(getContent(typedLocale).gradeFaqs[grade.code as GradeCodeId]),
+      ]}
+    >
       <header className="pt-8">
         <div className="flex flex-wrap items-center gap-3">
           <h1

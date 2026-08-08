@@ -20,7 +20,11 @@
     "check": "npm run lint && npm run typecheck && npm run check:i18n && npm run check:direction && npm run check:copy",
     "assets:optimize": "node scripts/optimize-assets.mjs",
     "check:copy": "node scripts/check-copy.mjs",
-    "audit:a11y": "node scripts/audit-a11y.mjs"
+    "audit:a11y": "node scripts/audit-a11y.mjs",
+    "check:dom": "node scripts/check-dom.mjs",
+    "check:crawl": "node scripts/check-crawl.mjs",
+    "check:schema": "node scripts/check-schema.mjs",
+    "check:seo": "npm run check:dom && npm run check:crawl && npm run check:schema"
   },
   "browserslist": [
     "chrome >= 111",

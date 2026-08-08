@@ -3,16 +3,17 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { Breadcrumbs, SectionHeader, TableSkeleton } from '@/components/primitives';
+import { SectionHeader, TableSkeleton } from '@/components/primitives';
 import {
   COMPARISON_LIMIT,
   GradeExplorer,
   ParticleSizeChart,
   RfqTeaser,
 } from '@/components/sections';
-import { GRADES } from '@/content/data/grades';
+import { GRADES, gradeSlug } from '@/content/data/grades';
 import { PageShell } from '@/components/layout';
 import { SECTOR_IDS } from '@/content/schema';
+import { itemListJsonLd } from '@/lib/jsonld';
 import { localeAlternates } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
@@ -111,14 +112,19 @@ export default async function ProductsPage({
   const t = await getTranslations();
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[{ label: t('nav.home'), href: '/' }, { label: t('nav.products') }]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[{ name: t('nav.products') }]}
+      jsonLd={[
+        itemListJsonLd(
+          typedLocale,
+          GRADES.map((grade) => ({
+            name: grade.code,
+            path: `/products/${gradeSlug(grade.code)}`,
+          })),
+        ),
+      ]}
+    >
       <div className="pt-8">
         <SectionHeader
           as="h1"

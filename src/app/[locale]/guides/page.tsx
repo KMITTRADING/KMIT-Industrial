@@ -2,11 +2,12 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
-import { ArrowInlineEndIcon, Breadcrumbs, SectionHeader } from '@/components/primitives';
+import { ArrowInlineEndIcon, SectionHeader } from '@/components/primitives';
 import { GUIDE_IDS } from '@/content/schema';
 import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { RfqTeaser } from '@/components/sections';
+import { itemListJsonLd } from '@/lib/jsonld';
 import { localeAlternates } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
@@ -47,14 +48,19 @@ export default async function GuidesPage({ params }: { params: Promise<{ locale:
   const t = await getTranslations();
 
   return (
-    <PageShell locale={typedLocale}>
-      <div className="pt-8">
-        <Breadcrumbs
-          label={t('ui.breadcrumb')}
-          items={[{ label: t('nav.home'), href: '/' }, { label: t('nav.guides') }]}
-        />
-      </div>
-
+    <PageShell
+      locale={typedLocale}
+      crumbs={[{ name: t('nav.guides') }]}
+      jsonLd={[
+        itemListJsonLd(
+          typedLocale,
+          GUIDE_IDS.map((guide) => ({
+            name: t(`guides.${guide}.navLabel`),
+            path: `/guides/${guide}`,
+          })),
+        ),
+      ]}
+    >
       <div className="pt-8">
         <SectionHeader
           as="h1"
