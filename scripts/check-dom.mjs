@@ -12,12 +12,16 @@
  * 1. **No em dash or en dash in visible text or in metadata.** Same rule as
  *    check:copy, applied where the reader actually meets it. Script and style
  *    contents are skipped; a dash inside minified JavaScript is not copy.
- * 2. **Exactly one canonical, and it matches the requested URL.** A canonical
- *    pointing at another document is the single most damaging metadata defect
- *    on a bilingual site.
+ * 2. **Exactly one canonical, and it points at this document.** Compared by
+ *    path, not by full URL: the canonical origin comes from
+ *    `NEXT_PUBLIC_SITE_URL` and is deliberately independent of the host the
+ *    page was fetched from, which is how a staging host serves production
+ *    canonicals. The origin is checked for *consistency* across routes instead,
+ *    because a page canonicalising to a different origin than its neighbours is
+ *    the defect worth catching.
  * 3. **A complete, reciprocal hreflang cluster.** Every page must declare both
  *    locales and `x-default`, and the URL it advertises for its own locale must
- *    be its own canonical.
+ *    be byte-identical to its own canonical.
  *
  * Usage:
  *   npm run build && npx next start -p 3000 &
@@ -53,6 +57,9 @@ const BANNED_DASH = /[—–]/;
 const findings = [];
 const report = (route, rule, detail) => findings.push({ route, rule, detail });
 
+/** Canonical origins seen, so a route canonicalising elsewhere stands out. */
+const canonicalOrigins = new Map();
+
 /** Visible text, with script and style subtrees removed. */
 function visibleText(root) {
   for (const node of root.querySelectorAll('script, style')) node.remove();
@@ -76,12 +83,24 @@ for (const locale of LOCALES) {
     /* ------------------------------------------------------- canonical */
 
     const canonicals = root.querySelectorAll('link[rel="canonical"]');
+    let canonical;
+
     if (canonicals.length !== 1) {
       report(route, 'canonical', `${canonicals.length} canonical links, expected 1`);
     } else {
-      const href = canonicals[0].getAttribute('href');
-      if (href !== url) {
-        report(route, 'canonical', `points at ${href}, expected ${url}`);
+      canonical = canonicals[0].getAttribute('href');
+      let parsed;
+      try {
+        parsed = new URL(canonical);
+      } catch {
+        report(route, 'canonical', `is not an absolute URL: ${canonical}`);
+      }
+      if (parsed) {
+        if (parsed.pathname !== route) {
+          report(route, 'canonical', `points at path ${parsed.pathname}, expected ${route}`);
+        }
+        if (!canonicalOrigins.has(parsed.origin)) canonicalOrigins.set(parsed.origin, []);
+        canonicalOrigins.get(parsed.origin).push(route);
       }
     }
 
@@ -99,12 +118,13 @@ for (const locale of LOCALES) {
       }
     }
 
+    // The real invariant: the page's entry for its own locale is its canonical.
     const selfLang = locale === 'ar' ? 'ar-SA' : 'en';
-    if (alternates.has(selfLang) && alternates.get(selfLang) !== url) {
+    if (canonical && alternates.has(selfLang) && alternates.get(selfLang) !== canonical) {
       report(
         route,
         'hreflang',
-        `self-reference for ${selfLang} is ${alternates.get(selfLang)}, expected ${url}`,
+        `self-reference for ${selfLang} is ${alternates.get(selfLang)}, but the canonical is ${canonical}`,
       );
     }
 
@@ -133,6 +153,13 @@ for (const locale of LOCALES) {
   }
 }
 
+if (canonicalOrigins.size > 1) {
+  const summary = [...canonicalOrigins.entries()]
+    .map(([origin, routes]) => `${origin} (${routes.length} routes)`)
+    .join(', ');
+  report('(site)', 'canonical', `canonical origins disagree across routes: ${summary}`);
+}
+
 if (findings.length > 0) {
   console.error(`check:dom found ${findings.length} problem(s):\n`);
   const grouped = new Map();
@@ -150,6 +177,8 @@ if (findings.length > 0) {
   process.exit(1);
 }
 
+const [origin] = [...canonicalOrigins.keys()];
 console.log(
-  `check:dom passed - ${LOCALES.length * PATHS.length} routes, canonical, hreflang and dash checks clean.`,
+  `check:dom passed - ${LOCALES.length * PATHS.length} routes on canonical origin ${origin}, ` +
+    'canonical, hreflang and dash checks clean.',
 );
