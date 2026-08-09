@@ -168,6 +168,40 @@ export const FILLER_COMPARISON_IDS = [
  */
 export const POLYMER_IDS = ['ldpe', 'hdpe', 'pp', 'rigid-pvc', 'flexible-pvc'] as const;
 
+/**
+ * The technical knowledge hub.
+ *
+ * Four of the topics the phase brief names, not the twelve it asks for.
+ * docs/pseo-inventory.md §4 records which and why: the four here each explain a
+ * number that is already published on the grade pages, so each has a data table
+ * behind it and none is an article about a subject in general. The rest are
+ * held, and the two that overlap `/guides/coated-vs-uncoated` are held
+ * permanently, because a second page on the same primary intent is
+ * self-cannibalisation rather than coverage.
+ *
+ * Slugs are written as the question, since that is what gets typed.
+ */
+export const ARTICLE_IDS = [
+  'reading-a-particle-size-distribution',
+  'what-whiteness-r457-measures',
+  'oil-absorption-in-a-formulation',
+  'moisture-and-shelf-life',
+] as const;
+
+export type ArticleId = (typeof ARTICLE_IDS)[number];
+
+/**
+ * Which existing table an article renders.
+ *
+ * Articles reuse the real tables rather than carrying their own numbers. An
+ * article about what D50 governs that restated the grade figures would be a
+ * second copy of the specification, free to drift; pointing at the same
+ * component the grade pages use means it cannot.
+ */
+export const ARTICLE_TABLE_IDS = ['grades', 'properties'] as const;
+
+export type ArticleTableId = (typeof ARTICLE_TABLE_IDS)[number];
+
 export type PolymerId = (typeof POLYMER_IDS)[number];
 
 export type SupplyComparisonId = (typeof SUPPLY_COMPARISON_IDS)[number];
@@ -457,6 +491,8 @@ export const contentSchema = z.object({
     /** The three decision and comparison guides. */
     /** The grade x sector hub. Footer only; the header is capped at five. */
     solutions: nonEmpty,
+    /** The technical article hub. Footer only, for the same reason. */
+    knowledge: nonEmpty,
     guides: nonEmpty,
     resources: nonEmpty,
     contact: nonEmpty,
@@ -737,6 +773,16 @@ export const contentSchema = z.object({
     homePackagingHeading: nonEmpty,
     homeCtaTds: nonEmpty,
 
+    knowledgeTitle: titleString,
+    knowledgeDescription: descriptionString,
+    knowledgeH1: nonEmpty,
+    knowledgeAnswerFirst: answerFirstString,
+    knowledgeRead: nonEmpty,
+    /** Says how many articles are published and why not more. */
+    knowledgeCoverage: nonEmpty,
+    articleFaqHeading: nonEmpty,
+    articleRelatedHeading: nonEmpty,
+
     solutionsTitle: titleString,
     solutionsDescription: descriptionString,
     solutionsH1: nonEmpty,
@@ -952,6 +998,57 @@ export const contentSchema = z.object({
   }),
 
   polymers: labelMap(POLYMER_IDS),
+
+  /* --------------------------------------------------------- knowledge */
+
+  /**
+   * The technical articles.
+   *
+   * Four keyed sections rather than an array, because `keyPaths` treats an
+   * array as a leaf and `check:i18n` would stop diffing inside it: an Arabic
+   * article that quietly lost a section would pass the gate.
+   *
+   * Each article names the table it renders and the grades it bears on, so the
+   * internal links are derived rather than written into prose where they would
+   * rot the first time a grade code changed.
+   */
+  knowledge: mapOf(
+    ARTICLE_IDS,
+    z.object({
+      title: titleString,
+      description: descriptionString,
+      h1: nonEmpty,
+      answerFirst: answerFirstString,
+      cardSummary: nonEmpty,
+      s1Heading: nonEmpty,
+      s1Body: bodyParagraph,
+      s2Heading: nonEmpty,
+      s2Body: bodyParagraph,
+      s3Heading: nonEmpty,
+      s3Body: bodyParagraph,
+      s4Heading: nonEmpty,
+      s4Body: bodyParagraph,
+      tableHeading: nonEmpty,
+      tableIntro: nonEmpty,
+    }),
+  ),
+
+  /**
+   * Article FAQs.
+   *
+   * Three to five, against six to ten elsewhere. An article has already
+   * answered the main question in its body, so the FAQ is for the follow-ups
+   * rather than for the subject, and padding it to six would mean asking
+   * questions the article did not raise.
+   */
+  knowledgeFaqs: mapOf(
+    ARTICLE_IDS,
+    z
+      .record(z.string(), faqEntrySchema)
+      .refine((set) => Object.keys(set).length >= 3 && Object.keys(set).length <= 5, {
+        message: 'An article FAQ carries between 3 and 5 questions',
+      }),
+  ),
 
   /* -------------------------------------------------------- calculator */
 

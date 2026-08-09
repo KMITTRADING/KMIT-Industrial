@@ -1,5 +1,6 @@
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { GUIDE_IDS, SECTOR_IDS } from '@/content/schema';
+import { ARTICLES } from '@/content/data/knowledge';
 import { SOLUTIONS } from '@/content/data/solutions';
 
 /**
@@ -33,6 +34,7 @@ export const SITEMAP_SECTIONS = [
   'applications',
   'solutions',
   'guides',
+  'knowledge',
 ] as const;
 
 export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
@@ -81,6 +83,12 @@ export const SITE_ROUTES: SiteRoute[] = [
     for the whole informational layer at once.
   */
   { path: '/tools/filler-loading', priority: 0.8, section: 'guides' },
+  { path: '/knowledge', priority: 0.7, section: 'knowledge' },
+  ...ARTICLES.map((article) => ({
+    path: `/knowledge/${article.id}`,
+    priority: 0.7 as const,
+    section: 'knowledge' as const,
+  })),
   { path: '/guides', priority: 0.7, section: 'guides' },
   ...GUIDE_IDS.map((guide) => ({
     path: `/guides/${guide}`,

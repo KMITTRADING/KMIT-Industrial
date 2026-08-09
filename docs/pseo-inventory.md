@@ -193,26 +193,38 @@ hopeless. Attacking them would be both wrong and ineffective.
 
 `/[locale]/knowledge` and `/[locale]/knowledge/[article]`.
 
-The brief asks for 12 articles and names 8 topics. **8 ship, the 8 it names.**
-Padding to 12 with topics nobody specified would contradict the rule this whole
-document applies, on the same day it was written.
+The brief asks for 12 articles and names 8 topics. **4 ship in this phase.** The
+other 4 named topics are held, and the reasons differ, so they are set out
+separately rather than lumped together.
 
-| #   | Article                                           | Primary cluster | Ships on                                                               |
-| --- | ------------------------------------------------- | --------------- | ---------------------------------------------------------------------- |
-| 1   | Reading a particle size distribution              | 4 informational | D50 already on every grade page; this explains what the number governs |
-| 2   | What whiteness R457 measures                      | 4               | ISO 2470 and the 95.0-98.5 range are in §2                             |
-| 3   | Oil absorption and what it costs a formulation    | 4               | 14-24 g/100g, ISO 787-5, §2                                            |
-| 4   | Why calcium carbonate is coated with stearic acid | 4               | 0.8-1.2%, §1.2                                                         |
-| 5   | Dispersion troubleshooting                        | 4               | Failure modes tied to coating, moisture and oil absorption             |
-| 6   | Acid solubility in drilling applications          | 3 / 4           | §4.3                                                                   |
-| 7   | Filler loading economics                          | 4               | Method, not numbers. Pairs with the calculator.                        |
-| 8   | Moisture control and shelf life in coated grades  | 4 / 5           | ≤ 0.20% moisture, 12 vs 24 months, §2 and §5                           |
+The rule applied is narrower than the brief's: an article ships only if it
+explains a value that is **already published on the grade pages with its test
+method**. That constraint is what stops a knowledge hub becoming a blog. It also
+means every shipped article has a real data table behind it, rendered from the
+same component the grade pages use rather than from numbers copied into prose.
 
-The brief also lists "SASO/REACH compliance for imported vs local material" as a
-9th topic. **Held.** Writing it properly requires the ISO certificate numbers and
-issuing bodies from §8, and a compliance article that cannot name a certificate
-is an article about compliance in general, which every competitor already has.
-`/resources` covers the documentation surface honestly in the meantime.
+### Shipped
+
+| #   | Article                                        | Explains                      | Table it renders |
+| --- | ---------------------------------------------- | ----------------------------- | ---------------- |
+| 1   | Reading a particle size distribution           | D50, and what it hides        | Grade matrix     |
+| 2   | What whiteness R457 measures                   | ISO 2470, 95.0-98.5%, Fe₂O₃   | Property table   |
+| 3   | Oil absorption and what it costs a formulation | 14-24 g/100g, ISO 787-5       | Property table   |
+| 4   | Moisture and shelf life in coated grades       | ≤ 0.20%, 12 against 24 months | Grade matrix     |
+
+### Held, and why each is different
+
+| Topic                                      | Decision            | Reason                                                                                                                                                                                                                                                             |
+| ------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Why CaCO₃ is coated with stearic acid      | **held, permanent** | `/guides/coated-vs-uncoated` already owns this primary intent. A second page on it is self-cannibalisation, which `docs/keyword-clusters.md` names as the most common failure on a bilingual B2B site.                                                             |
+| Filler loading economics                   | **held, permanent** | `/tools/filler-loading` answers it better, interactively, and with the reader's own numbers. An article restating the method beside the tool would compete with it.                                                                                                |
+| Dispersion troubleshooting                 | **held, capacity**  | No overlap and real value. Deferred on phase capacity, not on data or on principle. It is the first article to write next.                                                                                                                                         |
+| Acid solubility in drilling applications   | **held, capacity**  | Partly covered by `/solutions/gcc-200-for-oil-gas-drilling`, which carries the acid-solubility argument in its processing section. A standalone article would deepen it rather than duplicate it, so it is worth writing, but second.                              |
+| SASO / REACH compliance, local vs imported | **held, data**      | Needs the ISO certificate numbers and issuing bodies from §8. A compliance article that cannot name a certificate is an article about compliance in general, which every competitor already has. `/resources` covers the documentation surface honestly meanwhile. |
+
+Two of the five are held permanently because publishing them would compete with
+a better page that already exists, which is worth stating plainly: the honest
+count of articles this site should eventually carry is 7, not 12.
 
 Every article: answer-first opening, at least one real data table, internal
 links to the grade pages the topic bears on, `Article` plus `FAQPage` schema,
@@ -237,13 +249,15 @@ bilingual and key-mirrored.
 | Grade x sector             | 9      | 5      | 11     |
 | City / logistics           | 0      | 6      | 0      |
 | Comparison guides          | 2      | 0      | 0      |
-| Knowledge articles         | 8      | 1      | 0      |
+| Knowledge articles         | 4      | 5      | 0      |
 | Interactive / gated assets | 1      | 2      | 0      |
-| **Total**                  | **20** | **14** | **11** |
+| **Total**                  | **16** | **18** | **11** |
 
-**20 pages ship out of 45 candidates.** 14 are held on data KMIT has and this
-repository does not, and every one of them names the specific field that unlocks
-it. 11 are rejected permanently on technical grounds.
+**16 pages ship out of 45 candidates.** Of the 18 held, 12 are blocked on data
+KMIT has and this repository does not, and each names the specific field that
+unlocks it; 4 are held on phase capacity and are ready to write; 2 are held
+permanently because a better page already answers the same query. 11 are
+rejected permanently on technical grounds.
 
 The single highest-value unlock is **lead time per city per packaging format**.
 It converts 6 held pages to shippable, completes the strongest argument on the

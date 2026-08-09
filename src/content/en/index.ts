@@ -1,6 +1,8 @@
 import { enSolutionFaqs } from './solution-faqs';
 import { enSolutions } from './solutions';
 
+import { enKnowledge, enKnowledgeFaqs } from './knowledge';
+
 import type { Content } from '../schema';
 
 /**
@@ -40,6 +42,7 @@ export const en = {
     applications: 'Applications',
     facility: 'Sustainability and facility',
     solutions: 'Grade and application matrix',
+    knowledge: 'Technical knowledge',
     guides: 'Technical guides',
     resources: 'Technical documents',
     contact: 'Contact',
@@ -897,6 +900,17 @@ export const en = {
     homePackagingHeading: 'Packaging and logistics',
     homeCtaTds: 'Request a data sheet',
 
+    knowledgeTitle: 'Technical Knowledge | Calcium Carbonate | KMIT',
+    knowledgeDescription:
+      'Short technical articles explaining the numbers on the grade pages: particle size distribution, whiteness, oil absorption and shelf life.',
+    knowledgeH1: 'Technical knowledge',
+    knowledgeAnswerFirst:
+      'Each article here explains one number that appears on the grade pages and has no room to be explained there: what a D50 does and does not tell you, what a whiteness measurement at 457 nanometres is for, what oil absorption costs a formulation, and why the coated grades carry half the shelf life of the uncoated ones.',
+    knowledgeRead: 'Read the article',
+    knowledgeCoverage:
+      'Four articles, each explaining a value that is already published with its test method. An article with no data behind it would be a piece about a subject rather than an answer, and there are enough of those in this industry already.',
+    articleFaqHeading: 'Follow-up questions',
+    articleRelatedHeading: 'Grades this bears on',
     solutionsTitle: 'Grade and Application Matrix | KMIT',
     solutionsDescription:
       'Which calcium carbonate grade belongs in which process, with the particle-size reasoning, the processing caveat and the alternative for each.',
@@ -1263,6 +1277,9 @@ export const en = {
         'When the formulation wants mass. At a relative density of about 4.5 against roughly 2.7, barite adds weight, sound damping and radiation attenuation that calcium carbonate cannot approach. In drilling it is a weighting agent, which is a different job from bridging: barite raises mud density and is acid insoluble, while calcium carbonate seals a permeable face and dissolves on cleanup. Specifying one for the other is a common and expensive confusion.',
     },
   },
+
+  knowledge: enKnowledge,
+  knowledgeFaqs: enKnowledgeFaqs,
 
   polymers: {
     ldpe: 'LDPE, low-density polyethylene',

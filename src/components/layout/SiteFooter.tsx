@@ -31,6 +31,7 @@ export type FooterLink = {
     | 'products'
     | 'applications'
     | 'solutions'
+    | 'knowledge'
     | 'guides'
     | 'facility'
     | 'resources'
