@@ -1334,6 +1334,7 @@ export const en = {
     gradeHeading: 'Which grade this points to',
     gradeIntro:
       'Taken from the grade specification for the application you selected, not from the loading. Particle size is decided by the process, not by the economics.',
+    gradeRequestQuote: 'Request a quote for this grade',
     gradeNone: 'No grade in the published range is specified for that application.',
     assumptionsHeading: 'What this assumes',
     assumptionsBody:

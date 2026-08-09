@@ -3,7 +3,9 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { ArrowInlineEndIcon } from '@/components/primitives/IconSet';
 import { Field } from '@/components/primitives/Field';
+import { Link } from '@/i18n/navigation';
 import { Select } from '@/components/primitives/Field';
 import { TextInput } from '@/components/primitives/Field';
 import { POLYMERS } from '@/content/data/polymers';
@@ -339,12 +341,40 @@ export function FillerLoadingCalculator({ options, className }: FillerLoadingCal
             </h3>
             <p className="mt-2 text-xs text-ink-muted">{t('calculator.gradeIntro')}</p>
             {selected ? (
-              <p
-                dir="ltr"
-                className="mt-4 text-start text-2xl font-semibold text-ink-accent tabular-nums"
-              >
-                {selected.gradeCode}
-              </p>
+              <>
+                <p
+                  dir="ltr"
+                  className="mt-4 text-start text-2xl font-semibold text-ink-accent tabular-nums"
+                >
+                  {selected.gradeCode}
+                </p>
+
+                {/*
+                  The path out of the tool, carrying what the reader already
+                  told it. Every other page on the site prefills the quotation
+                  request from whatever it knows; this page knows the most and
+                  was, until this was added, the only one passing nothing.
+
+                  It lives here rather than in the page's `RfqTeaser` because
+                  the grade and the application are live client state and a
+                  server-rendered teaser cannot see them.
+                */}
+                <p className="mt-4">
+                  <Link
+                    href={{
+                      pathname: '/rfq',
+                      query: {
+                        grade: selected.gradeCode,
+                        application: selected.application,
+                      },
+                    }}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-ink-accent underline-offset-4 hover:underline"
+                  >
+                    {t('calculator.gradeRequestQuote')}
+                    <ArrowInlineEndIcon className="size-4 rtl:-scale-x-100" />
+                  </Link>
+                </p>
+              </>
             ) : (
               <p className="mt-4 text-sm text-ink-secondary">{t('calculator.gradeNone')}</p>
             )}
