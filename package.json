@@ -31,7 +31,8 @@
     "test:unit": "vitest run",
     "test": "npm run test:unit && npm run test:e2e",
     "check:budget": "node scripts/check-budget.mjs",
-    "check:runtime": "npm run audit:a11y && npm run check:dom && npm run check:crawl && npm run check:schema && npm run check:rtl && npm run check:budget"
+    "check:runtime": "npm run audit:a11y && npm run check:dom && npm run check:crawl && npm run check:schema && npm run check:rtl && npm run check:pseo && npm run check:budget",
+    "check:pseo": "node scripts/check-pseo.mjs"
   },
   "browserslist": [
     "chrome >= 111",

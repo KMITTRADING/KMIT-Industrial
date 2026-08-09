@@ -1,5 +1,6 @@
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { GUIDE_IDS, SECTOR_IDS } from '@/content/schema';
+import { SOLUTIONS } from '@/content/data/solutions';
 
 /**
  * Every indexable path on the site, locale-neutral.
@@ -37,6 +38,16 @@ export const SITE_ROUTES: SiteRoute[] = [
   { path: '/applications', priority: 0.8 },
   ...SECTOR_IDS.map((sector) => ({
     path: `/applications/${sector}`,
+    priority: 0.8 as const,
+  })),
+  /*
+    The solution pages rank below the grade pages and above the sector index.
+    They are the most specific commercial documents on the site, and a crawler
+    with a finite budget should reach them before the informational layer.
+  */
+  { path: '/solutions', priority: 0.8 },
+  ...SOLUTIONS.map((solution) => ({
+    path: `/solutions/${solution.id}`,
     priority: 0.8 as const,
   })),
   { path: '/guides', priority: 0.7 },

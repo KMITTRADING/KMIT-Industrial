@@ -1,3 +1,6 @@
+import { arSolutionFaqs } from './solution-faqs';
+import { arSolutions } from './solutions';
+
 import type { Content } from '../schema';
 
 /**
@@ -39,6 +42,7 @@ export const ar = {
     products: 'المنتجات',
     applications: 'التطبيقات',
     facility: 'الاستدامة والمنشأة',
+    solutions: 'مصفوفة الدرجات والتطبيقات',
     guides: 'أدلة فنية',
     resources: 'الوثائق الفنية',
     contact: 'تواصل معنا',
@@ -613,6 +617,9 @@ export const ar = {
     },
   },
 
+  solutions: arSolutions,
+  solutionFaqs: arSolutionFaqs,
+
   sections: {
     certificationsHeading: 'المعايير والمطابقة',
     certificationsIntro:
@@ -887,6 +894,31 @@ export const ar = {
     homeQualityHeading: 'الجودة والمطابقة',
     homePackagingHeading: 'التعبئة واللوجستيات',
     homeCtaTds: 'اطلب ورقة البيانات الفنية',
+
+    solutionsTitle: 'مصفوفة الدرجات والتطبيقات | KMIT',
+    solutionsDescription:
+      'أي درجة كربونات كالسيوم تنتمي إلى أي عملية، مع منطق حجم الجسيمات والتحفظ التشغيلي والبديل المطروح لكل حالة.',
+    solutionsH1: 'أي درجة تنتمي إلى أي عملية',
+    solutionsAnswerFirst:
+      'تغطي كل صفحة أدناه درجة واحدة في قطاع واحد: المشكلة التركيبية التي تعالجها، ولماذا يكون حجمها الوسيط للجسيمات (D50) هو المناسب، وما الذي يضع سقف التحميل، وما يجب مراقبته على خط الإنتاج، وما الذي ستفعله الدرجة المجاورة بدلاً منها. وتُنشر تسع تركيبات من خمس وعشرين ممكنة، لأنها التركيبات التي تدعمها المواصفة.',
+    solutionsCoverageHeading: 'لماذا تسع صفحات لا خمس وعشرون',
+    solutionsCoverageBody:
+      'تُنشر صفحة لدرجة وقطاع فقط حيث تذكر مواصفة الدرجة أصلاً تطبيقاً في ذلك القطاع. ولا تُنشر ست عشرة تركيبة: إحدى عشرة لأن حجم الجسيمات خاطئ للعملية، وخمس تخص الورق والكرتون لأن أي درجة في النطاق لم تُوضع لها بعد. والصفحة التي توصي بحجم جسيمات خاطئ تكلف المصمم دفعة تجريبية، وهذا أغلى من صفحة غائبة.',
+    solutionsGroupLabel: 'حسب القطاع',
+    solutionsReadMore: 'اقرأ التفصيل',
+
+    solutionProblemHeading: 'المشكلة التركيبية',
+    solutionSizingHeading: 'لماذا هذا الحجم تحديداً',
+    solutionLoadingHeading: 'ما الذي يضع سقف التحميل',
+    solutionProcessingHeading: 'على خط الإنتاج',
+    solutionVersusHeading: 'مقابل الدرجة المجاورة',
+    solutionSpecHeading: 'مقتطف المواصفة',
+    solutionSpecIntro:
+      'القيم التي تمس هذا التطبيق، مأخوذة من جدول خواص العائلة. وكل قيمة مذكورة مع طريقة الاختبار المستخدمة في تحديدها.',
+    solutionFaqHeading: 'أسئلة حول هذه التركيبة',
+    solutionContextHeading: 'السياق الأوسع',
+    solutionContextGrade: 'المواصفة الكاملة لهذه الدرجة',
+    solutionContextSector: 'كل الدرجات لهذا القطاع',
 
     guidesTitle: 'أدلة فنية | KMIT',
     guidesDescription:

@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { GRADES, TYPICAL_PROPERTIES, findGrade, gradeSlug } from '@/content/data/grades';
 import { APPLICATION_IDS, APPLICATION_SECTOR, PARAMETER_IDS } from '@/content/schema';
 import { GRADE_RECOMMENDATIONS, recommendationFor } from '@/content/data/guides';
+import { SOLUTIONS, solutionsBySector } from '@/content/data/solutions';
+import { SOLUTION_IDS } from '@/content/schema';
 
 /**
  * Dataset integrity.
@@ -90,6 +92,55 @@ describe('the grade-selection matrix', () => {
   it('never recommends a grade that does not claim the application', () => {
     for (const entry of GRADE_RECOMMENDATIONS) {
       expect(entry.grade.applications as readonly string[]).toContain(entry.application);
+    }
+  });
+});
+
+/**
+ * The grade x sector matrix.
+ *
+ * docs/pseo-inventory.md publishes a count and a set of reasons, and both are
+ * only as good as the predicate behind them. These assert that the predicate is
+ * what the document says it is, so a dataset edit that quietly changes which
+ * pages exist fails here rather than in a search console three months later.
+ */
+describe('the solution matrix', () => {
+  it('publishes exactly the nine combinations in the inventory', () => {
+    expect(SOLUTIONS).toHaveLength(9);
+    expect(SOLUTIONS.map((solution) => solution.id).sort()).toEqual([...SOLUTION_IDS].sort());
+  });
+
+  it('never publishes a combination the grade specification does not claim', () => {
+    for (const solution of SOLUTIONS) {
+      const claimed = solution.grade.applications.filter(
+        (application) => APPLICATION_SECTOR[application] === solution.sector,
+      );
+      expect(claimed.length, solution.id).toBeGreaterThan(0);
+      expect(solution.applications).toEqual(claimed);
+    }
+  });
+
+  it('leaves paper and paperboard unpublished, because no grade claims it', () => {
+    expect(SOLUTIONS.some((solution) => solution.sector === 'paper-paperboard')).toBe(false);
+    expect(
+      GRADES.some((grade) =>
+        grade.applications.some(
+          (application) => APPLICATION_SECTOR[application] === 'paper-paperboard',
+        ),
+      ),
+    ).toBe(false);
+  });
+
+  it('points every page at a neighbouring grade to argue against', () => {
+    for (const solution of SOLUTIONS) {
+      expect(solution.adjacentGrade, solution.id).toBeDefined();
+      expect(solution.adjacentGrade?.code).not.toBe(solution.grade.code);
+    }
+  });
+
+  it('groups only sectors that have pages, so no hub renders an empty heading', () => {
+    for (const group of solutionsBySector()) {
+      expect(group.solutions.length, group.sector).toBeGreaterThan(0);
     }
   });
 });

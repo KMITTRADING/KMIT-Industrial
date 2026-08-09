@@ -1,6 +1,7 @@
 import { GRADES, TYPICAL_PROPERTIES } from '@/content/data/grades';
 import { PACKAGING_IDS, SECTOR_IDS, STANDARD_IDS } from '@/content/schema';
 import { SITE_ROUTES } from '@/lib/routes';
+import { SOLUTIONS } from '@/content/data/solutions';
 import { absoluteUrl } from '@/lib/env';
 import { getContent } from '@/content';
 import { formatRange } from '@/lib/utils';
@@ -79,6 +80,29 @@ export function GET(): Response {
         (sector) =>
           `- ${en.sectors[sector]} / ${ar.sectors[sector]}: ${en.sectorValue[sector]}`,
       ),
+    ]),
+    /*
+      The published coverage of the grade x sector matrix, stated explicitly.
+
+      An answer engine that sees nine of twenty-five combinations documented
+      will otherwise fill the gaps by interpolation, which is precisely the
+      failure this site is built to avoid: a confident recommendation of a
+      grade for a process its specification does not claim. Naming the absent
+      combinations, and why they are absent, is cheaper than correcting it.
+    */
+    block('Grade and sector coverage', [
+      'A grade is documented for a sector only where its specification names an application in that sector.',
+      'Nine of the twenty-five possible combinations are published. The remaining sixteen are deliberate omissions, not gaps to be filled by inference.',
+      '',
+      ...SOLUTIONS.map(
+        (solution) =>
+          `- ${solution.grade.code} in ${en.sectors[solution.sector]}: ${absoluteUrl(`/en/solutions/${solution.id}`)}`,
+      ),
+      '',
+      'Not documented, and not to be inferred:',
+      '- Any grade for paper and paperboard. The sector is described on the site; no grade in the range is yet positioned for it.',
+      '- Any grade other than GCC-200 for drilling fluids. Bridging is a particle-size-matched duty and the finer grades do not perform it.',
+      '- The coated grades in water-borne paints. The surface treatment is designed for a polymer melt.',
     ]),
     block('Packaging', [...PACKAGING_IDS.map((packaging) => `- ${en.packaging[packaging]}`)]),
     block('Standards and compliance', [

@@ -1,3 +1,6 @@
+import { enSolutionFaqs } from './solution-faqs';
+import { enSolutions } from './solutions';
+
 import type { Content } from '../schema';
 
 /**
@@ -36,6 +39,7 @@ export const en = {
     products: 'Products',
     applications: 'Applications',
     facility: 'Sustainability and facility',
+    solutions: 'Grade and application matrix',
     guides: 'Technical guides',
     resources: 'Technical documents',
     contact: 'Contact',
@@ -613,6 +617,9 @@ export const en = {
     },
   },
 
+  solutions: enSolutions,
+  solutionFaqs: enSolutionFaqs,
+
   sections: {
     certificationsHeading: 'Standards and compliance',
     certificationsIntro:
@@ -889,6 +896,31 @@ export const en = {
     homeQualityHeading: 'Quality and compliance',
     homePackagingHeading: 'Packaging and logistics',
     homeCtaTds: 'Request a data sheet',
+
+    solutionsTitle: 'Grade and Application Matrix | KMIT',
+    solutionsDescription:
+      'Which calcium carbonate grade belongs in which process, with the particle-size reasoning, the processing caveat and the alternative for each.',
+    solutionsH1: 'Which grade belongs in which process',
+    solutionsAnswerFirst:
+      'Each page below covers one grade in one sector: the formulation problem it addresses, why its median particle size (D50) is the one that fits, what sets the loading ceiling, what to watch on the line, and what the neighbouring grade would do instead. Nine of the twenty-five possible combinations are published, because those are the ones the specification supports.',
+    solutionsCoverageHeading: 'Why nine pages and not twenty-five',
+    solutionsCoverageBody:
+      'A page is published for a grade and a sector only where the grade specification already names an application in that sector. Sixteen combinations are not published: eleven because the particle size is wrong for the process, and five covering paper and paperboard because no grade in the range is yet positioned for it. A page recommending the wrong particle size costs a formulator a trial batch, which is more expensive than an absent page.',
+    solutionsGroupLabel: 'By sector',
+    solutionsReadMore: 'Read the detail',
+
+    solutionProblemHeading: 'The formulation problem',
+    solutionSizingHeading: 'Why this particle size',
+    solutionLoadingHeading: 'What sets the loading ceiling',
+    solutionProcessingHeading: 'On the line',
+    solutionVersusHeading: 'Against the neighbouring grade',
+    solutionSpecHeading: 'Specification extract',
+    solutionSpecIntro:
+      'The values that bear on this application, taken from the family property table. Each is stated with the test method used to determine it.',
+    solutionFaqHeading: 'Questions about this combination',
+    solutionContextHeading: 'Wider context',
+    solutionContextGrade: 'Full specification for this grade',
+    solutionContextSector: 'All grades for this sector',
 
     guidesTitle: 'Technical Guides | KMIT',
     guidesDescription:

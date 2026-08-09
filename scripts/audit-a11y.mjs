@@ -32,6 +32,8 @@ const PATHS = [
   '/products/gcc-1250',
   '/applications',
   '/applications/plastics-masterbatch',
+  '/solutions',
+  '/solutions/gcc-1250-for-plastics-masterbatch',
   '/sustainability-and-facility',
   '/guides',
   '/guides/grade-selection',

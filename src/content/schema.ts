@@ -116,6 +116,31 @@ export const GRADE_CODES = ['GCC-200', 'GCC-400', 'GCC-800', 'GCC-1250', 'GCC-25
 export const GUIDE_IDS = ['grade-selection', 'coated-vs-uncoated', 'gcc-vs-pcc'] as const;
 
 /**
+ * The grade x sector pages that survived the thin-content filter.
+ *
+ * Nine of twenty-five. This list is written out rather than computed because
+ * `contentSchema` needs a static tuple to build a required key per page, and
+ * because a URL that appears and disappears as a dataset is edited is a
+ * liability. It is not, however, the authority: `src/content/data/solutions.ts`
+ * derives the same set from `GRADES` and `APPLICATION_SECTOR` and asserts the
+ * two agree at import time, so this tuple cannot drift from the specification
+ * it claims to describe.
+ *
+ * The rejected sixteen, each with its reason, are in docs/pseo-inventory.md.
+ */
+export const SOLUTION_IDS = [
+  'gcc-200-for-paints-coatings-construction',
+  'gcc-200-for-oil-gas-drilling',
+  'gcc-400-for-paints-coatings-construction',
+  'gcc-400-for-rubber-elastomers',
+  'gcc-800-for-plastics-masterbatch',
+  'gcc-800-for-paints-coatings-construction',
+  'gcc-1250-for-plastics-masterbatch',
+  'gcc-2500-for-plastics-masterbatch',
+  'gcc-2500-for-paints-coatings-construction',
+] as const;
+
+/**
  * Images that carry alt text from the content tree rather than from the page.
  *
  * Alt text is copy: it is read aloud, it is indexed, and it has to be written
@@ -157,6 +182,7 @@ export type ContactChannelId = (typeof CONTACT_CHANNEL_IDS)[number];
 export type GradeCodeId = (typeof GRADE_CODES)[number];
 export type GuideId = (typeof GUIDE_IDS)[number];
 export type ImageId = (typeof IMAGE_IDS)[number];
+export type SolutionId = (typeof SOLUTION_IDS)[number];
 
 /**
  * Which §4 sector each §3 application rolls up into. Used to link a grade to
@@ -317,6 +343,19 @@ const comparisonRowSchema = z.object({
 
 export type ComparisonRow = z.infer<typeof comparisonRowSchema>;
 
+/**
+ * A body block on a programmatic page.
+ *
+ * Floored deliberately. docs/pseo-inventory.md commits to shipping a grade x
+ * sector page only where 250+ words of non-substitutable technical content
+ * exist, and a rule that lives only in a document is a rule until the first
+ * hurried edit. Five blocks at this floor, plus the answer-first paragraph and
+ * the FAQ set, put every solution page comfortably past the bar before anyone
+ * counts. `scripts/check-pseo.mjs` counts the rendered words as well, because
+ * this only bounds what was written, not what reaches the reader.
+ */
+const bodyParagraph = z.string().trim().min(200).max(1400);
+
 /** Fields every guide carries, whatever its body looks like. */
 const guideChromeSchema = {
   title: titleString,
@@ -357,6 +396,8 @@ export const contentSchema = z.object({
     /** The sustainability-and-facility route. */
     facility: nonEmpty,
     /** The three decision and comparison guides. */
+    /** The grade x sector hub. Footer only; the header is capped at five. */
+    solutions: nonEmpty,
     guides: nonEmpty,
     resources: nonEmpty,
     contact: nonEmpty,
@@ -432,6 +473,16 @@ export const contentSchema = z.object({
 
   /** The same, for a sector: process behaviour rather than specification. */
   sectorFaqs: mapOf(SECTOR_IDS, faqSetSchema),
+
+  /**
+   * The same again, for one grade in one sector.
+   *
+   * These are the narrowest questions on the site and the reason the pages
+   * clear the thin-content bar: "can I run GCC-800 through a 2 mm pipe die"
+   * has an answer that neither the grade page nor the sector page can give,
+   * because each knows only half of it.
+   */
+  solutionFaqs: mapOf(SOLUTION_IDS, faqSetSchema),
 
   /**
    * Section-level copy for the domain components. Each block is what a real
@@ -627,6 +678,29 @@ export const contentSchema = z.object({
     homePackagingHeading: nonEmpty,
     homeCtaTds: nonEmpty,
 
+    solutionsTitle: titleString,
+    solutionsDescription: descriptionString,
+    solutionsH1: nonEmpty,
+    solutionsAnswerFirst: answerFirstString,
+    /** Explains to a reader why nine pages exist and not twenty-five. */
+    solutionsCoverageHeading: nonEmpty,
+    solutionsCoverageBody: nonEmpty,
+    solutionsGroupLabel: nonEmpty,
+    solutionsReadMore: nonEmpty,
+
+    solutionProblemHeading: nonEmpty,
+    solutionSizingHeading: nonEmpty,
+    solutionLoadingHeading: nonEmpty,
+    solutionProcessingHeading: nonEmpty,
+    solutionVersusHeading: nonEmpty,
+    solutionSpecHeading: nonEmpty,
+    solutionSpecIntro: nonEmpty,
+    solutionFaqHeading: nonEmpty,
+    /** Links back to the two pages this one sits between. */
+    solutionContextHeading: nonEmpty,
+    solutionContextGrade: nonEmpty,
+    solutionContextSector: nonEmpty,
+
     guidesTitle: titleString,
     guidesDescription: descriptionString,
     guidesH1: nonEmpty,
@@ -639,6 +713,46 @@ export const contentSchema = z.object({
     errorRetry: nonEmpty,
     loadingLabel: nonEmpty,
   }),
+
+  /* ------------------------------------------------------------ solutions */
+
+  /**
+   * The grade x sector pages.
+   *
+   * Five body blocks, in the order a formulator reads them: what goes wrong,
+   * why this particle size is the answer, what governs how much of it you can
+   * use, what to watch on the line, and what the neighbouring grade would do
+   * instead. Every block is written per combination. Nothing here is a
+   * template with the grade code substituted in, which is the whole argument
+   * for these pages existing.
+   *
+   * `loading` deserves a note. The brief asks for loading guidance and
+   * docs/technical-data.md has no loading levels, so these blocks describe what
+   * sets the ceiling rather than where it sits: oil absorption, binder demand,
+   * torque. That is real guidance derived from §2 data and it is not a number
+   * anybody can act on wrongly. See docs/pseo-inventory.md.
+   */
+  solutions: mapOf(
+    SOLUTION_IDS,
+    z.object({
+      title: titleString,
+      description: descriptionString,
+      h1: nonEmpty,
+      answerFirst: answerFirstString,
+      /** One sentence on the hub card, stating what this page settles. */
+      cardSummary: nonEmpty,
+      /** The formulation problem this combination exists to solve. */
+      problem: bodyParagraph,
+      /** Why this D50 band, specifically, is the one that fits. */
+      sizing: bodyParagraph,
+      /** What governs the loading ceiling. Not a phr figure. */
+      loading: bodyParagraph,
+      /** What to watch on the line, and the failure mode if you do not. */
+      processing: bodyParagraph,
+      /** What the adjacent grade would do in the same process. */
+      versus: bodyParagraph,
+    }),
+  ),
 
   /* --------------------------------------------------------------- guides */
 
