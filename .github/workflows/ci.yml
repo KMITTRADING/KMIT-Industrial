@@ -66,8 +66,9 @@ jobs:
       - name: Runtime gates
         # Everything that reads served HTML rather than source: the static
         # accessibility audit, the rendered dash and hreflang checks, the crawl
-        # reconciliation, the structured-data requirements and the RTL bidi
-        # isolation. A source scan cannot see any of them.
+        # reconciliation, the structured-data requirements, the RTL bidi
+        # isolation, and the thin-content and hub-linking rules for the
+        # programmatic pages. A source scan cannot see any of them.
         run: |
           npx next start -p 3210 &
           npx wait-on --timeout 60000 http://localhost:3210/ar
@@ -76,6 +77,7 @@ jobs:
           node scripts/check-crawl.mjs http://localhost:3210
           node scripts/check-schema.mjs http://localhost:3210
           node scripts/check-rtl.mjs http://localhost:3210
+          node scripts/check-pseo.mjs http://localhost:3210
         env:
           NEXT_PUBLIC_SITE_URL: https://ci.invalid
 

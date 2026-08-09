@@ -1,3 +1,8 @@
+import { enSolutionFaqs } from './solution-faqs';
+import { enSolutions } from './solutions';
+
+import { enKnowledge, enKnowledgeFaqs } from './knowledge';
+
 import type { Content } from '../schema';
 
 /**
@@ -36,6 +41,8 @@ export const en = {
     products: 'Products',
     applications: 'Applications',
     facility: 'Sustainability and facility',
+    solutions: 'Grade and application matrix',
+    knowledge: 'Technical knowledge',
     guides: 'Technical guides',
     resources: 'Technical documents',
     contact: 'Contact',
@@ -613,6 +620,9 @@ export const en = {
     },
   },
 
+  solutions: enSolutions,
+  solutionFaqs: enSolutionFaqs,
+
   sections: {
     certificationsHeading: 'Standards and compliance',
     certificationsIntro:
@@ -890,6 +900,42 @@ export const en = {
     homePackagingHeading: 'Packaging and logistics',
     homeCtaTds: 'Request a data sheet',
 
+    knowledgeTitle: 'Technical Knowledge | Calcium Carbonate | KMIT',
+    knowledgeDescription:
+      'Short technical articles explaining the numbers on the grade pages: particle size distribution, whiteness, oil absorption and shelf life.',
+    knowledgeH1: 'Technical knowledge',
+    knowledgeAnswerFirst:
+      'Each article here explains one number that appears on the grade pages and has no room to be explained there: what a D50 does and does not tell you, what a whiteness measurement at 457 nanometres is for, what oil absorption costs a formulation, and why the coated grades carry half the shelf life of the uncoated ones.',
+    knowledgeRead: 'Read the article',
+    knowledgeCoverage:
+      'Four articles, each explaining a value that is already published with its test method. An article with no data behind it would be a piece about a subject rather than an answer, and there are enough of those in this industry already.',
+    articleFaqHeading: 'Follow-up questions',
+    articleRelatedHeading: 'Grades this bears on',
+    solutionsTitle: 'Grade and Application Matrix | KMIT',
+    solutionsDescription:
+      'Which calcium carbonate grade belongs in which process, with the particle-size reasoning, the processing caveat and the alternative for each.',
+    solutionsH1: 'Which grade belongs in which process',
+    solutionsAnswerFirst:
+      'Each page below covers one grade in one sector: the formulation problem it addresses, why its median particle size (D50) is the one that fits, what sets the loading ceiling, what to watch on the line, and what the neighbouring grade would do instead. Nine of the twenty-five possible combinations are published, because those are the ones the specification supports.',
+    solutionsCoverageHeading: 'Why nine pages and not twenty-five',
+    solutionsCoverageBody:
+      'A page is published for a grade and a sector only where the grade specification already names an application in that sector. Sixteen combinations are not published: eleven because the particle size is wrong for the process, and five covering paper and paperboard because no grade in the range is yet positioned for it. A page recommending the wrong particle size costs a formulator a trial batch, which is more expensive than an absent page.',
+    solutionsGroupLabel: 'By sector',
+    solutionsReadMore: 'Read the detail',
+
+    solutionProblemHeading: 'The formulation problem',
+    solutionSizingHeading: 'Why this particle size',
+    solutionLoadingHeading: 'What sets the loading ceiling',
+    solutionProcessingHeading: 'On the line',
+    solutionVersusHeading: 'Against the neighbouring grade',
+    solutionSpecHeading: 'Specification extract',
+    solutionSpecIntro:
+      'The values that bear on this application, taken from the family property table. Each is stated with the test method used to determine it.',
+    solutionFaqHeading: 'Questions about this combination',
+    solutionContextHeading: 'Wider context',
+    solutionContextGrade: 'Full specification for this grade',
+    solutionContextSector: 'All grades for this sector',
+
     guidesTitle: 'Technical Guides | KMIT',
     guidesDescription:
       'How to choose a calcium carbonate grade, when surface coating is worth the premium, and the difference between GCC and PCC.',
@@ -1068,6 +1114,232 @@ export const en = {
       supplyBody:
         'The published grade range is ground calcium carbonate, five grades from 200 to 2500 mesh, with the two finest surface treated. Precipitated calcium carbonate is part of the product classification in the technical data but carries no published grade table. If your specification calls for PCC, state the morphology and particle size on the quotation request rather than assuming a ground grade will substitute.',
     },
+
+    'local-vs-imported': {
+      title: 'Local vs Imported Calcium Carbonate | KMIT',
+      description:
+        'The structural differences between an in-Kingdom source and an import: transit exposure, order cycle, currency, quality recourse and working capital.',
+      h1: 'Buying calcium carbonate locally against importing it',
+      navLabel: 'Local against imported',
+      cardSummary:
+        'What actually differs between an in-Kingdom source and an import, and the one number this comparison cannot supply.',
+      answerFirst:
+        'Imported calcium carbonate and in-Kingdom material are not competing on price per tonne alone. They differ in the shape of the supply: how long the pipeline is, how much stock a plant has to carry to cover it, which currency the exposure sits in, and what happens when a delivery fails a specification. This guide compares those structures. It quotes no lead time, because none is published.',
+      shapeHeading: 'Two different shapes of supply',
+      shapeBody:
+        'An import is a long pipeline with a large batch at the end of it. Material is ordered against a forecast, travels by sea, clears customs and arrives in a quantity sized to justify the freight. Everything about the buying process follows from that length: the order has to be placed before the demand is certain, the plant carries stock to cover the transit, and a problem discovered on arrival is a problem discovered weeks after it was created. An in-Kingdom source is a short pipeline with smaller, more frequent movements. The same tonne of material costs what it costs; what changes is how much has to be committed in advance, how much sits in a warehouse, and how quickly a mistake can be corrected.',
+      tableHeading: 'Where the two differ',
+      tableCaption:
+        'Structural differences between imported and in-Kingdom supply of industrial minerals',
+      columnAspect: 'Dimension',
+      columnImported: 'Imported',
+      columnLocal: 'In-Kingdom',
+      rows: {
+        transit: {
+          aspect: 'Transit and exposure',
+          left: 'Sea freight plus port and customs clearance. The pipeline is long enough that a disruption at any point in it arrives as a stockout weeks later, with no short path to recovery.',
+          right:
+            'Road movement inside the Kingdom or the GCC. A disruption is visible early and can usually be covered by a further despatch rather than by an air freight decision.',
+        },
+        'order-cycle': {
+          aspect: 'Order cycle and batch size',
+          left: 'Large batches, ordered against a forecast, because the freight cost per tonne only works at volume. Committing before the demand is firm is part of the model.',
+          right:
+            'Smaller and more frequent, which lets ordering follow production rather than forecast it.',
+        },
+        currency: {
+          aspect: 'Currency and payment',
+          left: 'Typically a foreign currency and often a letter of credit, so the cost carries an exchange exposure between order and settlement and ties up a facility limit.',
+          right:
+            'Settled in riyals against ordinary trade terms, so the price agreed is the price paid.',
+        },
+        'quality-recourse': {
+          aspect: 'Recourse on a failed specification',
+          left: 'Rejecting a consignment on arrival means the material is already in the country and the replacement is another full transit away. The commercial conversation happens across a border and a time zone.',
+          right:
+            'A failed batch can be replaced from the same origin, and the supplier can be visited. Recourse is a conversation rather than a claim.',
+        },
+        documentation: {
+          aspect: 'Documentation turnaround',
+          left: 'A certificate of analysis for a specific batch has to be requested through an intermediary chain, and a technical question can take a working week to reach somebody who can answer it.',
+          right:
+            'Batch documentation and technical questions go to the plant that produced the material, in the same working week and the same language.',
+        },
+        'working-capital': {
+          aspect: 'Working capital',
+          left: 'Stock covering the transit sits on the balance sheet, and the safety stock behind it sits there too. The cost is real and is rarely counted against the price per tonne.',
+          right:
+            'Lower cover requirement, so less capital is held in a warehouse. The saving is in inventory rather than in unit price.',
+        },
+      },
+      importedFitHeading: 'When importing is the right answer',
+      importedFitBody:
+        'Importing is not a mistake, and a guide that treated it as one would be worth nothing to the buyer reading it. It is the correct decision when the specification calls for a material that is not produced in the region at all, such as a precipitated grade with a controlled crystal morphology or an ultrafine cut below what local milling reaches. It is also correct where a plant is qualified to a specific producer and requalification would cost more than the supply difference is worth, which in a regulated or customer-audited product is a real constraint rather than an excuse. And at very large annual volumes with steady, forecastable demand, the freight cost per tonne falls far enough that the long pipeline stops being expensive and becomes merely long.',
+      localFitHeading: 'When an in-Kingdom source is the right answer',
+      localFitBody:
+        'Local supply earns its place where the demand is variable, where the working capital tied up in cover is material to the business, or where the specification is ordinary enough that several sources can meet it and the differentiator is responsiveness rather than the material itself. It is strongest of all where a formulation is still being developed, because the loop between a trial, a question and a revised sample is measured in days rather than in shipping cycles. The published grade range covers 200 to 2500 mesh at a minimum 98.5% CaCO₃, which is the range most plastics, paint, construction and drilling-fluid formulations specify against.',
+      limitHeading: 'What this comparison cannot tell you',
+      limitBody:
+        'The decisive number is lead time, and KMIT has not published one. Without it, this page can describe why a short pipeline behaves differently from a long one but cannot tell you what cover to hold or what a changeover would save. Treat the structure above as the argument and ask for the lead time per destination and packaging format on the quotation request; anyone quoting one before knowing your destination is quoting a number they do not have.',
+    },
+
+    'caco3-vs-alternative-fillers': {
+      title: 'Calcium Carbonate vs Talc, Kaolin and Barite',
+      description:
+        'How the four common mineral fillers differ in particle shape, hardness, density and chemistry, and which formulation problem each one actually solves.',
+      h1: 'Calcium carbonate against talc, kaolin and barite',
+      navLabel: 'Against other fillers',
+      cardSummary:
+        'Four mineral fillers, four different jobs: which property decides each one, and where calcium carbonate is not the answer.',
+      answerFirst:
+        'Calcium carbonate, talc, kaolin and barite are not interchangeable fillers at different prices. They differ in particle shape, hardness, density and chemistry, and each of those properties makes one of them right for a formulation and the others wrong. This guide sets out what separates them and names the cases where calcium carbonate is not the material to specify.',
+      roleHeading: 'What a filler is actually being asked to do',
+      roleBody:
+        'The word filler suggests inert volume, and that is why filler selection goes wrong. A mineral added at twenty or forty percent of a formulation is not passive: it changes stiffness, surface finish, rheology, opacity, thermal behaviour, abrasion on the equipment that processes it, and how the formulation responds to the chemistry around it. Choosing between minerals means deciding which of those effects is wanted and which are tolerable. Particle shape is usually the first question, because it separates the four more sharply than any other property. Calcium carbonate is roughly equiaxed, talc is platy, kaolin is platy and much finer, and barite is dense and equiaxed. Almost everything else follows.',
+      tableHeading: 'The four compared',
+      tableCaption: 'Comparative properties of the four common mineral fillers',
+      columnAspect: 'Property',
+      minerals: {
+        caco3: 'Calcium carbonate',
+        talc: 'Talc',
+        kaolin: 'Kaolin',
+        barite: 'Barite',
+      },
+      rows: {
+        'particle-shape': {
+          aspect: 'Particle shape',
+          values: {
+            caco3: 'Roughly equiaxed, from milling',
+            talc: 'Platy, high aspect ratio',
+            kaolin: 'Platy, fine, stacked plates',
+            barite: 'Equiaxed, blocky',
+          },
+        },
+        hardness: {
+          aspect: 'Mohs hardness',
+          values: {
+            caco3: '3.0',
+            talc: '1, the softest mineral on the scale',
+            kaolin: 'About 2',
+            barite: 'About 3 to 3.5',
+          },
+        },
+        density: {
+          aspect: 'Relative density',
+          values: {
+            caco3: 'About 2.7',
+            talc: 'About 2.8',
+            kaolin: 'About 2.6',
+            barite: 'About 4.5, far the highest of the four',
+          },
+        },
+        brightness: {
+          aspect: 'Brightness',
+          values: {
+            caco3: '95.0 to 98.5% to ISO 2470',
+            talc: 'Variable by deposit, generally lower',
+            kaolin: 'High, and the reason it is used in paper',
+            barite: 'Variable, often the lowest of the four',
+          },
+        },
+        chemistry: {
+          aspect: 'Chemical behaviour',
+          values: {
+            caco3: 'Alkaline at pH 8.5 to 9.5, acid soluble',
+            talc: 'Near neutral, hydrophobic, chemically inert',
+            kaolin: 'Slightly acidic, inert',
+            barite: 'Inert and acid insoluble',
+          },
+        },
+        'primary-function': {
+          aspect: 'What it is chosen for',
+          values: {
+            caco3: 'Cost, stiffness, opacity and acid solubility',
+            talc: 'Stiffness and barrier from the plate shape',
+            kaolin: 'Brightness, opacity and rheology at fine size',
+            barite: 'Mass, sound damping and radiation shielding',
+          },
+        },
+      },
+      provenanceNote:
+        'One column is a product and three are minerals. The calcium carbonate values are the published KMIT specification, stated with the test method on the grade pages. The talc, kaolin and barite entries are general properties of those minerals, not measurements of a KMIT product, because KMIT does not supply them and no test data exists here for them. Specify against a supplier certificate, not against this column.',
+      choosingHeading: 'How the choice usually resolves',
+      choosingBody:
+        'Calcium carbonate is the default in most filled formulations because it is the cheapest way to add volume without introducing a property that has to be designed around, and because at Mohs 3.0 it is gentle on processing equipment. The cases where it loses are specific and identifiable, and all three come down to a property it does not have. It has no plate shape, so it cannot deliver a barrier or the stiffness a plate gives at low loading. It has no exceptional brightness at fine particle size relative to kaolin, which is why paper coating went the other way. And it has ordinary density, which is exactly what a formulation wanting mass does not want. Where none of those three is the requirement, the argument for the alternatives is usually an argument about habit.',
+      talcHeading: 'When talc is the better answer',
+      talcBody:
+        'When the requirement is stiffness at a loading low enough that a coarser equiaxed filler would not reach it, or a barrier against moisture or gas transmission. The plate shape delivers both by forcing a longer path through the material, and no particle size of calcium carbonate reproduces it. Talc is also the softer mineral, at Mohs 1, which matters where equipment wear is the binding constraint.',
+      kaolinHeading: 'When kaolin is the better answer',
+      kaolinBody:
+        'When brightness and opacity are wanted at a very fine particle size, particularly in paper coating and in some coatings, where its plate shape also contributes gloss and rheology behaviour that an equiaxed particle does not. Its slightly acidic surface makes it a better fit than calcium carbonate in systems that cannot tolerate alkalinity, which is the more decisive difference in practice.',
+      bariteHeading: 'When barite is the better answer',
+      bariteBody:
+        'When the formulation wants mass. At a relative density of about 4.5 against roughly 2.7, barite adds weight, sound damping and radiation attenuation that calcium carbonate cannot approach. In drilling it is a weighting agent, which is a different job from bridging: barite raises mud density and is acid insoluble, while calcium carbonate seals a permeable face and dissolves on cleanup. Specifying one for the other is a common and expensive confusion.',
+    },
+  },
+
+  knowledge: enKnowledge,
+  knowledgeFaqs: enKnowledgeFaqs,
+
+  polymers: {
+    ldpe: 'LDPE, low-density polyethylene',
+    hdpe: 'HDPE, high-density polyethylene',
+    pp: 'PP, polypropylene',
+    'rigid-pvc': 'Rigid PVC',
+    'flexible-pvc': 'Flexible PVC',
+  },
+
+  calculator: {
+    title: 'Filler Loading Calculator | Cost per Litre',
+    description:
+      'Work out what a calcium carbonate loading actually saves, per tonne and per litre of finished part, using your own resin and filler costs.',
+    h1: 'Filler loading calculator',
+    navLabel: 'Filler loading calculator',
+    cardSummary:
+      'What a filler loading saves once density is accounted for, calculated on your costs rather than on an indicative price.',
+    answerFirst:
+      'Enter your resin cost, your filler cost and a target loading, and this works out the compound cost and the density that results. It reports the saving twice: per tonne, which is how filler is bought, and per litre, which is how parts are sold. The second number is smaller, often much smaller, and it is the one worth taking to a costing meeting.',
+    volumeHeading: 'Why the per-litre answer is the one that counts',
+    volumeBody:
+      'Filler is bought and dosed by weight. Parts are sold by volume: a pipe of a given length and wall, a film of a given area and gauge, a moulding of a given size. Calcium carbonate is roughly three times denser than polyethylene, so every tonne of filled compound occupies less space than a tonne of unfilled resin, and some of the apparent saving is spent buying weight rather than parts. At a 30% loading in LDPE the arithmetic gives about a quarter off the cost per tonne and closer to a fifteenth off the cost per litre, and the gap widens as loading rises. Both numbers are true. Only the second one reaches the accounts.',
+    inputsHeading: 'Your figures',
+    labelApplication: 'What are you making',
+    labelPolymer: 'Polymer',
+    labelDensity: 'Polymer density',
+    labelLoading: 'Filler loading, by weight',
+    labelPolymerCost: 'Resin cost per tonne',
+    labelFillerCost: 'Filler cost per tonne, delivered',
+    hintDensity:
+      'Prefilled with a nominal value for the polymer. Use the figure from your own grade datasheet if you have it.',
+    hintLoading: 'As a percentage of total compound weight.',
+    hintCost:
+      'In whatever currency you work in. Both costs use the same one, and the results come back in it.',
+    resultsHeading: 'What that gives you',
+    resultCompoundDensity: 'Compound density',
+    resultCompoundCost: 'Compound cost',
+    resultSavingPerTonne: 'Saving per tonne',
+    resultSavingByWeight: 'Saving by weight',
+    resultCostPerLitreBefore: 'Unfilled cost per litre',
+    resultCostPerLitreAfter: 'Compound cost per litre',
+    resultSavingPerLitre: 'Saving per litre',
+    resultSavingByVolume: 'Saving by volume',
+    resultRetention: 'Share of the weight saving that survives',
+    unitPerTonne: 'per tonne',
+    unitPerLitre: 'per litre',
+    unitDensity: 'g/cm³',
+    retentionWarning:
+      'Less than half of the apparent saving survives the change from weight to volume at this loading. The per-litre figure is the one to quote internally.',
+    noSaving:
+      'At these costs the filler is not cheaper than the resin it displaces, so the loading adds cost rather than removing it. Filler can still be the right choice for stiffness, opacity or thermal behaviour, but not on this arithmetic.',
+    gradeHeading: 'Which grade this points to',
+    gradeIntro:
+      'Taken from the grade specification for the application you selected, not from the loading. Particle size is decided by the process, not by the economics.',
+    gradeNone: 'No grade in the published range is specified for that application.',
+    assumptionsHeading: 'What this assumes',
+    assumptionsBody:
+      'That the filler disperses fully, that the compound follows simple volume additivity, and that no other formulation change is needed to carry the loading. Real compounds need the coating, the lubricant package and sometimes an impact modifier adjusted, and at high loadings the line rate can move too. Treat the output as the ceiling on what the substitution can return, not as a forecast.',
+    noPriceNote:
+      'No price is used here and none is published. Both costs are the ones you entered, the calculation runs in your browser, and nothing is sent anywhere. A filler price quoted by the party selling the filler is not a useful input to your costing.',
   },
 
   rfqForm: {

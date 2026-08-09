@@ -30,6 +30,8 @@ export const SITE_NAV: NavItem[] = [
 export const FOOTER_LINKS: FooterLink[] = [
   { key: 'products', href: '/products' },
   { key: 'applications', href: '/applications' },
+  { key: 'solutions', href: '/solutions' },
+  { key: 'knowledge', href: '/knowledge' },
   { key: 'guides', href: '/guides' },
   { key: 'facility', href: '/sustainability-and-facility' },
   { key: 'resources', href: '/resources' },

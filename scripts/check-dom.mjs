@@ -31,26 +31,46 @@
 import process from 'node:process';
 import { parse } from 'node-html-parser';
 
-const ORIGIN = process.argv[2] ?? 'http://localhost:3000';
+import { sitemapUrls } from './sitemap-paths.mjs';
 
-const PATHS = [
-  '',
-  '/products',
-  '/products/gcc-1250',
-  '/applications',
-  '/applications/plastics-masterbatch',
-  '/guides',
-  '/guides/grade-selection',
-  '/guides/coated-vs-uncoated',
-  '/guides/gcc-vs-pcc',
-  '/sustainability-and-facility',
-  '/resources',
-  '/contact',
-  '/rfq',
-];
+const ORIGIN = process.argv[2] ?? 'http://localhost:3000';
 
 const LOCALES = ['ar', 'en'];
 const EXPECTED_HREFLANG = ['ar-SA', 'en', 'x-default'];
+
+/**
+ * Routes come from the sitemap rather than from a list kept here.
+ *
+ * They used to be a literal array, and it fell four routes behind within one
+ * phase and twenty behind within two: pages shipped, were linked, were indexed
+ * by the sitemap, and were never checked for a canonical, an hreflang cluster
+ * or a stray dash, because nobody remembered a second list. Reading the sitemap
+ * makes the coverage of this gate a consequence of shipping a page rather than
+ * a thing to remember, and `check:crawl` independently proves the sitemap is
+ * complete, so the two gates hold each other up.
+ *
+ * Paths are locale-stripped here and re-prefixed per locale below, so an
+ * hreflang cluster is still verified from both sides rather than only from
+ * whichever side the sitemap happened to list.
+ */
+async function pathsFromSitemap() {
+  const paths = new Set();
+
+  for (const url of await sitemapUrls(ORIGIN, 'check:dom')) {
+    const { pathname } = new URL(url);
+    const stripped = pathname.replace(new RegExp(`^/(${LOCALES.join('|')})`), '');
+    paths.add(stripped === '/' ? '' : stripped);
+  }
+
+  return [...paths].sort();
+}
+
+const PATHS = await pathsFromSitemap();
+
+if (PATHS.length === 0) {
+  console.error('check:dom failed: the sitemap yielded no routes to check.');
+  process.exit(1);
+}
 
 const BANNED_DASH = /[—–]/;
 

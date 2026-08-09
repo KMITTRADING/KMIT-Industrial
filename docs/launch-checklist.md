@@ -86,8 +86,20 @@ while appearing to work.
       rather than by an HTML file, so it survives a redeploy
 - [ ] Bing Webmaster Tools property created; it can import the Search Console
       verification
-- [ ] `https://<domain>/sitemap.xml` submitted in both. It carries 42 URLs with
-      hreflang alternates.
+- [ ] `https://<domain>/sitemap.xml` submitted in both. It is a **sitemap index**
+      over six section files, carrying 78 URLs in total with hreflang
+      alternates. Submit the six section files individually as well as the
+      index, so Search Console reports index coverage per page family. See
+      `docs/pseo-monitoring.md` §1.
+- [ ] **Verify the sitemap index actually serves on the live origin**, which has
+      not been checked on real hosting. `/sitemap.xml` and each
+      `/sitemap/<section>.xml` must return 200 with a
+      `content-type: application/xml`. They are Next route handlers rather than
+      the framework's metadata convention, and the build emits them as static
+      files, so the risk is low; but the egress proxy in the build environment
+      blocks the deploy preview, so this could not be confirmed before launch
+      and is confirmed here instead. A sitemap index that 404s takes every URL
+      on the site out of the submitted set at once.
 - [ ] `robots.txt` checked on the live origin: it must allow all and disallow
       only `/ar/styleguide` and `/en/styleguide`
 - [ ] `llms.txt` checked on the live origin

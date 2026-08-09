@@ -71,6 +71,12 @@ export const ROUTE_NAMESPACES = {
    * from the styleguide and its cost lands only there.
    */
   'components/sections/GradeMatrix': ['sections', 'applications', 'coatingAgents'],
+  /**
+   * src/components/sections/FillerLoadingCalculator.tsx, rendered only by
+   * /tools/filler-loading. `applications` comes along because the selector
+   * names the process, and `polymers` because it names the resin.
+   */
+  'components/sections/FillerLoadingCalculator': ['calculator', 'applications', 'polymers'],
   /** src/components/styleguide/*, rendered only by /styleguide. */
   'components/styleguide': [
     'styleguide',

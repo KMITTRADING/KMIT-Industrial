@@ -17,9 +17,14 @@ import type { Metadata } from 'next';
 /**
  * Guides index.
  *
- * Three cards and nothing else. The index of a three-item set does not need a
- * filter, a search box or a hero: it needs to name each guide and say what it
- * settles, so the reader picks one and leaves.
+ * Cards and nothing else. The index of a five-item set does not need a filter,
+ * a search box or a hero: it needs to name each guide and say what it settles,
+ * so the reader picks one and leaves.
+ *
+ * The calculator sits at the end of the same list rather than in a section of
+ * its own. It answers a question from the same cluster, and giving it its own
+ * heading would make an interactive page look like a different kind of thing
+ * to the reader who wants the answer rather than the tool.
  */
 
 export async function generateMetadata({
@@ -52,13 +57,13 @@ export default async function GuidesPage({ params }: { params: Promise<{ locale:
       locale={typedLocale}
       crumbs={[{ name: t('nav.guides') }]}
       jsonLd={[
-        itemListJsonLd(
-          typedLocale,
-          GUIDE_IDS.map((guide) => ({
+        itemListJsonLd(typedLocale, [
+          ...GUIDE_IDS.map((guide) => ({
             name: t(`guides.${guide}.navLabel`),
             path: `/guides/${guide}`,
           })),
-        ),
+          { name: t('calculator.navLabel'), path: '/tools/filler-loading' },
+        ]),
       ]}
     >
       <div className="pt-8">
@@ -90,6 +95,24 @@ export default async function GuidesPage({ params }: { params: Promise<{ locale:
             </Link>
           </li>
         ))}
+
+        <li className="flex">
+          <Link
+            href="/tools/filler-loading"
+            className="group flex flex-1 flex-col justify-between rounded-md border border-border-subtle bg-surface-page p-6 transition-[border-color] duration-[var(--duration-fast)] ease-[var(--ease-standard)] hover:border-ink-accent"
+          >
+            <div className="flex flex-col gap-3">
+              <h2 className="text-lg font-semibold text-balance text-ink-primary">
+                {t('calculator.navLabel')}
+              </h2>
+              <p className="text-sm text-ink-secondary">{t('calculator.cardSummary')}</p>
+            </div>
+            <p className="mt-6 flex items-center gap-2 text-sm font-medium text-ink-accent">
+              {t('pages.guidesReadGuide')}
+              <ArrowInlineEndIcon className="size-4 transition-transform duration-[var(--duration-fast)] ease-[var(--ease-standard)] group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" />
+            </p>
+          </Link>
+        </li>
       </ul>
 
       <RfqTeaser className="mt-section" />

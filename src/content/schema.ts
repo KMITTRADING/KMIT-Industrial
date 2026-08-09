@@ -113,7 +113,125 @@ export const GRADE_CODES = ['GCC-200', 'GCC-400', 'GCC-800', 'GCC-1250', 'GCC-25
  * these three pages are where those questions get answered. Slugs are written
  * as the comparison itself, because that is the query.
  */
-export const GUIDE_IDS = ['grade-selection', 'coated-vs-uncoated', 'gcc-vs-pcc'] as const;
+export const GUIDE_IDS = [
+  'grade-selection',
+  'coated-vs-uncoated',
+  'gcc-vs-pcc',
+  'local-vs-imported',
+  'caco3-vs-alternative-fillers',
+] as const;
+
+/**
+ * Rows of the local versus imported comparison.
+ *
+ * Structural only. Lead time is the fact a buyer most wants here and
+ * docs/technical-data.md §8 does not have it, so the guide compares the shape
+ * of the two supply routes, which is true independent of the figures, and says
+ * plainly that the number is not published rather than reaching for one.
+ */
+export const SUPPLY_COMPARISON_IDS = [
+  'transit',
+  'order-cycle',
+  'currency',
+  'quality-recourse',
+  'documentation',
+  'working-capital',
+] as const;
+
+/**
+ * The mineral fillers a formulator weighs calcium carbonate against.
+ *
+ * Talc, kaolin and barite are not products KMIT supplies and no KMIT test data
+ * exists for them. The guide is explicit that the calcium carbonate column is a
+ * published specification and the other three are generic mineral properties,
+ * because presenting them in one table without that distinction would imply a
+ * test result that was never produced.
+ */
+export const FILLER_IDS = ['caco3', 'talc', 'kaolin', 'barite'] as const;
+
+export const FILLER_COMPARISON_IDS = [
+  'particle-shape',
+  'hardness',
+  'density',
+  'brightness',
+  'chemistry',
+  'primary-function',
+] as const;
+
+/**
+ * Polymers the filler loading calculator offers as a starting point.
+ *
+ * Each carries a nominal density, which is a published property of the polymer
+ * rather than anything KMIT measured, and the field is editable for that
+ * reason: a formulator with a grade-specific figure should use theirs. See
+ * `POLYMERS` in src/content/data/polymers.ts.
+ */
+export const POLYMER_IDS = ['ldpe', 'hdpe', 'pp', 'rigid-pvc', 'flexible-pvc'] as const;
+
+/**
+ * The technical knowledge hub.
+ *
+ * Four of the topics the phase brief names, not the twelve it asks for.
+ * docs/pseo-inventory.md §4 records which and why: the four here each explain a
+ * number that is already published on the grade pages, so each has a data table
+ * behind it and none is an article about a subject in general. The rest are
+ * held, and the two that overlap `/guides/coated-vs-uncoated` are held
+ * permanently, because a second page on the same primary intent is
+ * self-cannibalisation rather than coverage.
+ *
+ * Slugs are written as the question, since that is what gets typed.
+ */
+export const ARTICLE_IDS = [
+  'reading-a-particle-size-distribution',
+  'what-whiteness-r457-measures',
+  'oil-absorption-in-a-formulation',
+  'moisture-and-shelf-life',
+] as const;
+
+export type ArticleId = (typeof ARTICLE_IDS)[number];
+
+/**
+ * Which existing table an article renders.
+ *
+ * Articles reuse the real tables rather than carrying their own numbers. An
+ * article about what D50 governs that restated the grade figures would be a
+ * second copy of the specification, free to drift; pointing at the same
+ * component the grade pages use means it cannot.
+ */
+export const ARTICLE_TABLE_IDS = ['grades', 'properties'] as const;
+
+export type ArticleTableId = (typeof ARTICLE_TABLE_IDS)[number];
+
+export type PolymerId = (typeof POLYMER_IDS)[number];
+
+export type SupplyComparisonId = (typeof SUPPLY_COMPARISON_IDS)[number];
+export type FillerId = (typeof FILLER_IDS)[number];
+export type FillerComparisonId = (typeof FILLER_COMPARISON_IDS)[number];
+
+/**
+ * The grade x sector pages that survived the thin-content filter.
+ *
+ * Nine of twenty-five. This list is written out rather than computed because
+ * `contentSchema` needs a static tuple to build a required key per page, and
+ * because a URL that appears and disappears as a dataset is edited is a
+ * liability. It is not, however, the authority: `src/content/data/solutions.ts`
+ * derives the same set from `GRADES` and `APPLICATION_SECTOR` and asserts the
+ * two agree at import time, so this tuple cannot drift from the specification
+ * it claims to describe.
+ *
+ * The rejected sixteen, each with its reason, are in docs/pseo-inventory.md.
+ */
+export const SOLUTION_IDS = [
+  'gcc-200-for-paints-coatings-construction',
+  'gcc-200-for-oil-gas-drilling',
+  'gcc-400-for-paints-coatings-construction',
+  'gcc-400-for-rubber-elastomers',
+  'gcc-800-for-plastics-masterbatch',
+  'gcc-800-for-paints-coatings-construction',
+  'gcc-1250-for-plastics-masterbatch',
+  'gcc-2500-for-plastics-masterbatch',
+  'gcc-2500-for-paints-coatings-construction',
+] as const;
 
 /**
  * Images that carry alt text from the content tree rather than from the page.
@@ -157,6 +275,7 @@ export type ContactChannelId = (typeof CONTACT_CHANNEL_IDS)[number];
 export type GradeCodeId = (typeof GRADE_CODES)[number];
 export type GuideId = (typeof GUIDE_IDS)[number];
 export type ImageId = (typeof IMAGE_IDS)[number];
+export type SolutionId = (typeof SOLUTION_IDS)[number];
 
 /**
  * Which §4 sector each §3 application rolls up into. Used to link a grade to
@@ -317,6 +436,19 @@ const comparisonRowSchema = z.object({
 
 export type ComparisonRow = z.infer<typeof comparisonRowSchema>;
 
+/**
+ * A body block on a programmatic page.
+ *
+ * Floored deliberately. docs/pseo-inventory.md commits to shipping a grade x
+ * sector page only where 250+ words of non-substitutable technical content
+ * exist, and a rule that lives only in a document is a rule until the first
+ * hurried edit. Five blocks at this floor, plus the answer-first paragraph and
+ * the FAQ set, put every solution page comfortably past the bar before anyone
+ * counts. `scripts/check-pseo.mjs` counts the rendered words as well, because
+ * this only bounds what was written, not what reaches the reader.
+ */
+const bodyParagraph = z.string().trim().min(200).max(1400);
+
 /** Fields every guide carries, whatever its body looks like. */
 const guideChromeSchema = {
   title: titleString,
@@ -357,6 +489,10 @@ export const contentSchema = z.object({
     /** The sustainability-and-facility route. */
     facility: nonEmpty,
     /** The three decision and comparison guides. */
+    /** The grade x sector hub. Footer only; the header is capped at five. */
+    solutions: nonEmpty,
+    /** The technical article hub. Footer only, for the same reason. */
+    knowledge: nonEmpty,
     guides: nonEmpty,
     resources: nonEmpty,
     contact: nonEmpty,
@@ -432,6 +568,16 @@ export const contentSchema = z.object({
 
   /** The same, for a sector: process behaviour rather than specification. */
   sectorFaqs: mapOf(SECTOR_IDS, faqSetSchema),
+
+  /**
+   * The same again, for one grade in one sector.
+   *
+   * These are the narrowest questions on the site and the reason the pages
+   * clear the thin-content bar: "can I run GCC-800 through a 2 mm pipe die"
+   * has an answer that neither the grade page nor the sector page can give,
+   * because each knows only half of it.
+   */
+  solutionFaqs: mapOf(SOLUTION_IDS, faqSetSchema),
 
   /**
    * Section-level copy for the domain components. Each block is what a real
@@ -627,6 +773,39 @@ export const contentSchema = z.object({
     homePackagingHeading: nonEmpty,
     homeCtaTds: nonEmpty,
 
+    knowledgeTitle: titleString,
+    knowledgeDescription: descriptionString,
+    knowledgeH1: nonEmpty,
+    knowledgeAnswerFirst: answerFirstString,
+    knowledgeRead: nonEmpty,
+    /** Says how many articles are published and why not more. */
+    knowledgeCoverage: nonEmpty,
+    articleFaqHeading: nonEmpty,
+    articleRelatedHeading: nonEmpty,
+
+    solutionsTitle: titleString,
+    solutionsDescription: descriptionString,
+    solutionsH1: nonEmpty,
+    solutionsAnswerFirst: answerFirstString,
+    /** Explains to a reader why nine pages exist and not twenty-five. */
+    solutionsCoverageHeading: nonEmpty,
+    solutionsCoverageBody: nonEmpty,
+    solutionsGroupLabel: nonEmpty,
+    solutionsReadMore: nonEmpty,
+
+    solutionProblemHeading: nonEmpty,
+    solutionSizingHeading: nonEmpty,
+    solutionLoadingHeading: nonEmpty,
+    solutionProcessingHeading: nonEmpty,
+    solutionVersusHeading: nonEmpty,
+    solutionSpecHeading: nonEmpty,
+    solutionSpecIntro: nonEmpty,
+    solutionFaqHeading: nonEmpty,
+    /** Links back to the two pages this one sits between. */
+    solutionContextHeading: nonEmpty,
+    solutionContextGrade: nonEmpty,
+    solutionContextSector: nonEmpty,
+
     guidesTitle: titleString,
     guidesDescription: descriptionString,
     guidesH1: nonEmpty,
@@ -639,6 +818,46 @@ export const contentSchema = z.object({
     errorRetry: nonEmpty,
     loadingLabel: nonEmpty,
   }),
+
+  /* ------------------------------------------------------------ solutions */
+
+  /**
+   * The grade x sector pages.
+   *
+   * Five body blocks, in the order a formulator reads them: what goes wrong,
+   * why this particle size is the answer, what governs how much of it you can
+   * use, what to watch on the line, and what the neighbouring grade would do
+   * instead. Every block is written per combination. Nothing here is a
+   * template with the grade code substituted in, which is the whole argument
+   * for these pages existing.
+   *
+   * `loading` deserves a note. The brief asks for loading guidance and
+   * docs/technical-data.md has no loading levels, so these blocks describe what
+   * sets the ceiling rather than where it sits: oil absorption, binder demand,
+   * torque. That is real guidance derived from §2 data and it is not a number
+   * anybody can act on wrongly. See docs/pseo-inventory.md.
+   */
+  solutions: mapOf(
+    SOLUTION_IDS,
+    z.object({
+      title: titleString,
+      description: descriptionString,
+      h1: nonEmpty,
+      answerFirst: answerFirstString,
+      /** One sentence on the hub card, stating what this page settles. */
+      cardSummary: nonEmpty,
+      /** The formulation problem this combination exists to solve. */
+      problem: bodyParagraph,
+      /** Why this D50 band, specifically, is the one that fits. */
+      sizing: bodyParagraph,
+      /** What governs the loading ceiling. Not a phr figure. */
+      loading: bodyParagraph,
+      /** What to watch on the line, and the failure mode if you do not. */
+      processing: bodyParagraph,
+      /** What the adjacent grade would do in the same process. */
+      versus: bodyParagraph,
+    }),
+  ),
 
   /* --------------------------------------------------------------- guides */
 
@@ -714,6 +933,186 @@ export const contentSchema = z.object({
       supplyHeading: nonEmpty,
       supplyBody: nonEmpty,
     }),
+
+    /**
+     * In-Kingdom supply against imported material.
+     *
+     * The one guide on the site whose subject is commercial rather than
+     * technical, and the one most at risk of becoming a sales page. It is
+     * written as a comparison of two supply structures, with a section stating
+     * what the argument cannot settle, because the decisive number is a lead
+     * time nobody has supplied yet.
+     */
+    'local-vs-imported': z.object({
+      ...guideChromeSchema,
+      shapeHeading: nonEmpty,
+      shapeBody: bodyParagraph,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnAspect: nonEmpty,
+      columnImported: nonEmpty,
+      columnLocal: nonEmpty,
+      rows: mapOf(SUPPLY_COMPARISON_IDS, comparisonRowSchema),
+      importedFitHeading: nonEmpty,
+      importedFitBody: bodyParagraph,
+      localFitHeading: nonEmpty,
+      localFitBody: bodyParagraph,
+      /** What this guide cannot answer, and what would let it. */
+      limitHeading: nonEmpty,
+      limitBody: nonEmpty,
+    }),
+
+    /**
+     * Calcium carbonate against the other mineral fillers.
+     *
+     * Four columns, and only one of them is a KMIT product. `provenanceNote` is
+     * required rather than optional for that reason: the table has to say which
+     * column is a published specification and which three are textbook mineral
+     * properties, on the page, next to the numbers.
+     */
+    'caco3-vs-alternative-fillers': z.object({
+      ...guideChromeSchema,
+      roleHeading: nonEmpty,
+      roleBody: bodyParagraph,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnAspect: nonEmpty,
+      /** Column head per mineral. */
+      minerals: labelMap(FILLER_IDS),
+      /** Row label, then one cell per mineral. */
+      rows: mapOf(
+        FILLER_COMPARISON_IDS,
+        z.object({ aspect: nonEmpty, values: labelMap(FILLER_IDS) }),
+      ),
+      provenanceNote: nonEmpty,
+      choosingHeading: nonEmpty,
+      choosingBody: bodyParagraph,
+      /** Where each of the other three is the better answer. */
+      talcHeading: nonEmpty,
+      talcBody: nonEmpty,
+      kaolinHeading: nonEmpty,
+      kaolinBody: nonEmpty,
+      bariteHeading: nonEmpty,
+      bariteBody: nonEmpty,
+    }),
+  }),
+
+  polymers: labelMap(POLYMER_IDS),
+
+  /* --------------------------------------------------------- knowledge */
+
+  /**
+   * The technical articles.
+   *
+   * Four keyed sections rather than an array, because `keyPaths` treats an
+   * array as a leaf and `check:i18n` would stop diffing inside it: an Arabic
+   * article that quietly lost a section would pass the gate.
+   *
+   * Each article names the table it renders and the grades it bears on, so the
+   * internal links are derived rather than written into prose where they would
+   * rot the first time a grade code changed.
+   */
+  knowledge: mapOf(
+    ARTICLE_IDS,
+    z.object({
+      title: titleString,
+      description: descriptionString,
+      h1: nonEmpty,
+      answerFirst: answerFirstString,
+      cardSummary: nonEmpty,
+      s1Heading: nonEmpty,
+      s1Body: bodyParagraph,
+      s2Heading: nonEmpty,
+      s2Body: bodyParagraph,
+      s3Heading: nonEmpty,
+      s3Body: bodyParagraph,
+      s4Heading: nonEmpty,
+      s4Body: bodyParagraph,
+      tableHeading: nonEmpty,
+      tableIntro: nonEmpty,
+    }),
+  ),
+
+  /**
+   * Article FAQs.
+   *
+   * Three to five, against six to ten elsewhere. An article has already
+   * answered the main question in its body, so the FAQ is for the follow-ups
+   * rather than for the subject, and padding it to six would mean asking
+   * questions the article did not raise.
+   */
+  knowledgeFaqs: mapOf(
+    ARTICLE_IDS,
+    z
+      .record(z.string(), faqEntrySchema)
+      .refine((set) => Object.keys(set).length >= 3 && Object.keys(set).length <= 5, {
+        message: 'An article FAQ carries between 3 and 5 questions',
+      }),
+  ),
+
+  /* -------------------------------------------------------- calculator */
+
+  /**
+   * The filler loading calculator.
+   *
+   * Ungated and indexable on purpose. It computes only on numbers the reader
+   * enters, because no price exists anywhere in this repository to compute
+   * with, and it is more useful that way: a formulator trusts arithmetic done
+   * on their own costs and does not trust an indicative saving quoted by the
+   * party selling the filler.
+   */
+  calculator: z.object({
+    title: titleString,
+    description: descriptionString,
+    h1: nonEmpty,
+    answerFirst: answerFirstString,
+    navLabel: nonEmpty,
+    cardSummary: nonEmpty,
+
+    /** Why the per-volume answer is the one that matters. */
+    volumeHeading: nonEmpty,
+    volumeBody: bodyParagraph,
+
+    inputsHeading: nonEmpty,
+    labelApplication: nonEmpty,
+    labelPolymer: nonEmpty,
+    labelDensity: nonEmpty,
+    labelLoading: nonEmpty,
+    labelPolymerCost: nonEmpty,
+    labelFillerCost: nonEmpty,
+    hintDensity: nonEmpty,
+    hintLoading: nonEmpty,
+    hintCost: nonEmpty,
+
+    resultsHeading: nonEmpty,
+    resultCompoundDensity: nonEmpty,
+    resultCompoundCost: nonEmpty,
+    resultSavingPerTonne: nonEmpty,
+    resultSavingByWeight: nonEmpty,
+    resultCostPerLitreBefore: nonEmpty,
+    resultCostPerLitreAfter: nonEmpty,
+    resultSavingPerLitre: nonEmpty,
+    resultSavingByVolume: nonEmpty,
+    resultRetention: nonEmpty,
+
+    /** Units, written once so the interface cannot disagree with itself. */
+    unitPerTonne: nonEmpty,
+    unitPerLitre: nonEmpty,
+    unitDensity: nonEmpty,
+
+    /** Shown when the volume saving is far below the weight saving. */
+    retentionWarning: nonEmpty,
+    /** Shown when the filler costs at least as much as the polymer. */
+    noSaving: nonEmpty,
+
+    gradeHeading: nonEmpty,
+    gradeIntro: nonEmpty,
+    gradeNone: nonEmpty,
+
+    assumptionsHeading: nonEmpty,
+    assumptionsBody: nonEmpty,
+    /** Says plainly that no price is published and none is used. */
+    noPriceNote: nonEmpty,
   }),
 
   /* ---------------------------------------------------------- rfq form */

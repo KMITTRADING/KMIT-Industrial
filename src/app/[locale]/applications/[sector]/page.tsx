@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowInlineEndIcon, Badge, SectionHeader } from '@/components/primitives';
 import { APPLICATION_SECTOR, SECTOR_IDS } from '@/content/schema';
 import { GRADES, gradeSlug } from '@/content/data/grades';
+import { SOLUTIONS } from '@/content/data/solutions';
 import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { FaqList, RfqTeaser } from '@/components/sections';
@@ -78,6 +79,8 @@ export default async function SectorPage({
       grade.applications.filter((application) => APPLICATION_SECTOR[application] === sector),
     )
     .filter((application, index, all) => all.indexOf(application) === index);
+
+  const sectorSolutions = SOLUTIONS.filter((solution) => solution.sector === sector);
 
   return (
     <PageShell
@@ -164,6 +167,35 @@ export default async function SectorPage({
         ) : (
           <p className="mt-8 text-sm text-ink-muted">{t('sections.certificatePending')}</p>
         )}
+
+        {/*
+          Into the matrix from the sector side. The cards above answer which
+          grades; these answer what happens when one of them is actually run.
+          That is the next question, and holding all of it here would make this
+          page a concatenation of the solution pages rather than a sector page.
+        */}
+        {sectorSolutions.length > 0 ? (
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {sectorSolutions.map((solution) => (
+              <li key={solution.id}>
+                <Link
+                  href={`/solutions/${solution.id}`}
+                  className="group flex h-full flex-col gap-2 rounded-md border border-border-subtle p-5 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-standard)] hover:border-ink-accent"
+                >
+                  <span
+                    dir="ltr"
+                    className="text-start text-sm font-medium text-ink-accent tabular-nums"
+                  >
+                    {solution.grade.code}
+                  </span>
+                  <span className="text-xs text-ink-secondary">
+                    {getContent(typedLocale).solutions[solution.id].cardSummary}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
         <p className="mt-8">
           <Link

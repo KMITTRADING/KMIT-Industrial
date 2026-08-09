@@ -26,6 +26,8 @@
 import process from 'node:process';
 import { parse } from 'node-html-parser';
 
+import { pathOf, sitemapUrls } from './sitemap-paths.mjs';
+
 const ORIGIN = process.argv[2] ?? 'http://localhost:3000';
 const MAX_DEPTH = 3;
 
@@ -54,25 +56,8 @@ function normalise(href, base = ORIGIN) {
 
 /* ------------------------------------------------------ read the sitemap */
 
-const sitemapResponse = await fetch(`${ORIGIN}/sitemap.xml`);
-if (!sitemapResponse.ok) {
-  console.error(`check:crawl failed: /sitemap.xml returned ${sitemapResponse.status}`);
-  process.exit(1);
-}
-const sitemapXml = await sitemapResponse.text();
-/** Path only, so a configured origin does not have to match the served one. */
-function pathOf(href) {
-  try {
-    return new URL(href).pathname.replace(/\/$/, '') || '/';
-  } catch {
-    return undefined;
-  }
-}
-
 const sitemapPaths = new Set(
-  [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-    .map((match) => pathOf(match[1]))
-    .filter(Boolean),
+  (await sitemapUrls(ORIGIN, 'check:crawl')).map(pathOf).filter(Boolean),
 );
 
 /* -------------------------------------------------------------- the crawl */

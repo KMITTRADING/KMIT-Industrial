@@ -1,5 +1,7 @@
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { GUIDE_IDS, SECTOR_IDS } from '@/content/schema';
+import { ARTICLES } from '@/content/data/knowledge';
+import { SOLUTIONS } from '@/content/data/solutions';
 
 /**
  * Every indexable path on the site, locale-neutral.
@@ -16,10 +18,32 @@ import { GUIDE_IDS, SECTOR_IDS } from '@/content/schema';
 
 export type RoutePriority = 1.0 | 0.9 | 0.8 | 0.7 | 0.6;
 
+/**
+ * Which sitemap a route belongs to.
+ *
+ * The site has 62 URLs, so splitting is not about the 50,000-URL limit. It is
+ * about diagnosis: Search Console reports index coverage per submitted sitemap,
+ * and with one file the only available answer to "are the nine solution pages
+ * being indexed" is a number covering the whole site. With a file per section
+ * the question is answerable, which is what makes the 90-day de-indexing policy
+ * in docs/pseo-monitoring.md something anybody can actually act on.
+ */
+export const SITEMAP_SECTIONS = [
+  'core',
+  'products',
+  'applications',
+  'solutions',
+  'guides',
+  'knowledge',
+] as const;
+
+export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
+
 export type SiteRoute = {
   /** Path without the locale segment. Empty string is the home page. */
   path: string;
   priority: RoutePriority;
+  section: SitemapSection;
 };
 
 /**
@@ -28,24 +52,59 @@ export type SiteRoute = {
  * specification query should land on and the ones carrying `Product` markup.
  */
 export const SITE_ROUTES: SiteRoute[] = [
-  { path: '', priority: 1.0 },
-  { path: '/products', priority: 0.9 },
+  { path: '', priority: 1.0, section: 'core' },
+  { path: '/products', priority: 0.9, section: 'products' },
   ...GRADES.map((grade) => ({
     path: `/products/${gradeSlug(grade.code)}`,
     priority: 0.9 as const,
+    section: 'products' as const,
   })),
-  { path: '/applications', priority: 0.8 },
+  { path: '/applications', priority: 0.8, section: 'applications' },
   ...SECTOR_IDS.map((sector) => ({
     path: `/applications/${sector}`,
     priority: 0.8 as const,
+    section: 'applications' as const,
   })),
-  { path: '/guides', priority: 0.7 },
-  ...GUIDE_IDS.map((guide) => ({ path: `/guides/${guide}`, priority: 0.8 as const })),
-  { path: '/sustainability-and-facility', priority: 0.7 },
-  { path: '/resources', priority: 0.7 },
-  { path: '/contact', priority: 0.6 },
-  { path: '/rfq', priority: 0.9 },
+  /*
+    The solution pages rank below the grade pages and above the sector index.
+    They are the most specific commercial documents on the site, and a crawler
+    with a finite budget should reach them before the informational layer.
+  */
+  { path: '/solutions', priority: 0.8, section: 'solutions' },
+  ...SOLUTIONS.map((solution) => ({
+    path: `/solutions/${solution.id}`,
+    priority: 0.8 as const,
+    section: 'solutions' as const,
+  })),
+  /*
+    The calculator sits in the guides sitemap rather than in core. It is an
+    informational asset in the same cluster as the guides, and grouping it with
+    them keeps the index-coverage question in docs/pseo-monitoring.md answerable
+    for the whole informational layer at once.
+  */
+  { path: '/tools/filler-loading', priority: 0.8, section: 'guides' },
+  { path: '/knowledge', priority: 0.7, section: 'knowledge' },
+  ...ARTICLES.map((article) => ({
+    path: `/knowledge/${article.id}`,
+    priority: 0.7 as const,
+    section: 'knowledge' as const,
+  })),
+  { path: '/guides', priority: 0.7, section: 'guides' },
+  ...GUIDE_IDS.map((guide) => ({
+    path: `/guides/${guide}`,
+    priority: 0.8 as const,
+    section: 'guides' as const,
+  })),
+  { path: '/sustainability-and-facility', priority: 0.7, section: 'core' },
+  { path: '/resources', priority: 0.7, section: 'core' },
+  { path: '/contact', priority: 0.6, section: 'core' },
+  { path: '/rfq', priority: 0.9, section: 'core' },
 ];
+
+/** Routes belonging to one sitemap section, in site order. */
+export function routesInSection(section: SitemapSection): SiteRoute[] {
+  return SITE_ROUTES.filter((route) => route.section === section);
+}
 
 /**
  * Paths that exist but must not be indexed.

@@ -299,6 +299,38 @@ export function itemListJsonLd(
  * Google requires the answer to be visible on the page, which is one more
  * reason `FaqList` renders open rather than behind an accordion.
  */
+/**
+ * `Article` for a knowledge-hub page.
+ *
+ * Deliberately spare. `datePublished` and `dateModified` are omitted rather
+ * than filled with a build timestamp: there is no CMS and no per-document
+ * revision history, so any date here would be a claim about editorial freshness
+ * that nothing behind it supports, and a wrong date on an `Article` is worse
+ * than an absent one because Google surfaces it.
+ *
+ * `author` and `publisher` both resolve to the organisation node rather than to
+ * a `Person`, which is the accurate answer: these are supplier technical
+ * documents, not bylined pieces, and inventing an author would be inventing a
+ * person.
+ */
+export function articleJsonLd(
+  locale: Locale,
+  article: { path: string; headline: string; description: string },
+): JsonLdNode {
+  return {
+    '@type': 'TechArticle',
+    '@id': `${absoluteUrl(`/${locale}${article.path}`)}#article`,
+    headline: article.headline,
+    description: article.description,
+    inLanguage: localeHtmlLang[locale],
+    url: absoluteUrl(`/${locale}${article.path}`),
+    mainEntityOfPage: absoluteUrl(`/${locale}${article.path}`),
+    author: { '@id': ORGANIZATION_ID },
+    publisher: { '@id': ORGANIZATION_ID },
+    isAccessibleForFree: true,
+  };
+}
+
 export function faqPageJsonLd(faqs: FaqSet): JsonLdNode {
   return {
     '@type': 'FAQPage',

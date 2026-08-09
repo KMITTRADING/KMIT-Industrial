@@ -12,6 +12,7 @@ import {
 } from '@/components/sections';
 import { GRADES, gradeSlug } from '@/content/data/grades';
 import { APPLICATION_SECTOR, PACKAGING_IDS } from '@/content/schema';
+import { SOLUTIONS } from '@/content/data/solutions';
 import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { formatInteger, formatRange } from '@/lib/utils';
@@ -96,6 +97,7 @@ export default async function GradePage({
   const sectors = [
     ...new Set(grade.applications.map((application) => APPLICATION_SECTOR[application])),
   ];
+  const gradeSolutions = SOLUTIONS.filter((solution) => solution.grade.code === grade.code);
 
   const coatingSentence = grade.coatingLevel
     ? t('grades.coatingWithLevel', {
@@ -263,6 +265,43 @@ export default async function GradePage({
           faqs={getContent(typedLocale).gradeFaqs[grade.code as GradeCodeId]}
         />
       </section>
+
+      {/*
+        The grade in each sector its specification claims.
+
+        This is the second entry point into the solution matrix, and the more
+        useful one: a reader on a grade page has already chosen the grade and is
+        asking whether it suits their process. Only combinations the dataset
+        supports appear, so this list can never point at a recommendation the
+        specification does not make.
+      */}
+      {gradeSolutions.length > 0 ? (
+        <section aria-labelledby="solutions-heading" className="mt-section">
+          <SectionHeader
+            id="solutions-heading"
+            title={t('pages.solutionContextSector')}
+            lede={t('pages.solutionsAnswerFirst')}
+          />
+
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {gradeSolutions.map((solution) => (
+              <li key={solution.id}>
+                <Link
+                  href={`/solutions/${solution.id}`}
+                  className="group flex h-full flex-col gap-2 rounded-md border border-border-subtle p-5 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-standard)] hover:border-ink-accent"
+                >
+                  <span className="text-sm font-medium text-ink-accent">
+                    {t(`sectors.${solution.sector}`)}
+                  </span>
+                  <span className="text-xs text-ink-secondary">
+                    {getContent(typedLocale).solutions[solution.id].cardSummary}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {/* -------------------------------------------------------- related */}
       {related.length > 0 ? (
