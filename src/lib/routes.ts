@@ -74,6 +74,13 @@ export const SITE_ROUTES: SiteRoute[] = [
     priority: 0.8 as const,
     section: 'solutions' as const,
   })),
+  /*
+    The calculator sits in the guides sitemap rather than in core. It is an
+    informational asset in the same cluster as the guides, and grouping it with
+    them keeps the index-coverage question in docs/pseo-monitoring.md answerable
+    for the whole informational layer at once.
+  */
+  { path: '/tools/filler-loading', priority: 0.8, section: 'guides' },
   { path: '/guides', priority: 0.7, section: 'guides' },
   ...GUIDE_IDS.map((guide) => ({
     path: `/guides/${guide}`,

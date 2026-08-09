@@ -158,6 +158,18 @@ export const FILLER_COMPARISON_IDS = [
   'primary-function',
 ] as const;
 
+/**
+ * Polymers the filler loading calculator offers as a starting point.
+ *
+ * Each carries a nominal density, which is a published property of the polymer
+ * rather than anything KMIT measured, and the field is editable for that
+ * reason: a formulator with a grade-specific figure should use theirs. See
+ * `POLYMERS` in src/content/data/polymers.ts.
+ */
+export const POLYMER_IDS = ['ldpe', 'hdpe', 'pp', 'rigid-pvc', 'flexible-pvc'] as const;
+
+export type PolymerId = (typeof POLYMER_IDS)[number];
+
 export type SupplyComparisonId = (typeof SUPPLY_COMPARISON_IDS)[number];
 export type FillerId = (typeof FILLER_IDS)[number];
 export type FillerComparisonId = (typeof FILLER_COMPARISON_IDS)[number];
@@ -937,6 +949,73 @@ export const contentSchema = z.object({
       bariteHeading: nonEmpty,
       bariteBody: nonEmpty,
     }),
+  }),
+
+  polymers: labelMap(POLYMER_IDS),
+
+  /* -------------------------------------------------------- calculator */
+
+  /**
+   * The filler loading calculator.
+   *
+   * Ungated and indexable on purpose. It computes only on numbers the reader
+   * enters, because no price exists anywhere in this repository to compute
+   * with, and it is more useful that way: a formulator trusts arithmetic done
+   * on their own costs and does not trust an indicative saving quoted by the
+   * party selling the filler.
+   */
+  calculator: z.object({
+    title: titleString,
+    description: descriptionString,
+    h1: nonEmpty,
+    answerFirst: answerFirstString,
+    navLabel: nonEmpty,
+    cardSummary: nonEmpty,
+
+    /** Why the per-volume answer is the one that matters. */
+    volumeHeading: nonEmpty,
+    volumeBody: bodyParagraph,
+
+    inputsHeading: nonEmpty,
+    labelApplication: nonEmpty,
+    labelPolymer: nonEmpty,
+    labelDensity: nonEmpty,
+    labelLoading: nonEmpty,
+    labelPolymerCost: nonEmpty,
+    labelFillerCost: nonEmpty,
+    hintDensity: nonEmpty,
+    hintLoading: nonEmpty,
+    hintCost: nonEmpty,
+
+    resultsHeading: nonEmpty,
+    resultCompoundDensity: nonEmpty,
+    resultCompoundCost: nonEmpty,
+    resultSavingPerTonne: nonEmpty,
+    resultSavingByWeight: nonEmpty,
+    resultCostPerLitreBefore: nonEmpty,
+    resultCostPerLitreAfter: nonEmpty,
+    resultSavingPerLitre: nonEmpty,
+    resultSavingByVolume: nonEmpty,
+    resultRetention: nonEmpty,
+
+    /** Units, written once so the interface cannot disagree with itself. */
+    unitPerTonne: nonEmpty,
+    unitPerLitre: nonEmpty,
+    unitDensity: nonEmpty,
+
+    /** Shown when the volume saving is far below the weight saving. */
+    retentionWarning: nonEmpty,
+    /** Shown when the filler costs at least as much as the polymer. */
+    noSaving: nonEmpty,
+
+    gradeHeading: nonEmpty,
+    gradeIntro: nonEmpty,
+    gradeNone: nonEmpty,
+
+    assumptionsHeading: nonEmpty,
+    assumptionsBody: nonEmpty,
+    /** Says plainly that no price is published and none is used. */
+    noPriceNote: nonEmpty,
   }),
 
   /* ---------------------------------------------------------- rfq form */

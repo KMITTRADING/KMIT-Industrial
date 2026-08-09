@@ -1264,6 +1264,67 @@ export const en = {
     },
   },
 
+  polymers: {
+    ldpe: 'LDPE, low-density polyethylene',
+    hdpe: 'HDPE, high-density polyethylene',
+    pp: 'PP, polypropylene',
+    'rigid-pvc': 'Rigid PVC',
+    'flexible-pvc': 'Flexible PVC',
+  },
+
+  calculator: {
+    title: 'Filler Loading Calculator | Cost per Litre',
+    description:
+      'Work out what a calcium carbonate loading actually saves, per tonne and per litre of finished part, using your own resin and filler costs.',
+    h1: 'Filler loading calculator',
+    navLabel: 'Filler loading calculator',
+    cardSummary:
+      'What a filler loading saves once density is accounted for, calculated on your costs rather than on an indicative price.',
+    answerFirst:
+      'Enter your resin cost, your filler cost and a target loading, and this works out the compound cost and the density that results. It reports the saving twice: per tonne, which is how filler is bought, and per litre, which is how parts are sold. The second number is smaller, often much smaller, and it is the one worth taking to a costing meeting.',
+    volumeHeading: 'Why the per-litre answer is the one that counts',
+    volumeBody:
+      'Filler is bought and dosed by weight. Parts are sold by volume: a pipe of a given length and wall, a film of a given area and gauge, a moulding of a given size. Calcium carbonate is roughly three times denser than polyethylene, so every tonne of filled compound occupies less space than a tonne of unfilled resin, and some of the apparent saving is spent buying weight rather than parts. At a 30% loading in LDPE the arithmetic gives about a quarter off the cost per tonne and closer to a fifteenth off the cost per litre, and the gap widens as loading rises. Both numbers are true. Only the second one reaches the accounts.',
+    inputsHeading: 'Your figures',
+    labelApplication: 'What are you making',
+    labelPolymer: 'Polymer',
+    labelDensity: 'Polymer density',
+    labelLoading: 'Filler loading, by weight',
+    labelPolymerCost: 'Resin cost per tonne',
+    labelFillerCost: 'Filler cost per tonne, delivered',
+    hintDensity:
+      'Prefilled with a nominal value for the polymer. Use the figure from your own grade datasheet if you have it.',
+    hintLoading: 'As a percentage of total compound weight.',
+    hintCost:
+      'In whatever currency you work in. Both costs use the same one, and the results come back in it.',
+    resultsHeading: 'What that gives you',
+    resultCompoundDensity: 'Compound density',
+    resultCompoundCost: 'Compound cost',
+    resultSavingPerTonne: 'Saving per tonne',
+    resultSavingByWeight: 'Saving by weight',
+    resultCostPerLitreBefore: 'Unfilled cost per litre',
+    resultCostPerLitreAfter: 'Compound cost per litre',
+    resultSavingPerLitre: 'Saving per litre',
+    resultSavingByVolume: 'Saving by volume',
+    resultRetention: 'Share of the weight saving that survives',
+    unitPerTonne: 'per tonne',
+    unitPerLitre: 'per litre',
+    unitDensity: 'g/cm³',
+    retentionWarning:
+      'Less than half of the apparent saving survives the change from weight to volume at this loading. The per-litre figure is the one to quote internally.',
+    noSaving:
+      'At these costs the filler is not cheaper than the resin it displaces, so the loading adds cost rather than removing it. Filler can still be the right choice for stiffness, opacity or thermal behaviour, but not on this arithmetic.',
+    gradeHeading: 'Which grade this points to',
+    gradeIntro:
+      'Taken from the grade specification for the application you selected, not from the loading. Particle size is decided by the process, not by the economics.',
+    gradeNone: 'No grade in the published range is specified for that application.',
+    assumptionsHeading: 'What this assumes',
+    assumptionsBody:
+      'That the filler disperses fully, that the compound follows simple volume additivity, and that no other formulation change is needed to carry the loading. Real compounds need the coating, the lubricant package and sometimes an impact modifier adjusted, and at high loadings the line rate can move too. Treat the output as the ceiling on what the substitution can return, not as a forecast.',
+    noPriceNote:
+      'No price is used here and none is published. Both costs are the ones you entered, the calculation runs in your browser, and nothing is sent anywhere. A filler price quoted by the party selling the filler is not a useful input to your costing.',
+  },
+
   rfqForm: {
     sectionRequirement: 'What you need',
     sectionDelivery: 'Where it goes',
