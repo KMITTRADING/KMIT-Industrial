@@ -228,11 +228,11 @@ noindex headers and a redirect hop.
 
 ## 6. What runs in CI
 
-| Job                                | Contents                                                                                                                                                                                                                       |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `lint · typecheck · gates · build` | lint, typecheck, locale parity, direction, copy, client message scope, unit tests, formatting, build, then the runtime gates against a real server: static a11y audit, `check:dom`, `check:crawl`, `check:schema`, `check:rtl` |
-| `axe · flows`                      | Playwright, Chromium, full axe suite plus the functional flows; traces uploaded on failure                                                                                                                                     |
-| `performance budget`               | `check:budget`                                                                                                                                                                                                                 |
+| Job                                | Contents                                                                                                                                                                                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lint · typecheck · gates · build` | lint, typecheck, locale parity, direction, copy, client message scope, unit tests, formatting, build, then the runtime gates against a real server: static a11y audit, `check:dom`, `check:crawl`, `check:schema`, `check:rtl`, `check:pseo` |
+| `axe · flows`                      | Playwright, Chromium, full axe suite plus the functional flows; traces uploaded on failure                                                                                                                                                   |
+| `performance budget`               | `check:budget`                                                                                                                                                                                                                               |
 
 The budget gate asserts a ceiling on shipped bytes rather than on a Lighthouse
 score. On a shared runner the Performance number swings ten points between

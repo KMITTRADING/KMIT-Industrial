@@ -731,3 +731,98 @@ deterministic, so a failure always means somebody added weight.
 
 The Lighthouse numbers are still measured and still reported, in
 `docs/qa-report.md`. They are evidence, not a gate.
+
+## ADR-043: The grade x sector matrix is derived, not chosen
+
+**Phase 7.** A programmatic page set needs a rule for what exists, and a rule
+applied by hand is an opinion applied repeatedly.
+
+`src/content/data/solutions.ts` publishes a page for a grade and a sector if and
+only if the grade's own `applications` list contains an application that
+`APPLICATION_SECTOR` maps to that sector. Twenty-five candidates, nine
+survivors. The derived set is asserted against the declared `SOLUTION_IDS` at
+import time, so the two cannot drift.
+
+This is the no-invented-data rule from CLAUDE.md §2 applied to page generation.
+`docs/technical-data.md` §3 states which industries each grade targets, so a
+page headed "GCC-1250 for drilling fluids" would be this repository deciding
+that, not KMIT. The matrix cannot express a recommendation the specification
+does not already make, and an application added to the dataset brings its page
+with it.
+
+## ADR-044: The thin-content rule is a gate, not a document
+
+**Phase 7.** `docs/pseo-inventory.md` commits to 250+ words of
+non-substitutable content per programmatic page. A rule that lives only in a
+document is a rule until the first hurried edit.
+
+`scripts/check-pseo.mjs` measures it on served HTML: a word floor per page per
+locale, a hub-linking check so no page is an orphan, and a pairwise
+sentence-overlap ceiling that fails a page assembled from a template. The
+overlap check is the one that matters, because the word count only proxies for
+substitutability. Measured at first run: 833 to 990 words per Arabic page, 1122
+to 1258 per English page, no pair sharing more than the ceiling.
+
+`bodyParagraph` in the schema floors each block at 200 characters, so a thin
+edit fails at build time before it reaches the runtime gate.
+
+## ADR-045: check:dom reads the sitemap instead of a list
+
+**Phase 7.** The route list in `scripts/check-dom.mjs` was a literal array. It
+fell four routes behind in one phase and twenty behind in two: pages shipped,
+were linked, were indexed by the sitemap, and were never checked for a
+canonical, an hreflang cluster or a stray dash, because nobody remembered the
+second list.
+
+It now derives its routes from the sitemap, taking coverage from 26 to 78
+routes. `check:crawl` independently proves the sitemap is complete, so the two
+gates hold each other up rather than sharing a single point of failure.
+
+## ADR-046: /sitemap.xml is an index over per-section files
+
+**Phase 7.** The site has 78 URLs, nowhere near any limit, so the split is not
+about size. Search Console reports index coverage per submitted sitemap, and
+with one file the only answer to "are the nine solution pages being indexed" is
+a number covering the whole site.
+
+Six section files under `/sitemap/`, listed individually in `robots.txt` so each
+can be submitted separately. `lastmod` stays at build time on every entry:
+there is no CMS and no per-document revision history, so a per-route date would
+be invented, and a sitemap that overstates freshness teaches a crawler to ignore
+the field.
+
+## ADR-047: The calculator computes only on the reader's own numbers
+
+**Phase 7.** `/tools/filler-loading` needs two costs to say anything useful and
+this repository has no price data at all. Rather than invent an indicative
+filler price, both costs are entered by the reader and the arithmetic runs
+entirely in the browser.
+
+That is also the better product. A saving quoted by the party selling the filler
+is not a useful input to somebody's costing, and the two figures a formulator
+would type are commercially sensitive to them.
+
+The output that justifies publishing it is the per-volume figure. Filler is
+bought by weight and parts are sold by volume, and calcite is roughly three
+times denser than polyethylene, so a loading showing 25.2% off the cost per
+tonne shows 6.8% off the cost per litre at the default inputs. Compound density
+combines by specific volume rather than by averaging densities, and the calcite
+figure used is the mineral's 2.7 g/cm³, explicitly not the 0.7 to 1.3 g/cm³
+bulk density on the technical data sheet, which describes poured powder
+including air and would be wrong here by roughly a factor of three.
+
+## ADR-048: Two knowledge articles are held permanently, not deferred
+
+**Phase 7.** The brief names eight article topics. Four shipped. Two of the
+remainder are held permanently rather than queued, and the distinction is worth
+recording because it will look like underdelivery otherwise.
+
+Coating chemistry is already the whole subject of `/guides/coated-vs-uncoated`,
+and filler loading economics is answered better and interactively by
+`/tools/filler-loading`. A second page on either would target a primary intent
+that already has a page, which `docs/keyword-clusters.md` names as the most
+common cause of self-cannibalisation on a bilingual B2B site.
+
+Two more are held on phase capacity with nothing blocking them, and one needs
+the ISO certificate numbers from `docs/technical-data.md` §8. The honest number
+of articles this site should carry is seven, not twelve.
