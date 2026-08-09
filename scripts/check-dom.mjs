@@ -31,6 +31,8 @@
 import process from 'node:process';
 import { parse } from 'node-html-parser';
 
+import { sitemapUrls } from './sitemap-paths.mjs';
+
 const ORIGIN = process.argv[2] ?? 'http://localhost:3000';
 
 const LOCALES = ['ar', 'en'];
@@ -52,17 +54,10 @@ const EXPECTED_HREFLANG = ['ar-SA', 'en', 'x-default'];
  * whichever side the sitemap happened to list.
  */
 async function pathsFromSitemap() {
-  const response = await fetch(`${ORIGIN}/sitemap.xml`);
-  if (!response.ok) {
-    console.error(`check:dom failed: /sitemap.xml returned ${response.status}`);
-    process.exit(1);
-  }
-
-  const xml = await response.text();
   const paths = new Set();
 
-  for (const match of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
-    const { pathname } = new URL(match[1]);
+  for (const url of await sitemapUrls(ORIGIN, 'check:dom')) {
+    const { pathname } = new URL(url);
     const stripped = pathname.replace(new RegExp(`^/(${LOCALES.join('|')})`), '');
     paths.add(stripped === '/' ? '' : stripped);
   }
