@@ -1108,6 +1108,14 @@ export const contentSchema = z.object({
     gradeHeading: nonEmpty,
     gradeIntro: nonEmpty,
     gradeNone: nonEmpty,
+    /**
+     * The path out of the tool.
+     *
+     * Lives inside the calculator rather than in the page's `RfqTeaser`,
+     * because the grade and the application it carries are live client state
+     * and a server-rendered teaser cannot see them.
+     */
+    gradeRequestQuote: nonEmpty,
 
     assumptionsHeading: nonEmpty,
     assumptionsBody: nonEmpty,

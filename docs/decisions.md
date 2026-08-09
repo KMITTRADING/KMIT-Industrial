@@ -826,3 +826,34 @@ common cause of self-cannibalisation on a bilingual B2B site.
 Two more are held on phase capacity with nothing blocking them, and one needs
 the ISO certificate numbers from `docs/technical-data.md` §8. The honest number
 of articles this site should carry is seven, not twelve.
+
+## ADR-049: Phase 7 loaded two of its six mapped skills, and the calculator paid for it
+
+**Phase 7, recorded retrospectively.** `docs/skill-map.md` closes with a rule:
+Claude Code states which skills it loaded before each phase, and a skill used
+outside the phase's list needs a justification here. Phase 7 stated its
+selection in the transcript but the selection itself was short.
+
+Mapped to Phase 7: `programmatic-seo`, `competitors` / `competitor-profiling`,
+`lead-magnets` / `free-tools`, `content-strategy`, `ai-seo`,
+`full-output-enforcement`. **Loaded: the first two.** `schema` and `ai-seo` were
+genuinely already materialised in `src/lib/jsonld.ts` from Phase 5 and skipping
+them cost nothing. The other omissions were not reasoned, they were budget.
+
+The one that mattered is `free-tools`, which the skill map assigns to Phase 7
+naming **"the loading calculator"** specifically. Reviewing the shipped
+calculator against it afterwards scores 34 of 40 on its evaluation framework,
+strong on search demand, audience match, uniqueness and maintenance burden, and
+weak on exactly one axis: **natural path from tool to product, 3 of 5.**
+
+The finding was concrete. Every page on this site that holds a parameter passes
+it to the quotation request: grade pages pass the grade, sector pages the
+sector, solution pages both, the filtered product and resource indexes their
+filter. The calculator, which knows more about a reader's intent than any other
+page because they have just typed it in, passed nothing. Fixed here: the
+recommended grade panel now links to `/rfq` carrying both the grade and the
+application, from live client state, which is why it sits inside the calculator
+rather than in the page's server-rendered `RfqTeaser`.
+
+The process lesson is the durable part. Skipping a mapped skill is a decision
+and belongs in this file when it is made, not when an audit finds what it cost.
