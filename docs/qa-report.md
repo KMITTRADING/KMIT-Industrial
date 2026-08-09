@@ -211,6 +211,12 @@ been inspected, so the additional gap is not accounted for here. Check it agains
 the live origin after launch rather than against a preview, which also carries
 noindex headers and a redirect hop.
 
+Phase 7 re-measured on the preview and the numbers did not move: Performance 100,
+Accessibility 100, SEO 100, Best Practices 83, with twenty-six routes added to
+the site. The 83 is therefore a property of the policy rather than of anything a
+phase has added, which is what ADR-041 predicted and is the first evidence for
+it across two phases.
+
 ---
 
 ## 5. Known issues, ranked
