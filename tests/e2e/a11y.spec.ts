@@ -25,6 +25,8 @@ const PATHS = [
   '/guides/grade-selection',
   '/guides/coated-vs-uncoated',
   '/guides/gcc-vs-pcc',
+  '/guides/local-vs-imported',
+  '/guides/caco3-vs-alternative-fillers',
   '/sustainability-and-facility',
   '/resources',
   '/contact',

@@ -113,7 +113,54 @@ export const GRADE_CODES = ['GCC-200', 'GCC-400', 'GCC-800', 'GCC-1250', 'GCC-25
  * these three pages are where those questions get answered. Slugs are written
  * as the comparison itself, because that is the query.
  */
-export const GUIDE_IDS = ['grade-selection', 'coated-vs-uncoated', 'gcc-vs-pcc'] as const;
+export const GUIDE_IDS = [
+  'grade-selection',
+  'coated-vs-uncoated',
+  'gcc-vs-pcc',
+  'local-vs-imported',
+  'caco3-vs-alternative-fillers',
+] as const;
+
+/**
+ * Rows of the local versus imported comparison.
+ *
+ * Structural only. Lead time is the fact a buyer most wants here and
+ * docs/technical-data.md §8 does not have it, so the guide compares the shape
+ * of the two supply routes, which is true independent of the figures, and says
+ * plainly that the number is not published rather than reaching for one.
+ */
+export const SUPPLY_COMPARISON_IDS = [
+  'transit',
+  'order-cycle',
+  'currency',
+  'quality-recourse',
+  'documentation',
+  'working-capital',
+] as const;
+
+/**
+ * The mineral fillers a formulator weighs calcium carbonate against.
+ *
+ * Talc, kaolin and barite are not products KMIT supplies and no KMIT test data
+ * exists for them. The guide is explicit that the calcium carbonate column is a
+ * published specification and the other three are generic mineral properties,
+ * because presenting them in one table without that distinction would imply a
+ * test result that was never produced.
+ */
+export const FILLER_IDS = ['caco3', 'talc', 'kaolin', 'barite'] as const;
+
+export const FILLER_COMPARISON_IDS = [
+  'particle-shape',
+  'hardness',
+  'density',
+  'brightness',
+  'chemistry',
+  'primary-function',
+] as const;
+
+export type SupplyComparisonId = (typeof SUPPLY_COMPARISON_IDS)[number];
+export type FillerId = (typeof FILLER_IDS)[number];
+export type FillerComparisonId = (typeof FILLER_COMPARISON_IDS)[number];
 
 /**
  * The grade x sector pages that survived the thin-content filter.
@@ -827,6 +874,68 @@ export const contentSchema = z.object({
       fitBody: nonEmpty,
       supplyHeading: nonEmpty,
       supplyBody: nonEmpty,
+    }),
+
+    /**
+     * In-Kingdom supply against imported material.
+     *
+     * The one guide on the site whose subject is commercial rather than
+     * technical, and the one most at risk of becoming a sales page. It is
+     * written as a comparison of two supply structures, with a section stating
+     * what the argument cannot settle, because the decisive number is a lead
+     * time nobody has supplied yet.
+     */
+    'local-vs-imported': z.object({
+      ...guideChromeSchema,
+      shapeHeading: nonEmpty,
+      shapeBody: bodyParagraph,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnAspect: nonEmpty,
+      columnImported: nonEmpty,
+      columnLocal: nonEmpty,
+      rows: mapOf(SUPPLY_COMPARISON_IDS, comparisonRowSchema),
+      importedFitHeading: nonEmpty,
+      importedFitBody: bodyParagraph,
+      localFitHeading: nonEmpty,
+      localFitBody: bodyParagraph,
+      /** What this guide cannot answer, and what would let it. */
+      limitHeading: nonEmpty,
+      limitBody: nonEmpty,
+    }),
+
+    /**
+     * Calcium carbonate against the other mineral fillers.
+     *
+     * Four columns, and only one of them is a KMIT product. `provenanceNote` is
+     * required rather than optional for that reason: the table has to say which
+     * column is a published specification and which three are textbook mineral
+     * properties, on the page, next to the numbers.
+     */
+    'caco3-vs-alternative-fillers': z.object({
+      ...guideChromeSchema,
+      roleHeading: nonEmpty,
+      roleBody: bodyParagraph,
+      tableHeading: nonEmpty,
+      tableCaption: nonEmpty,
+      columnAspect: nonEmpty,
+      /** Column head per mineral. */
+      minerals: labelMap(FILLER_IDS),
+      /** Row label, then one cell per mineral. */
+      rows: mapOf(
+        FILLER_COMPARISON_IDS,
+        z.object({ aspect: nonEmpty, values: labelMap(FILLER_IDS) }),
+      ),
+      provenanceNote: nonEmpty,
+      choosingHeading: nonEmpty,
+      choosingBody: bodyParagraph,
+      /** Where each of the other three is the better answer. */
+      talcHeading: nonEmpty,
+      talcBody: nonEmpty,
+      kaolinHeading: nonEmpty,
+      kaolinBody: nonEmpty,
+      bariteHeading: nonEmpty,
+      bariteBody: nonEmpty,
     }),
   }),
 
