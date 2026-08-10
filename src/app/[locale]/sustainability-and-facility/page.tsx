@@ -11,7 +11,7 @@ import {
   RfqTeaser,
 } from '@/components/sections';
 import { PageShell } from '@/components/layout';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { ImageId } from '@/content/schema';
@@ -69,11 +69,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('facilityTitle'),
     description: t('facilityDescription'),
     alternates: localeAlternates(locale, '/sustainability-and-facility'),
-  };
+  });
 }
 
 export default async function FacilityPage({

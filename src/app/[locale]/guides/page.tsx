@@ -8,7 +8,7 @@ import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { RfqTeaser } from '@/components/sections';
 import { itemListJsonLd } from '@/lib/jsonld';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -37,11 +37,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('guidesTitle'),
     description: t('guidesDescription'),
     alternates: localeAlternates(locale, '/guides'),
-  };
+  });
 }
 
 export default async function GuidesPage({ params }: { params: Promise<{ locale: string }> }) {

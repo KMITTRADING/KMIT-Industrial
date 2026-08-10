@@ -8,7 +8,7 @@ import { DOCUMENT_IDS } from '@/content/schema';
 import { GRADES } from '@/content/data/grades';
 import { PageShell } from '@/components/layout';
 import { ResourceLibrary, RfqTeaser } from '@/components/sections';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { DocumentId } from '@/content/schema';
@@ -69,11 +69,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('resourcesTitle'),
     description: t('resourcesDescription'),
     alternates: localeAlternates(locale, '/resources'),
-  };
+  });
 }
 
 export default async function ResourcesPage({

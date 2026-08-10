@@ -9,7 +9,7 @@ import { PageShell } from '@/components/layout';
 import { RfqTeaser } from '@/components/sections';
 import { getContent } from '@/content';
 import { itemListJsonLd } from '@/lib/jsonld';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -39,11 +39,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('knowledgeTitle'),
     description: t('knowledgeDescription'),
     alternates: localeAlternates(locale, '/knowledge'),
-  };
+  });
 }
 
 export default async function KnowledgePage({

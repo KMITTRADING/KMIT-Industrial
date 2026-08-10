@@ -779,7 +779,7 @@ export const en = {
   },
 
   pages: {
-    productsTitle: 'Calcium Carbonate Grades | KMIT',
+    productsTitle: 'Calcium Carbonate Grades',
     productsDescription:
       'Five grades from 200 to 2500 mesh with median particle size, surface coating and applications, filterable and comparable.',
     productsH1: 'Grades and particle size',
@@ -817,7 +817,7 @@ export const en = {
     gradeRelatedCoarser: 'Coarser',
     gradeCoatingHeading: 'Surface coating',
 
-    applicationsTitle: 'Industrial Applications | KMIT',
+    applicationsTitle: 'Industrial Applications',
     applicationsDescription:
       'Five industrial sectors that use calcium carbonate, with the technical problem the filler solves and the recommended grades.',
     applicationsH1: 'Sectors served',
@@ -836,7 +836,7 @@ export const en = {
     sectorLoadingPending:
       'The technical data does not include recommended loading levels for this sector. The right level depends on the formulation and the line, and is settled with your team when a sample is requested.',
 
-    facilityTitle: 'Sustainability and Facility | KMIT',
+    facilityTitle: 'Sustainability and Facility',
     facilityDescription:
       'The route from feed to shipment, the quality control laboratory, and the health, safety and environmental posture.',
     facilityH1: 'From feed to shipment',
@@ -852,7 +852,7 @@ export const en = {
     facilityEnvironmentBody:
       'Environmental aspects are managed to ISO 14001. Calcium carbonate is a chemically inert mineral with a Mohs hardness of 3.0, and in papermaking it displaces virgin cellulose fibre.',
 
-    resourcesTitle: 'Technical Documents | KMIT',
+    resourcesTitle: 'Technical Documents',
     resourcesDescription:
       'Library of technical data sheets, safety data sheets and certificates of analysis, filterable by grade and document type.',
     resourcesH1: 'Document library',
@@ -866,14 +866,14 @@ export const en = {
     resourcesPendingNote:
       'The PDF files have not been supplied yet. Until they are, a requested document is emailed within one working day, and the full specification is published on each grade page and needs no request at all.',
 
-    rfqTitle: 'Request a Quote | KMIT',
+    rfqTitle: 'Request a Quote',
     rfqDescription:
       'State the grade, the tonnage, the application and the destination, and the quote comes back with the technical data attached.',
     rfqH1: 'Request a quote',
     rfqAnswerFirst:
       'The form is in three steps: what you need, where it goes, and who to reply to. You are not asked for a phone number before you know the destination is served, and you are not asked for detail you do not have yet. Optional fields are marked as optional, and any technical field can be answered with "not decided yet".',
 
-    contactTitle: 'Contact | KMIT',
+    contactTitle: 'Contact',
     contactDescription:
       'Technical and commercial enquiries for industrial calcium carbonate, from Jeddah to Saudi Arabia and the GCC.',
     contactH1: 'Contact',
@@ -900,7 +900,7 @@ export const en = {
     homePackagingHeading: 'Packaging and logistics',
     homeCtaTds: 'Request a data sheet',
 
-    knowledgeTitle: 'Technical Knowledge | Calcium Carbonate | KMIT',
+    knowledgeTitle: 'Technical Knowledge | Calcium Carbonate',
     knowledgeDescription:
       'Short technical articles explaining the numbers on the grade pages: particle size distribution, whiteness, oil absorption and shelf life.',
     knowledgeH1: 'Technical knowledge',
@@ -911,7 +911,7 @@ export const en = {
       'Four articles, each explaining a value that is already published with its test method. An article with no data behind it would be a piece about a subject rather than an answer, and there are enough of those in this industry already.',
     articleFaqHeading: 'Follow-up questions',
     articleRelatedHeading: 'Grades this bears on',
-    solutionsTitle: 'Grade and Application Matrix | KMIT',
+    solutionsTitle: 'Grade and Application Matrix',
     solutionsDescription:
       'Which calcium carbonate grade belongs in which process, with the particle-size reasoning, the processing caveat and the alternative for each.',
     solutionsH1: 'Which grade belongs in which process',
@@ -936,7 +936,7 @@ export const en = {
     solutionContextGrade: 'Full specification for this grade',
     solutionContextSector: 'All grades for this sector',
 
-    guidesTitle: 'Technical Guides | KMIT',
+    guidesTitle: 'Technical Guides',
     guidesDescription:
       'How to choose a calcium carbonate grade, when surface coating is worth the premium, and the difference between GCC and PCC.',
     guidesH1: 'Technical guides',
@@ -944,7 +944,7 @@ export const en = {
       'Three questions decide most calcium carbonate specifications: which grade the application needs, whether surface coating earns its premium, and whether the ground or the precipitated product is the right one. Each guide answers one of them with the published figures and the test methods behind them, and says plainly where the answer depends on a trial rather than on a table.',
     guidesReadGuide: 'Read the guide',
 
-    errorTitle: 'Something went wrong | KMIT',
+    errorTitle: 'Something went wrong',
     errorH1: 'Something went wrong',
     errorBody:
       'This part of the page could not be rendered. Try again, or start from the home page.',
@@ -1116,7 +1116,7 @@ export const en = {
     },
 
     'local-vs-imported': {
-      title: 'Local vs Imported Calcium Carbonate | KMIT',
+      title: 'Local vs Imported Calcium Carbonate',
       description:
         'The structural differences between an in-Kingdom source and an import: transit exposure, order cycle, currency, quality recourse and working capital.',
       h1: 'Buying calcium carbonate locally against importing it',
@@ -1433,7 +1433,7 @@ export const en = {
   },
 
   styleguide: {
-    title: 'Design system reference | KMIT',
+    title: 'Design system reference',
     description: 'Internal page presenting the design tokens and base components. Not indexed.',
     h1: 'Design system reference',
     intro:
@@ -1441,7 +1441,7 @@ export const en = {
   },
 
   notFound: {
-    title: 'Page not found | KMIT',
+    title: 'Page not found',
     h1: 'Page not found',
     body: 'The address you requested is not available. Check the URL, or start again from the home page.',
     backHome: 'Back to the home page',

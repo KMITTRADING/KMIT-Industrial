@@ -11,7 +11,7 @@ import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { RfqTeaser } from '@/components/sections';
 import { gradeSlug } from '@/content/data/grades';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 import { routeMessages } from '@/i18n/client-messages';
 
@@ -48,11 +48,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'calculator' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('title'),
     description: t('description'),
     alternates: localeAlternates(locale, '/tools/filler-loading'),
-  };
+  });
 }
 
 export default async function FillerLoadingPage({

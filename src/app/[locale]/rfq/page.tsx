@@ -9,7 +9,7 @@ import { DOCUMENT_IDS, SECTOR_IDS } from '@/content/schema';
 import { GRADES } from '@/content/data/grades';
 import { PageShell } from '@/components/layout';
 import { RfqForm } from '@/components/sections/RfqForm';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routeMessages } from '@/i18n/client-messages';
 import { routing } from '@/i18n/routing';
 
@@ -90,11 +90,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('rfqTitle'),
     description: t('rfqDescription'),
     alternates: localeAlternates(locale, '/rfq'),
-  };
+  });
 }
 
 export default async function RfqPage({

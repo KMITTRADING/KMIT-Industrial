@@ -12,7 +12,7 @@ import { FaqList, RfqTeaser } from '@/components/sections';
 import { formatInteger, formatRange } from '@/lib/utils';
 import { getContent } from '@/content';
 import { faqPageJsonLd, itemListJsonLd } from '@/lib/jsonld';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -51,11 +51,11 @@ export async function generateMetadata({
   const t = await getTranslations({ locale });
   const name = t(`sectors.${sector}`);
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('pages.sectorTitleTemplate', { sector: name }),
     description: t('pages.sectorDescriptionTemplate', { sector: name }),
     alternates: localeAlternates(locale, `/applications/${sector}`),
-  };
+  });
 }
 
 export default async function SectorPage({

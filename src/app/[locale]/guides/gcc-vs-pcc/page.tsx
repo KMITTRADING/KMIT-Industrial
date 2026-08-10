@@ -6,7 +6,7 @@ import { SectionHeader } from '@/components/primitives';
 import { ComparisonTable, RfqTeaser } from '@/components/sections';
 import { PageShell } from '@/components/layout';
 import { getContent } from '@/content';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -33,11 +33,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'guides.gcc-vs-pcc' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('title'),
     description: t('description'),
     alternates: localeAlternates(locale, '/guides/gcc-vs-pcc'),
-  };
+  });
 }
 
 export default async function GccVsPccGuide({

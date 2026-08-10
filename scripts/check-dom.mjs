@@ -148,6 +148,49 @@ for (const locale of LOCALES) {
       );
     }
 
+    /* ----------------------------------------------------------- title */
+
+    /*
+      The brand belongs in the title exactly once.
+
+      Page titles carried their own ` | KMIT` and the layout's title template
+      appended it again, so every route shipped `... | KMIT | KMIT`. It is the
+      kind of defect that survives indefinitely because each half looks correct
+      in isolation, and it is only visible in the rendered document.
+    */
+    const titleNode = root.querySelector('title');
+    const titleText = titleNode?.text ?? '';
+    if (!titleText.trim()) {
+      report(route, 'title', 'no title');
+    } else {
+      const brandCount = titleText.split('KMIT').length - 1;
+      if (brandCount > 1) {
+        report(route, 'title', `brand appears ${brandCount} times: "${titleText}"`);
+      }
+      if (brandCount === 0) {
+        report(route, 'title', `brand missing: "${titleText}"`);
+      }
+    }
+
+    /* ------------------------------------------------- open graph per page */
+
+    /*
+      `og:url` must be this page's canonical. Next merges metadata by top-level
+      key, so a page that set only title/description/alternates inherited the
+      layout's whole openGraph block and advertised the home page's URL.
+    */
+    const ogUrl = root
+      .querySelectorAll('meta[property="og:url"]')
+      .map((node) => node.getAttribute('content'));
+    if (ogUrl.length !== 1) {
+      report(route, 'og', `${ogUrl.length} og:url tags, expected 1`);
+    } else if (canonical && ogUrl[0] !== canonical) {
+      report(route, 'og', `og:url is ${ogUrl[0]}, canonical is ${canonical}`);
+    }
+
+    const ogTitle = root.querySelector('meta[property="og:title"]')?.getAttribute('content');
+    if (!ogTitle) report(route, 'og', 'no og:title');
+
     /* ------------------------------------------------------------ dash */
 
     const head = root.querySelector('head');

@@ -11,7 +11,7 @@ import { faqPageJsonLd } from '@/lib/jsonld';
 import { formatInteger, formatRange } from '@/lib/utils';
 import { getContent } from '@/content';
 import { gradeSlug } from '@/content/data/grades';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -56,11 +56,11 @@ export async function generateMetadata({
 
   const copy = getContent(locale).solutions[solution.id];
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: copy.title,
     description: copy.description,
     alternates: localeAlternates(locale, `/solutions/${solution.id}`),
-  };
+  });
 }
 
 export default async function SolutionPage({

@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { SectionHeader } from '@/components/primitives';
 import { ContactBlock, LogisticsMap, RfqTeaser } from '@/components/sections';
 import { PageShell } from '@/components/layout';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -34,11 +34,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('contactTitle'),
     description: t('contactDescription'),
     alternates: localeAlternates(locale, '/contact'),
-  };
+  });
 }
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
