@@ -896,3 +896,44 @@ sitemap fetched directly.
 the moment it is the production context. Setting `NEXT_PUBLIC_SITE_URL` to the
 real domain remains worthwhile once it is chosen, because it makes the address
 explicit rather than inherited, but it is no longer load-bearing.
+
+## ADR-051: `industrial-brutalist-ui` promoted to a secondary influence for the visual phases
+
+**Phase 9A.** `docs/skill-map.md` placed `industrial-brutalist-ui` under "use with
+caution", allowing at most one named structural idea, and ADR-011 recorded the
+one taken: the dense technical table as a first-class visual element.
+
+The Phase 9A brief promotes it to a real secondary influence for the visual
+phases, under `high-end-visual-design` which remains the primary authority.
+
+**Taken:** type-scale contrast (oversized figures against small technical
+labels), technical labelling with indices, the rigid grid, and analog
+degradation texture as a grain overlay.
+
+**Not taken:** raw or undesigned edges, and military-terminal colouring. The
+palette stays the single logo-derived accent plus the neutral ramp, and the new
+data accent is derived from it rather than borrowed from another system.
+
+**Why the promotion is safe.** `docs/skill-map.md` warns that competing
+aesthetic authorities produce a site assembled from three agencies, and that
+risk is real. It is contained here because the two skills are being used at
+different levels: `high-end-visual-design` governs surface, depth, spacing and
+shadow, and `industrial-brutalist-ui` contributes typographic contrast and
+texture within that. Where they disagree, the primary authority wins.
+
+## ADR-052: CLAUDE.md §6 rewritten around two failure modes
+
+**Phase 9A.** The original §6 was a list of things not to do, and it worked: the
+site has none of them. It also produced the opposite failure. Guardrails written
+only as prohibitions optimise for the absence of mistakes rather than the
+presence of quality, and the result was a build that is technically correct and
+visually inert.
+
+§6 now names both failure modes, generic and inert, states that inertness is the
+more common outcome of over-applying anti-generic rules, and sets a positive
+standard for material, depth, motion, photography and signature moments. The
+bans are retained in full and extended.
+
+The framing that matters, and the reason it is recorded here rather than only in
+the brief: **restraint is a budget, not a goal.** The rule was never to spend
+nothing.

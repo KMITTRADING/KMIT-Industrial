@@ -105,18 +105,28 @@ Tokens are generated in Phase 2 from `logo.svg` and recorded in `docs/brand-toke
 
 ---
 
-## 6. Anti-generic design guardrails
+## 6. Design guardrails
 
-Reject and rewrite any output containing:
+### Two failure modes, both defects
 
-- Purple/blue-violet gradient hero, glassmorphism cards, floating 3D blobs.
-- Centred hero: headline + subhead + two buttons + centred stat row.
-- Three identical feature cards with a lucide icon in a coloured circle.
-- Emoji as UI icons. Generic stock-photo "handshake / team meeting" imagery.
-- `shadow-2xl`, `rounded-3xl`, `bg-gradient-to-r from-X to-Y` as a default look.
-- Vague copy: "innovative solutions", "world-class quality", "your trusted partner", "حلول مبتكرة", "شريكك الموثوق".
+**A. Generic.** Purple/violet gradient hero. Glassmorphism everywhere. Floating 3D blobs. Centred hero of headline + subhead + two buttons + stat row. Three identical feature cards with a lucide icon in a coloured circle. Emoji as UI icons. Stock "handshake / team meeting" photography. `shadow-2xl` + `rounded-3xl` + `bg-gradient-to-r` as the default look. Copy like "innovative solutions", "world-class quality", "شريكك الموثوق".
 
-Aim instead for: **technical editorial**. Asymmetric grids, a visible baseline grid, dense spec tables as first-class visual elements, generous whitespace between sections, hairline rules, monospaced or tabular figures for data, photography of material and plant used large and duotone-treated toward the brand accent.
+**B. Inert.** Flat white or flat dark surfaces with no material. One accent used only on links and buttons. No depth, no texture, no temperature shift between sections. Imagery absent or decorative. Motion absent. Hover states limited to a colour change. Every section the same rhythm, the same width, the same weight. A page that could be printed with no loss.
+
+Failure mode B is the more common outcome of over-applying anti-generic rules, and it is what this build currently exhibits.
+
+### The standard
+
+The site should feel engineered, expensive, and physical — the way instrument-manufacturer and materials-science sites feel. Specifically:
+
+- **Material, not flat colour.** Surfaces carry a grain, a tint, a hairline, or a light direction. Never four sections of the same background.
+- **Depth through layering**, not drop shadows. Surface ramps, hairline borders, inner highlights, overlap, and z-order do the work. Shadows are used at most twice in the system, and are wide and near-transparent when used.
+- **Motion is part of the design, not a decoration on top.** Every section has a defined entrance. Every interactive element has a defined hover, focus, active, and disabled behaviour. Motion is fast, physical, and never blocks reading.
+- **Photography is structural.** Full-bleed, treated, and load-bearing — it establishes that this is a real plant with real material, which is the entire trust argument.
+- **Three to five signature moments** carry the impression of craft. The rest of the site is quiet so those moments land.
+
+### Still banned
+Everything in failure mode A. Plus: scroll-jacking, autoplaying video with sound, parallax on text, animation longer than 600ms, motion that must finish before content is readable, and any effect that costs more than 3 points of Lighthouse Performance.
 
 ---
 
