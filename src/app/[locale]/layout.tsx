@@ -54,28 +54,30 @@ export async function generateMetadata({
     // 404 in the console on every page load if nothing claims the slot.
     icons: { icon: [{ url: '/brand/icon.svg', type: 'image/svg+xml' }] },
     alternates: localeAlternates(locale),
+    /*
+      Site-wide Open Graph defaults only.
+
+      `title`, `description` and `url` are deliberately absent. Next merges
+      metadata by top-level key, so anything named here is inherited whole by
+      every page that does not set its own `openGraph`, which is exactly how
+      every subpage came to advertise the home page's title and URL. Per-page
+      values come from `pageMetadata()` in src/lib/seo.ts.
+    */
     openGraph: {
-      type: 'website',
       siteName: content.meta.siteName,
-      // Open Graph wants underscored BCP-47, not the hyphenated form used by
-      // `hreflang` and `<html lang>`. The alternate list is every other locale,
-      // which is what tells a share preview that a counterpart document exists.
       locale: localeHtmlLang[locale].replace('-', '_'),
       alternateLocale: locales
         .filter((candidate) => candidate !== locale)
         .map((candidate) => localeHtmlLang[candidate].replace('-', '_')),
-      url: `${env.siteUrl}/${locale}`,
-      title: content.meta.defaultTitle,
-      description: content.meta.defaultDescription,
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: content.meta.defaultTitle,
-      description: content.meta.defaultDescription,
-    },
+    twitter: { card: 'summary_large_image' },
+    /*
+      Indexable only on the production deploy. A preview host that says
+      `index, follow` is asking to be indexed, and it will be. See ADR-050.
+    */
     robots: {
-      index: true,
-      follow: true,
+      index: env.isIndexableDeploy,
+      follow: env.isIndexableDeploy,
     },
   };
 }

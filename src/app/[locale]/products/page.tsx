@@ -14,7 +14,7 @@ import { GRADES, gradeSlug } from '@/content/data/grades';
 import { PageShell } from '@/components/layout';
 import { SECTOR_IDS } from '@/content/schema';
 import { itemListJsonLd } from '@/lib/jsonld';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -90,11 +90,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('productsTitle'),
     description: t('productsDescription'),
     alternates: localeAlternates(locale, '/products'),
-  };
+  });
 }
 
 export default async function ProductsPage({

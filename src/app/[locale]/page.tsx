@@ -17,7 +17,7 @@ import { Link } from '@/i18n/navigation';
 import { PageShell } from '@/components/layout';
 import { SECTOR_IDS, SUPPLY_ARGUMENT_IDS } from '@/content/schema';
 import { formatInteger } from '@/lib/utils';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -49,11 +49,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'home' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('title'),
     description: t('description'),
     alternates: localeAlternates(locale),
-  };
+  });
 }
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {

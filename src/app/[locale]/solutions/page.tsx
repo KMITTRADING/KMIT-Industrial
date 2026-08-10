@@ -10,7 +10,7 @@ import { SOLUTIONS, solutionsBySector } from '@/content/data/solutions';
 import { formatInteger, formatRange } from '@/lib/utils';
 import { getContent } from '@/content';
 import { itemListJsonLd } from '@/lib/jsonld';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -44,11 +44,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'pages' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('solutionsTitle'),
     description: t('solutionsDescription'),
     alternates: localeAlternates(locale, '/solutions'),
-  };
+  });
 }
 
 export default async function SolutionsPage({

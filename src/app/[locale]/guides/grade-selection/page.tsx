@@ -7,7 +7,7 @@ import { APPLICATION_IDS } from '@/content/schema';
 import { SectionHeader, TableSkeleton } from '@/components/primitives';
 import { GradeSelector, ParticleSizeChart, RfqTeaser } from '@/components/sections';
 import { PageShell } from '@/components/layout';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { ApplicationId } from '@/content/schema';
@@ -59,11 +59,11 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: 'guides.grade-selection' });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('title'),
     description: t('description'),
     alternates: localeAlternates(locale, '/guides/grade-selection'),
-  };
+  });
 }
 
 export default async function GradeSelectionGuide({

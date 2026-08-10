@@ -18,7 +18,7 @@ import { PageShell } from '@/components/layout';
 import { formatInteger, formatRange } from '@/lib/utils';
 import { getContent } from '@/content';
 import { faqPageJsonLd, productJsonLd } from '@/lib/jsonld';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { locales, routing } from '@/i18n/routing';
 
 import type { GradeCodeId } from '@/content/schema';
@@ -64,15 +64,19 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'pages' });
   const d50 = formatRange(grade.d50Min, grade.d50Max);
 
-  return {
-    title: t('gradeTitleTemplate', { code: grade.code, mesh: grade.mesh }),
-    description: t('gradeDescriptionTemplate', {
-      code: grade.code,
-      mesh: grade.mesh,
-      d50,
-    }),
-    alternates: localeAlternates(locale, `/products/${gradeSlug(grade.code)}`),
-  };
+  return withOpenGraph(
+    locale as Locale,
+    {
+      title: t('gradeTitleTemplate', { code: grade.code, mesh: grade.mesh }),
+      description: t('gradeDescriptionTemplate', {
+        code: grade.code,
+        mesh: grade.mesh,
+        d50,
+      }),
+      alternates: localeAlternates(locale, `/products/${gradeSlug(grade.code)}`),
+    },
+    { ogType: 'product' },
+  );
 }
 
 export default async function GradePage({
@@ -123,6 +127,17 @@ export default async function GradePage({
         faqPageJsonLd(getContent(typedLocale).gradeFaqs[grade.code as GradeCodeId]),
       ]}
     >
+      {/*
+        og:type, rendered rather than declared.
+
+        Next's `openGraph.type` union has no `product`, and routing it through
+        `other` emits `<meta name="og:type">`, which Open Graph ignores: the
+        specification requires `property`. React hoists a `<meta>` rendered here
+        into the document head with the attribute intact, so this is the only
+        way to state the correct type without shipping a tag nothing reads.
+      */}
+      <meta property="og:type" content="product" />
+
       <header className="pt-8">
         <div className="flex flex-wrap items-center gap-3">
           <h1

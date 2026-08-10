@@ -18,7 +18,7 @@ import { FILLER_COMPARISON_IDS, FILLER_IDS } from '@/content/schema';
 import { PageShell } from '@/components/layout';
 import { RfqTeaser } from '@/components/sections';
 import { getContent } from '@/content';
-import { localeAlternates } from '@/lib/seo';
+import { localeAlternates, withOpenGraph } from '@/lib/seo';
 import { routing } from '@/i18n/routing';
 
 import type { Locale } from '@/i18n/routing';
@@ -55,11 +55,11 @@ export async function generateMetadata({
     namespace: 'guides.caco3-vs-alternative-fillers',
   });
 
-  return {
+  return withOpenGraph(locale as Locale, {
     title: t('title'),
     description: t('description'),
     alternates: localeAlternates(locale, '/guides/caco3-vs-alternative-fillers'),
-  };
+  });
 }
 
 export default async function FillerComparisonGuide({

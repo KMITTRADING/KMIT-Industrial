@@ -54,6 +54,9 @@ const nextConfig: NextConfig = {
    * for a number. See ADR-041.
    */
   async headers() {
+    const context = process.env.CONTEXT;
+    const isIndexableDeploy = context ? context === 'production' : true;
+
     const csp = [
       "default-src 'self'",
       "base-uri 'self'",
@@ -93,6 +96,19 @@ const nextConfig: NextConfig = {
           // anything older that ignores CSP.
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          /*
+            Close a non-production deploy to crawlers at the header level too.
+
+            `robots.txt` and the page-level robots metadata already say
+            noindex, and neither covers a response that is not an HTML page a
+            crawler parsed: a PDF, an OG image, a sitemap fetched directly. The
+            header does, and it is the one signal that applies to all of them.
+
+            Derived from CONTEXT rather than imported from src/lib/env.ts,
+            because next.config.ts is evaluated before the path aliases exist.
+            See ADR-050.
+          */
+          ...(isIndexableDeploy ? [] : [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }]),
         ],
       },
       {
