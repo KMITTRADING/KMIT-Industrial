@@ -857,3 +857,42 @@ rather than in the page's server-rendered `RfqTeaser`.
 
 The process lesson is the durable part. Skipping a mapped skill is a decision
 and belongs in this file when it is made, not when an audit finds what it cost.
+
+## ADR-050: The site URL resolves from the host, and non-production deploys are closed
+
+**Phase 8, from an external review of the deployment.** The review found every
+canonical, `og:url` and JSON-LD `@id` on the live site pointing at
+`http://localhost:3000`. `NEXT_PUBLIC_SITE_URL` was never set in the deploy
+environment and `src/lib/env.ts` carried
+`.default('http://localhost:3000')`, so the site built, deployed and served
+without an error while its entire bilingual structure was invisible.
+
+**Why the gates missed it.** `check:dom` asserts that the canonical origin is
+_consistent_ across routes, not that it is _correct_, and that was a deliberate
+choice: the canonical origin is meant to be independent of the host the page was
+fetched from, which is how a staging host serves production canonicals. A deploy
+where every route agreed on localhost satisfied it perfectly. The gate was not
+wrong, it was measuring the wrong property, and no gate that runs against a
+local server can measure the right one.
+
+**Three changes.** The base URL now falls back to the host's own variables,
+which Netlify injects on every build, so a correct value no longer depends on
+anybody remembering a dashboard field. A production build throws if the result
+is a localhost address. And the resolved value and its source are printed in the
+build log.
+
+`DEPLOY_PRIME_URL` is preferred outside the production context so a preview
+canonicalises to itself; a preview advertising production canonicals asks a
+crawler to index preview content under the production URL.
+
+**Non-production deploys are closed to crawlers** at three layers, because each
+covers what the others miss: `robots.txt` returns `Disallow: /`, the page
+metadata says `noindex, nofollow`, and an `X-Robots-Tag` header covers responses
+that are not HTML pages a crawler parsed, such as a PDF, an OG image or a
+sitemap fetched directly.
+
+**Removal condition.** None of this needs undoing. It keys on Netlify's
+`CONTEXT`, so the production deploy is already unaffected and becomes indexable
+the moment it is the production context. Setting `NEXT_PUBLIC_SITE_URL` to the
+real domain remains worthwhile once it is chosen, because it makes the address
+explicit rather than inherited, but it is no longer load-bearing.

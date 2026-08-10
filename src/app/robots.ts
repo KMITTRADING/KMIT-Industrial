@@ -1,5 +1,5 @@
 import { NOINDEX_PATHS, SITEMAP_SECTIONS } from '@/lib/routes';
-import { absoluteUrl } from '@/lib/env';
+import { absoluteUrl, env } from '@/lib/env';
 import { sectionSitemapUrl } from '@/lib/sitemap-xml';
 import { locales } from '@/i18n/routing';
 
@@ -20,6 +20,21 @@ export default function robots(): MetadataRoute.Robots {
   const disallow = locales.flatMap((locale) =>
     NOINDEX_PATHS.map((path) => `/${locale}${path}`),
   );
+
+  /*
+    A non-production deploy is closed to crawlers entirely.
+
+    Deploy previews and branch deploys serve the whole site on a netlify.app
+    address. Letting one be indexed creates a duplicate of every page under a
+    host that will be thrown away, and a migration problem on the day the real
+    domain goes live. See ADR-050 for the removal condition.
+  */
+  if (!env.isIndexableDeploy) {
+    return {
+      rules: [{ userAgent: '*', disallow: '/' }],
+      host: absoluteUrl('/'),
+    };
+  }
 
   return {
     rules: [{ userAgent: '*', allow: '/', disallow }],

@@ -73,9 +73,13 @@ export async function generateMetadata({
       title: content.meta.defaultTitle,
       description: content.meta.defaultDescription,
     },
+    /*
+      Indexable only on the production deploy. A preview host that says
+      `index, follow` is asking to be indexed, and it will be. See ADR-050.
+    */
     robots: {
-      index: true,
-      follow: true,
+      index: env.isIndexableDeploy,
+      follow: env.isIndexableDeploy,
     },
   };
 }
