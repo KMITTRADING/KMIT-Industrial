@@ -1,0 +1,95 @@
+/* =========================================================================
+   KMIT Industrial — design tokens (§5)
+   Two identity colours carry the whole site. Nothing here is decorative.
+   ========================================================================= */
+
+:root {
+  /* --- identity, locked, never edited ------------------------------------ */
+  --brand: #2b3073; /* corporate indigo, the logo colour */
+  --brand-mid: #3d55a4; /* light end of the identity gradient */
+
+  /* --- derived from the identity, no new hues --------------------------- */
+  --brand-deep: #1b1f4e; /* dark section grounds and the footer */
+  --brand-tint: #eef0f7; /* very light wash: bezels, hover surfaces */
+  --line: #d9dbe6; /* hairline border, grey pulled toward the brand */
+
+  --ink: #14173a; /* body text: near-black indigo, never neutral black */
+  --ink-soft: #4a4f73; /* secondary text, 7.51:1 on --paper */
+  --paper: #faf9f6; /* warm white, the body canvas */
+  --surface: #ffffff; /* raised surfaces */
+  --mineral: #e8e5de; /* warm stone grey: texture, dividers, image grounds */
+
+  /* on dark grounds: pure white, and white at .72 for secondary.
+     Grey text over indigo reads as washed out, so it is never used. */
+  --on-dark: #ffffff;
+  --on-dark-soft: rgba(255, 255, 255, 0.72);
+  --on-dark-line: rgba(255, 255, 255, 0.16);
+
+  /* --- the one gradient. 135deg always: parallel to the logo's diagonal.
+     Permitted on large dark grounds, the footer rule and the scroll bar.
+     Never on text, never inside a small card. ---------------------------- */
+  --grad-brand: linear-gradient(135deg, #2b3073 0%, #3d55a4 100%);
+
+  /* --- shadows: composite and indigo-tinted, never hard black (§5.5) ---- */
+  --shadow-1: 0 1px 2px rgba(20, 23, 58, 0.04), 0 2px 6px -2px rgba(43, 48, 115, 0.07);
+  --shadow-2: 0 2px 4px rgba(20, 23, 58, 0.04), 0 18px 40px -18px rgba(43, 48, 115, 0.22);
+
+  /* --- space: 4px base (§5.4) ------------------------------------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-24: 6rem;
+  --s-32: 8rem;
+  --s-44: 11rem;
+
+  /* section rhythm: chapters, not adjacent rows */
+  --section-y: clamp(6rem, 12vh, 11rem);
+
+  /* --- measure and gutters --------------------------------------------- */
+  --container: 1440px;
+  --content: 1180px;
+  --gutter: 1.5rem;
+
+  /* --- the 45deg chamfer, the geometric signature (§5.4.1) -------------- */
+  --chamfer: 20px;
+
+  /* --- motion (§11). No linear, no ease-in-out, no bounce, no elastic. -- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-micro: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-micro: 180ms;
+  --dur-standard: 480ms;
+  --dur-cinematic: 900ms;
+
+  /* --- z-index: systematic only, never 9999 (§12) ---------------------- */
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-modal: 40;
+  --z-toast: 50;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 3rem;
+  }
+}
+
+/* Arabic runs a taller line than Latin because of the dots and the madda.
+   Set once here, consumed by the type scale. */
+:root {
+  --lh-nudge: 0;
+  /* `transform-origin` and `background-position` accept no logical keyword, so
+     the few places that need a physical side read it from here instead of
+     hard-coding left/right (§6.2). */
+  --progress-origin: left;
+}
+:root:lang(ar),
+[dir='rtl'] {
+  --lh-nudge: 0.12;
+  --progress-origin: right;
+}
