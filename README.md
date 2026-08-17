@@ -40,7 +40,7 @@ rather than asserted in a comment.
 | Command | What it proves |
 |---|---|
 | `npm run typecheck` | No type errors. The Arabic dictionary is the shape of record and English is typed against it, so a key missing in either language fails the build. |
-| `npm run check:contrast` | All 21 text/ground pairs in the design system against WCAG 2.1 AA, computed from the token hex values. |
+| `npm run check:contrast` | All 25 text/ground pairs against WCAG 2.1 AA, computed from the token hex values — including the gradient-blended grounds that dark sections actually render, not just the raw tokens. |
 | `npm run check:copy` | Banned marketing vocabulary, Arabic punctuation (`،` `؛` `؟` `«»`), no em dash or kashida in Arabic, metadata length and uniqueness, and a sweep for fabricated figures. |
 | `npm run check:seo` | Audits the **built HTML**: one `<h1>` per page, no skipped heading levels, per-language canonicals, reciprocal `hreflang`, JSON-LD contents, `FAQPage` only where the Q&A is really rendered, no `<canvas>` before the `<h1>`, and body copy present in source. Run after `npm run build`. |
 | `npm run review` | Drives a real browser over all 11 routes at 390 / 834 / 1440 in both languages — the six mandatory states, 66 page states in total. Checks horizontal overflow, heading line counts, zero border-radius, Arabic typography, 44px touch targets, and that no layout property is transitioned. |
