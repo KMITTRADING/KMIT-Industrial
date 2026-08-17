@@ -647,7 +647,10 @@ select.field-control {
 }
 
 /* ------------------------------------------------------- text scrub (§11.3)
-   The intro paragraph's words start dim and reach full opacity with scroll. */
+   The intro paragraph's words start dim and reach full opacity with scroll.
+   The floor is set by script (never in CSS, so the text is readable without JS)
+   and is clamped to the lowest value that still clears WCAG AA — see the note in
+   IntroStrip.tsx. */
 .scrub-word {
   opacity: var(--scrub-floor, 1);
   transition: opacity 220ms var(--ease-out-expo);

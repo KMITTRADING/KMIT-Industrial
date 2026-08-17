@@ -14,7 +14,8 @@
     "check:seo": "node scripts/check-seo.mjs",
     "check": "npm run typecheck && npm run check:contrast && npm run check:copy",
     "review": "node scripts/review.mjs",
-    "review:3d": "node scripts/preview-3d.mjs"
+    "review:3d": "node scripts/preview-3d.mjs",
+    "check:a11y": "node scripts/check-a11y.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",
@@ -30,6 +31,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@types/three": "^0.185.4",
+    "axe-core": "^4.13.0",
     "playwright": "^1.62.1",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",

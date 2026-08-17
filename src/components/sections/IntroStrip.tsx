@@ -31,7 +31,16 @@ export function IntroStrip({ locale }: { locale: Locale }) {
     const spans = Array.from(el.querySelectorAll<HTMLElement>('.scrub-word'));
     if (spans.length === 0) return;
 
-    for (const span of spans) span.style.setProperty('--scrub-floor', '0.15');
+    /*
+     * §11.3 asks for the words to start at 0.15 opacity and scrub to 1. Measured
+     * with axe-core, --ink at 0.15 over --paper is 1.36:1 — a serious WCAG
+     * failure, and the paragraph sits at that floor until the visitor scrolls.
+     * §15's AA requirement and §17's "body text >= 4.5:1 in every section" both
+     * outrank the exact starting value, so the floor is the lowest opacity that
+     * still clears AA: 0.60 gives 4.54:1, and 0.62 is taken for margin (4.8:1).
+     * The scrub still reads clearly; it simply never becomes unreadable.
+     */
+    for (const span of spans) span.style.setProperty('--scrub-floor', '0.62');
 
     let cancelled = false;
     let trigger: { kill: () => void } | null = null;

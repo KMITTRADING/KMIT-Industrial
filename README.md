@@ -44,10 +44,11 @@ rather than asserted in a comment.
 | `npm run check:copy` | Banned marketing vocabulary, Arabic punctuation (`،` `؛` `؟` `«»`), no em dash or kashida in Arabic, metadata length and uniqueness, and a sweep for fabricated figures. |
 | `npm run check:seo` | Audits the **built HTML**: one `<h1>` per page, no skipped heading levels, per-language canonicals, reciprocal `hreflang`, JSON-LD contents, `FAQPage` only where the Q&A is really rendered, no `<canvas>` before the `<h1>`, and body copy present in source. Run after `npm run build`. |
 | `npm run review` | Drives a real browser over all 11 routes at 390 / 834 / 1440 in both languages — the six mandatory states, 66 page states in total. Checks horizontal overflow, heading line counts, zero border-radius, Arabic typography, 44px touch targets, and that no layout property is transitioned. |
+| `npm run check:a11y` | Runs **axe-core** — the engine Lighthouse's accessibility category is built on — over all 22 pages at WCAG 2.1 A/AA, reporting per rule, per element and per page. |
 | `npm run review:3d` | Renders with the capability gate forced open and captures the WebGL scenes. See below. |
 | `npm run check` | typecheck + contrast + copy. |
 
-`npm run review` and `npm run review:3d` need a running server; pass the base URL as
+`npm run review`, `npm run review:3d` and `npm run check:a11y` need a running server; pass the base URL as
 the first argument if it is not `http://localhost:3000`.
 
 ### Why `review:3d` exists
@@ -119,12 +120,13 @@ JavaScript at all.
 
 ## Deviations from the brief, and why
 
-Four, all deliberate. Everything else follows the brief as written.
+Five, all deliberate. Everything else follows the brief as written.
 
 | § | The brief says | What was built | Why |
 |---|---|---|---|
 | §5.3 / §8.1 / §17 | display-xl bottoms out at `2.75rem`; hero on two lines; never more than three lines at 390 / 834 / 1440 | The hero heading has its own size floor, and a lower ceiling in Arabic than in English | These three cannot all hold at once. Measured against the real font, the longest Arabic line needs 15.3× the font size and the longest English line 11.46× — the ~33% Arabic expansion §6.6 warns about. Against the 1084px content measure that caps Arabic at 70px and English at 94px. English keeps the §5.3 scale untouched; only Arabic takes the lower cap. Below 768px no display size holds 26 Arabic characters on one line, so it wraps to three there, which §17 permits. The display scale itself is unchanged for every other use. |
 | §10 | The fallback for a scene is a high-quality WebP exported from it | The hero fallback is vector (CSS + SVG); the sector and process stills are vector too | A raster would be a second LCP candidate competing with the heading, it would soften on a 3× display at the size these occupy, and a flat still cannot show the one idea the hero exists to show — text splitting behind a crystal. The vector fallback clips two offset copies of the *real* heading, so the effect survives with no WebGL and no JS. It also cannot 404 and costs no request. |
+| §11.3 | The intro paragraph's words start at `opacity: 0.15` and scrub to 1 | The floor is `0.62` | Measured with axe-core, `--ink` at 0.15 over `--paper` is **1.36:1** — a serious WCAG failure, and the paragraph sits at that floor until the visitor scrolls. §15's AA requirement and §17's "body text ≥ 4.5:1 in every section" both outrank the exact starting value. 0.60 is the lowest opacity that clears AA (4.54:1); 0.62 is taken for margin (4.8:1). The scrub still reads clearly, it simply never becomes unreadable. |
 | §11 | Motion only on `transform`, `opacity`, `clip-path`, `filter` | The §8.6 accordion transitions `grid-template-columns` | §8.6 asks in so many words for three vertical strips that expand horizontally on hover. Transforming the panels instead would distort their text. The exception is scoped to that one component and `npm run review` enforces the scope — every other layout-property transition still fails the audit. |
 | §5.7 | Phosphor (Light) or Remix Icon | Six icons hand-drawn on a 24-unit grid in the Phosphor Light idiom | §5.7 also fixes the stroke at 1.25px. Phosphor ships Light as filled outlines at a fixed optical weight that cannot be restruck to 1.25px. Stroked geometry hits the specified weight exactly, scales cleanly at 20px, and costs no dependency for six glyphs. |
 
@@ -145,12 +147,14 @@ Against Slow 4G with 4x CPU throttling, on `/ar` (the heavier language — Arabi
 The three.js chunk is 131 KB gzipped and is **not referenced in the home page HTML**
 at all: it is fetched only when the §10 capability gate opens, at idle, after paint.
 
-Netlify's Lighthouse scores the deploy preview at **Performance 69, Accessibility 98,
-Best Practices 92, SEO 100**. LCP and CLS both clear their targets by a wide margin,
+Netlify's Lighthouse scored the first deploy preview at **Performance 69,
+Accessibility 98, Best Practices 92, SEO 100**; deferring the scroll libraries took
+Performance to **80**. LCP and CLS both clear their targets by a wide margin,
 so the Performance number is dominated by Total Blocking Time — React hydrating a
 page with several interactive sections under synthetic 4x CPU throttling. Loading
-Lenis, GSAP and ScrollTrigger at idle rather than during hydration took ~40 ms off
-it. The remaining structural win is to split the static markup of `SectorsPinned`
+Lenis, GSAP and ScrollTrigger at idle rather than during hydration took ~40 ms of
+long-task time off
+it — 11 Lighthouse points. The remaining structural win is to split the static markup of `SectorsPinned`
 and `MaterialJourney` back into server components, mounting only the interactive
 shell on the client — the pattern `HeroCrystalMount` already uses. That is a
 worthwhile follow-up, not a blocker.
