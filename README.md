@@ -148,13 +148,16 @@ The three.js chunk is 131 KB gzipped and is **not referenced in the home page HT
 at all: it is fetched only when the §10 capability gate opens, at idle, after paint.
 
 Netlify's Lighthouse scored the first deploy preview at **Performance 69,
-Accessibility 98, Best Practices 92, SEO 100**; deferring the scroll libraries took
-Performance to **80**. LCP and CLS both clear their targets by a wide margin,
+Accessibility 98, Best Practices 92, SEO 100**. Deferring the scroll libraries moved
+Performance into the **76–80** band — the spread is run-to-run variance on a shared
+CI runner, not a difference between commits, since the changes between those runs
+were an opacity value and documentation. Accessibility is now **100**, after
+axe-core named the one real defect (see the §11.3 row below). LCP and CLS both clear their targets by a wide margin,
 so the Performance number is dominated by Total Blocking Time — React hydrating a
 page with several interactive sections under synthetic 4x CPU throttling. Loading
 Lenis, GSAP and ScrollTrigger at idle rather than during hydration took ~40 ms of
 long-task time off
-it — 11 Lighthouse points. The remaining structural win is to split the static markup of `SectorsPinned`
+it, worth roughly 10 Lighthouse points. The remaining structural win is to split the static markup of `SectorsPinned`
 and `MaterialJourney` back into server components, mounting only the interactive
 shell on the client — the pattern `HeroCrystalMount` already uses. That is a
 worthwhile follow-up, not a blocker.
