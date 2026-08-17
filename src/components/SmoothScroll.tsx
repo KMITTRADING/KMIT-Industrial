@@ -23,8 +23,21 @@ export function SmoothScroll() {
     let lenis: import('lenis').default | null = null;
     let rafId = 0;
     let cancelled = false;
+    let cleanup: (() => void) | undefined;
 
-    (async () => {
+    /*
+     * Lenis, GSAP and ScrollTrigger together are the largest script on the page
+     * after React, and none of them is needed until the visitor scrolls. Loading
+     * them during hydration put ~800ms of long tasks on the main thread on a
+     * throttled CPU, which is Total Blocking Time and nothing else. Waiting for
+     * idle costs nothing perceptible — smooth scroll simply engages a moment
+     * later — and takes that work out of the load window entirely (§15.1.7).
+     */
+    const schedule =
+      window.requestIdleCallback ??
+      ((cb: IdleRequestCallback) => window.setTimeout(() => cb({} as IdleDeadline), 200));
+
+    const idleHandle = schedule(async () => {
       const [{ default: Lenis }, { gsap }, { ScrollTrigger }] = await Promise.all([
         import('lenis'),
         import('gsap'),
@@ -62,15 +75,19 @@ export function SmoothScroll() {
       window.addEventListener('resize', onResize);
 
       rafId = 1;
-      return () => {
+      cleanup = () => {
         window.removeEventListener('resize', onResize);
         gsap.ticker.remove(tick);
       };
-    })();
+    });
 
     return () => {
       cancelled = true;
+      if (window.cancelIdleCallback && typeof idleHandle === 'number') {
+        window.cancelIdleCallback(idleHandle);
+      }
       if (rafId) cancelAnimationFrame(rafId);
+      cleanup?.();
       lenis?.destroy();
       delete window.__lenis;
     };

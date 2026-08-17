@@ -130,6 +130,33 @@ Four, all deliberate. Everything else follows the brief as written.
 
 ---
 
+## Measured performance
+
+Against Slow 4G with 4x CPU throttling, on `/ar` (the heavier language — Arabic runs
+~33% longer):
+
+| Metric | Measured | §15 target |
+|---|---|---|
+| LCP | **856 ms** | < 2.5 s |
+| LCP element | `span.hero-line` — the heading, not the canvas | §15.1.7 |
+| CLS | **0.0016** | < 0.05 |
+| Total long-task time | 764 ms | — |
+
+The three.js chunk is 131 KB gzipped and is **not referenced in the home page HTML**
+at all: it is fetched only when the §10 capability gate opens, at idle, after paint.
+
+Netlify's Lighthouse scores the deploy preview at **Performance 69, Accessibility 98,
+Best Practices 92, SEO 100**. LCP and CLS both clear their targets by a wide margin,
+so the Performance number is dominated by Total Blocking Time — React hydrating a
+page with several interactive sections under synthetic 4x CPU throttling. Loading
+Lenis, GSAP and ScrollTrigger at idle rather than during hydration took ~40 ms off
+it. The remaining structural win is to split the static markup of `SectorsPinned`
+and `MaterialJourney` back into server components, mounting only the interactive
+shell on the client — the pattern `HeroCrystalMount` already uses. That is a
+worthwhile follow-up, not a blocker.
+
+---
+
 ## Deploying
 
 The build output is a standard Next.js production build; any Node host or Vercel

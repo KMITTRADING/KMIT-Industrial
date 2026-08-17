@@ -36,7 +36,13 @@ export function IntroStrip({ locale }: { locale: Locale }) {
     let cancelled = false;
     let trigger: { kill: () => void } | null = null;
 
-    (async () => {
+    // GSAP is not needed to read the paragraph, only to scrub it. Loading it at
+    // idle keeps it out of the load window (§15.1.7).
+    const schedule =
+      window.requestIdleCallback ??
+      ((cb: IdleRequestCallback) => window.setTimeout(() => cb({} as IdleDeadline), 200));
+
+    const idleHandle = schedule(async () => {
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([
         import('gsap'),
         import('gsap/ScrollTrigger'),
@@ -58,10 +64,13 @@ export function IntroStrip({ locale }: { locale: Locale }) {
         },
       });
       trigger = tween.scrollTrigger ?? null;
-    })();
+    });
 
     return () => {
       cancelled = true;
+      if (window.cancelIdleCallback && typeof idleHandle === 'number') {
+        window.cancelIdleCallback(idleHandle);
+      }
       trigger?.kill();
       for (const span of spans) span.style.removeProperty('--scrub-floor');
     };

@@ -69,6 +69,40 @@ const PAIRS = [
   ['focus ring white vs brand-deep', t.white, t['brand-deep'], 3],
 ];
 
+/*
+ * A dark section is not actually --brand-deep: `.on-dark::before` lays the 135deg
+ * identity gradient over it at 34% opacity, so the ground text really sits on is
+ * lighter than the token. Testing against the token alone would pass while the
+ * rendered page failed, so both ends of the gradient are flattened and checked.
+ */
+const GRADIENT_ENDS = [
+  ['grad start', '#2B3073'],
+  ['grad end', '#3D55A4'],
+];
+
+function overColour(fgHex, alpha, bgHex) {
+  const parse = (h) => [0, 2, 4].map((i) => parseInt(h.replace('#', '').slice(i, i + 2), 16));
+  const f = parse(fgHex);
+  const b = parse(bgHex);
+  return (
+    '#' +
+    f
+      .map((c, i) => Math.round(alpha * c + (1 - alpha) * b[i]).toString(16).padStart(2, '0'))
+      .join('')
+  );
+}
+
+for (const [label, end] of GRADIENT_ENDS) {
+  const ground = overColour(end, 0.34, t['brand-deep']);
+  PAIRS.push([`white on dark section (${label})`, t.white, ground, 4.5]);
+  PAIRS.push([
+    `white .72 on dark section (${label})`,
+    overColour(t.white, 0.72, ground),
+    ground,
+    4.5,
+  ]);
+}
+
 let failed = 0;
 const rows = PAIRS.map(([label, fg, bg, min]) => {
   const r = ratio(fg, bg);
