@@ -3,7 +3,7 @@ import { registerView, getSceneHost, invalidateScenes } from './sceneHost';
 import {
   bevelledBox,
   contactShadow,
-  getStudioEnvironment,
+  lightScene,
   marbleMaterial,
   productCamera,
   solarMaterial,
@@ -154,10 +154,9 @@ export function createSectorScene({
   dirSign?: 1 | -1;
 }): SectorScene {
   const host = getSceneHost();
-  const envMap = getStudioEnvironment(host.renderer);
 
   const scene = new THREE.Scene();
-  scene.environment = envMap;
+  const envMap = lightScene(scene, host.renderer);
 
   /* C5: product lens. The subject is about 2.2 units tall and should fill two
      thirds of the frame; the camera distance is solved from that rather than

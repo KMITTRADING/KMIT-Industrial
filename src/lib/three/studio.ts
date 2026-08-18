@@ -24,12 +24,65 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 
 let envMap: THREE.Texture | null = null;
 let envRenderer: THREE.WebGLRenderer | null = null;
+let software: boolean | null = null;
 
-export function getStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
-  if (envMap && envRenderer === renderer) return envMap;
+/**
+ * True when WebGL is being rasterised on the CPU — SwiftShader, llvmpipe, or a
+ * plain software fallback — rather than on a GPU.
+ *
+ * This matters because generating the PMREM is by far the most expensive thing
+ * the 3D layer does at start-up. On a GPU it is a few milliseconds. On a
+ * software rasteriser, measured here, it is a single ~2.8s block of the main
+ * thread, which is most of the page's total blocking time and is what a
+ * headless Lighthouse run sees. The lighting is an enhancement, not a
+ * requirement — every scene also carries a key and a rim light — so on a
+ * machine that cannot afford it we light with those and skip the probe.
+ */
+function isSoftwareRenderer(renderer: THREE.WebGLRenderer): boolean {
+  if (software !== null) return software;
+  software = false;
+  try {
+    const gl = renderer.getContext();
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = ext
+      ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) ?? '')
+      : String(gl.getParameter(gl.RENDERER) ?? '');
+    software = /swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/i.test(name);
+  } catch {
+    /* If the extension is blocked we assume real hardware and keep the probe. */
+  }
+  return software;
+}
+
+/**
+ * Sets up a scene's ambient lighting and returns the environment map to build
+ * materials against, which is `null` on a software rasteriser. A material with
+ * a null `envMap` is still perfectly valid — it simply has nothing to reflect.
+ */
+export function lightScene(
+  scene: THREE.Scene,
+  renderer: THREE.WebGLRenderer
+): THREE.Texture | null {
+  const env = getStudioEnvironment(renderer);
+  if (env) {
+    scene.environment = env;
+    return env;
+  }
+  /* No probe: a hemisphere stands in for the room, so the shadow sides pick up
+     the rim colour and the tops pick up the key instead of going dead black. */
+  const hemisphere = new THREE.HemisphereLight(0xdfe4f5, 0x2b3073, 1.15);
+  scene.add(hemisphere);
+  return null;
+}
+
+export function getStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture | null {
+  if (envRenderer === renderer && (envMap || software)) return envMap;
+  if (isSoftwareRenderer(renderer)) {
+    envRenderer = renderer;
+    return null;
+  }
 
   const pmrem = new THREE.PMREMGenerator(renderer);
-  pmrem.compileEquirectangularShader();
 
   const room = new THREE.Scene();
   room.background = new THREE.Color(0x0d1030);
@@ -189,7 +242,7 @@ function buildNoiseTextures() {
 }
 
 /** Warm stone white (#E8E5DE), varied roughness, fine grain. */
-export function stoneMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardMaterial {
+export function stoneMaterial(envMapTexture: THREE.Texture | null): THREE.MeshStandardMaterial {
   const { roughness, normal } = buildNoiseTextures();
   return new THREE.MeshStandardMaterial({
     color: 0xe8e5de,
@@ -200,11 +253,15 @@ export function stoneMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardM
     metalness: 0.04,
     envMap: envMapTexture,
     envMapIntensity: 0.9,
+    /* Without a probe there is nothing to reflect, so the broad soft highlight
+       the environment used to supply has to come from the key light instead:
+       a rougher surface spreads it wide rather than leaving a hot pinpoint. */
+    ...(envMapTexture ? {} : { roughness: 0.62 }),
   });
 }
 
 /** Polished marble: the same stone, smoother, for slab faces. */
-export function marbleMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardMaterial {
+export function marbleMaterial(envMapTexture: THREE.Texture | null): THREE.MeshStandardMaterial {
   const { roughness, normal } = buildNoiseTextures();
   return new THREE.MeshStandardMaterial({
     color: 0xf1efea,
@@ -215,6 +272,7 @@ export function marbleMaterial(envMapTexture: THREE.Texture): THREE.MeshStandard
     metalness: 0.05,
     envMap: envMapTexture,
     envMapIntensity: 1.15,
+    ...(envMapTexture ? {} : { roughness: 0.4 }),
   });
 }
 
@@ -224,7 +282,7 @@ export function marbleMaterial(envMapTexture: THREE.Texture): THREE.MeshStandard
  */
 let cellTexture: THREE.Texture | null = null;
 
-export function solarMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardMaterial {
+export function solarMaterial(envMapTexture: THREE.Texture | null): THREE.MeshStandardMaterial {
   if (!cellTexture) {
     const size = 128;
     const canvas = document.createElement('canvas');
@@ -254,6 +312,11 @@ export function solarMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardM
     metalness: 0.1,
     envMap: envMapTexture,
     envMapIntensity: 1.6,
+    /* This is the material that suffers most without a probe: dark glass at
+       roughness 0.1 has nothing to reflect and resolves to a black silhouette.
+       Lifting the base and roughening it trades the mirror for a sheen the key
+       and rim lights can actually produce, which still reads as a panel. */
+    ...(envMapTexture ? {} : { color: 0x3c4788, roughness: 0.38, metalness: 0.3 }),
   });
 }
 
@@ -309,7 +372,7 @@ function getShadowTexture(): THREE.Texture {
  * one step lighter than the section gives the shadow something to fall on, and
  * gives the subject a horizon.
  */
-export function studioFloor(size: number, y: number, envMapTexture: THREE.Texture): THREE.Mesh {
+export function studioFloor(size: number, y: number, envMapTexture: THREE.Texture | null): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(size, size),
     new THREE.MeshStandardMaterial({

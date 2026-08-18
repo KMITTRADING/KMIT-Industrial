@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { dict } from '@/content';
 import type { Locale } from '@/lib/i18n';
 import { canRender3D } from '@/lib/motion';
+import { buildWhenNear } from '@/lib/three/defer';
 
 /**
  * Interactive calcite explorer (§9).
@@ -31,22 +32,21 @@ export function CalciteExplorer({ locale }: { locale: Locale }) {
     if (!holder) return;
 
     let cancelled = false;
-    const schedule =
-      window.requestIdleCallback ??
-      ((cb: IdleRequestCallback) => window.setTimeout(() => cb({} as IdleDeadline), 200));
 
-    const handle = schedule(async () => {
-      const { createCalciteExplorer } = await import('@/lib/three/calciteExplorer');
-      if (cancelled) return;
-      sceneRef.current = createCalciteExplorer({ element: holder });
-      setLive(true);
+    /* B4: the explorer sits well down the knowledge page, so it is built when
+       the reader is within a viewport of it and the main thread is idle — not
+       during hydration. Until then the designed still is what shows. */
+    const deferred = buildWhenNear(holder, () => {
+      void import('@/lib/three/calciteExplorer').then(({ createCalciteExplorer }) => {
+        if (cancelled) return;
+        sceneRef.current = createCalciteExplorer({ element: holder });
+        setLive(true);
+      });
     });
 
     return () => {
       cancelled = true;
-      if (window.cancelIdleCallback && typeof handle === 'number') {
-        window.cancelIdleCallback(handle);
-      }
+      deferred.cancel();
       sceneRef.current?.dispose();
       sceneRef.current = null;
     };

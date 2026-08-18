@@ -8,6 +8,7 @@ import { SectorStill } from '../scenes/SectorStill';
 import { dict } from '@/content';
 import { pathFor, type Locale, type RouteKey } from '@/lib/i18n';
 import { canRender3D, dirSign, prefersReducedMotion } from '@/lib/motion';
+import { buildWhenNear, type Deferred } from '@/lib/three/defer';
 
 /**
  * The three sectors (§8.3) — pinned, two thirds scene and one third text, with
@@ -69,11 +70,13 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
 
     let scene: { setProgress: (p: number) => void; dispose: () => void } | null = null;
     let trigger: { kill: (revert?: boolean) => void } | null = null;
+    let deferred: Deferred | null = null;
     let cancelled = false;
+    /* Kept so a scene built mid-scroll opens at the right state, not at zero. */
+    let progress = 0;
 
     (async () => {
-      const [{ createSectorScene }, { gsap }, { ScrollTrigger }] = await Promise.all([
-        import('@/lib/three/sectorMorph'),
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
         import('gsap'),
         import('gsap/ScrollTrigger'),
       ]);
@@ -83,7 +86,16 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
       // recomputing every pin for it causes a visible jump mid-scroll.
       ScrollTrigger.config({ ignoreMobileResize: true });
 
-      scene = createSectorScene({ element: holder, dirSign: dirSign() });
+      /* B4: the pin is created now, because it sets the document height; the
+         WebGL scene waits until the section is within a viewport and the main
+         thread is idle. Until then setProgress simply has nothing to call. */
+      deferred = buildWhenNear(holder, () => {
+        void import('@/lib/three/sectorMorph').then(({ createSectorScene }) => {
+          if (cancelled) return;
+          scene = createSectorScene({ element: holder, dirSign: dirSign() });
+          scene.setProgress(progress);
+        });
+      });
 
       const st = ScrollTrigger.create({
         trigger: section,
@@ -99,6 +111,7 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
         onUpdate(self) {
           // 0..2 across the three states.
           const p = self.progress * 2;
+          progress = p;
           scene?.setProgress(p);
           const next = Math.min(2, Math.round(self.progress * 2.999 - 0.25));
           setActive(next < 0 ? 0 : next);
@@ -109,6 +122,7 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
 
     return () => {
       cancelled = true;
+      deferred?.cancel();
       trigger?.kill(true);
       scene?.dispose();
     };

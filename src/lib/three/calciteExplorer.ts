@@ -3,7 +3,7 @@ import { getSceneHost, invalidateScenes, registerView } from './sceneHost';
 import {
   bevelledRhombohedron,
   contactShadow,
-  getStudioEnvironment,
+  lightScene,
   productCamera,
 } from './studio';
 
@@ -39,10 +39,9 @@ export function createCalciteExplorer({
   element: HTMLElement;
 }): CalciteExplorerScene {
   const host = getSceneHost();
-  const envMap = getStudioEnvironment(host.renderer);
 
   const scene = new THREE.Scene();
-  scene.environment = envMap;
+  const envMap = lightScene(scene, host.renderer);
 
   // C5: product lens, subject filling about two thirds of the frame.
   const { camera, distance } = productCamera(1.8, 0.64, 30);

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { getSceneHost, invalidateScenes, registerView } from './sceneHost';
-import { bevelledRhombohedron, getStudioEnvironment } from './studio';
+import { bevelledRhombohedron } from './studio';
 
 /**
  * The calcite rhombohedron and its double refraction (§8.1).
@@ -109,8 +109,13 @@ const FRAGMENT = /* glsl */ `
 
 export function createHeroScene({ box, lineEls, dir }: Options): HeroScene {
   const host = getSceneHost();
-  // Touch the environment so the studio is warm for the scenes further down.
-  getStudioEnvironment(host.renderer);
+  /* Deliberately does NOT warm the studio environment. Generating the PMREM is
+     the single most expensive one-off in the whole 3D layer — on a machine
+     without a GPU it is a ~2.5s block — and the hero is the one scene that
+     never samples it: the crystal is a custom ShaderMaterial. Warming it here
+     put that cost above the fold, in the critical window, on behalf of scenes
+     that sit far below it. Each of those now builds near its own viewport at
+     idle and pays for the environment then (B4). */
 
   const scene = new THREE.Scene();
   // Orthographic in the view's own pixel space, y running down, so scene

@@ -3,7 +3,7 @@ import { getSceneHost, invalidateScenes, registerView } from './sceneHost';
 import {
   bevelledBox,
   contactShadow,
-  getStudioEnvironment,
+  lightScene,
   productCamera,
   stoneMaterial,
   studioFloor,
@@ -164,10 +164,9 @@ function chunkStates() {
 
 export function createJourneyScene({ element }: { element: HTMLElement }): JourneyScene {
   const host = getSceneHost();
-  const envMap = getStudioEnvironment(host.renderer);
 
   const scene = new THREE.Scene();
-  scene.environment = envMap;
+  const envMap = lightScene(scene, host.renderer);
 
   const { camera, distance } = productCamera(2.3, 0.86, 30);
   camera.position.set(distance * 0.46, distance * 0.36, distance * 0.8);

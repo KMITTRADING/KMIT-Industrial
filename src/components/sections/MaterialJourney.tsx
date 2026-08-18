@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { dict } from '@/content';
 import type { Locale } from '@/lib/i18n';
 import { canRender3D, prefersReducedMotion } from '@/lib/motion';
+import { buildWhenNear, type Deferred } from '@/lib/three/defer';
 
 /**
  * The material's journey (§8.4). Pinned dark chapter, four stages, the point
@@ -38,11 +39,13 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
 
     let scene: { setProgress: (p: number) => void; dispose: () => void } | null = null;
     let trigger: { kill: (revert?: boolean) => void } | null = null;
+    let deferred: Deferred | null = null;
     let cancelled = false;
+    /* Kept so a scene built mid-scroll opens at the right stage, not at zero. */
+    let progress = 0;
 
     (async () => {
-      const [{ createJourneyScene }, { gsap }, { ScrollTrigger }] = await Promise.all([
-        import('@/lib/three/materialJourney'),
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
         import('gsap'),
         import('gsap/ScrollTrigger'),
       ]);
@@ -52,7 +55,16 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
       // recomputing every pin for it causes a visible jump mid-scroll.
       ScrollTrigger.config({ ignoreMobileResize: true });
 
-      scene = createJourneyScene({ element: holder });
+      /* B4: the pin is created now, because it sets the document height; the
+         WebGL scene waits until the section is within a viewport and the main
+         thread is idle. Until then setProgress simply has nothing to call. */
+      deferred = buildWhenNear(holder, () => {
+        void import('@/lib/three/materialJourney').then(({ createJourneyScene }) => {
+          if (cancelled) return;
+          scene = createJourneyScene({ element: holder });
+          scene.setProgress(progress);
+        });
+      });
 
       trigger = ScrollTrigger.create({
         trigger: section,
@@ -63,7 +75,8 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
         scrub: 1,
         invalidateOnRefresh: true,
         onUpdate(self) {
-          scene?.setProgress(self.progress * 3);
+          progress = self.progress * 3;
+          scene?.setProgress(progress);
           const next = Math.min(3, Math.floor(self.progress * 3.999));
           setActive(next);
         },
@@ -72,6 +85,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
 
     return () => {
       cancelled = true;
+      deferred?.cancel();
       trigger?.kill(true);
       scene?.dispose();
     };
