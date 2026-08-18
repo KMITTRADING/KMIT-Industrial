@@ -1,9 +1,9 @@
 import { dict } from '@/content';
-import { pathFor, type Locale } from '@/lib/i18n';
-import { MAP_URL, SITE } from '@/lib/site';
-import { ArrowUpRight } from '../Icons';
+import type { Locale } from '@/lib/i18n';
+import { MAILTO_HREF, MAP_URL, SITE, TEL_HREF } from '@/lib/site';
+import { ArrowUpRight, Envelope, Phone } from '../Icons';
 import { ContactRows } from '../ContactRows';
-import { Bezel, Section, StatelessCTA } from '../primitives';
+import { Bezel, Section } from '../primitives';
 import { JeddahMap } from '../JeddahMap';
 
 /**
@@ -36,7 +36,7 @@ export function PresenceContact({ locale }: { locale: Locale }) {
             <figure className="presence-map">
               <JeddahMap label={d.contact.mapAlt} />
               <figcaption className="presence-map-caption">
-                <span className="t-label">{d.contact.mapCaption}</span>
+                <span className="t-label">{d.contact.mapCaption}</span>{' '}
                 <a
                   className="link-inline t-label"
                   href={MAP_URL}
@@ -52,10 +52,21 @@ export function PresenceContact({ locale }: { locale: Locale }) {
 
           <div className="presence-contact">
             <ContactRows locale={locale} size={24} />
-            <div style={{ marginBlockStart: 'var(--s-8)' }}>
-              <StatelessCTA href={pathFor(locale, 'contact')} variant="primary" chamfer>
-                {d.contact.cta}
-              </StatelessCTA>
+            {/*
+              Two direct actions rather than a link to a contact page: there is
+              no longer a contact form anywhere on the site, so the shortest path
+              to a human is the visitor's own mail app or dialler.
+            */}
+            <div className="contact-actions">
+              <a className="btn btn-primary chamfer" href={MAILTO_HREF}>
+                <Envelope size={18} />
+                <span>{d.contact.ctaEmail}</span>
+              </a>{' '}
+              <a className="btn btn-secondary" href={TEL_HREF}>
+                <Phone size={18} />
+                <span className="ltr-num">{SITE.phoneDisplay}</span>{' '}
+                <span className="sr-only">{d.contact.ctaPhone}</span>
+              </a>
             </div>
             {/* City and country in prose, for local targeting (§15.1.3). */}
             <p

@@ -64,6 +64,13 @@ const canvasSizes = await page.evaluate(() =>
 console.log(`hero WebGL: ${webglOn}`);
 console.log(`canvases:   ${canvasSizes.join(' | ')}`);
 
+// B1: the crash was caused by one WebGL context per scene. There must be exactly
+// one canvas on the page, and it must be the shared host.
+if (canvasSizes.length !== 1) {
+  console.error(`\nFAIL  expected exactly 1 canvas (the shared host), found ${canvasSizes.length}`);
+  process.exit(1);
+}
+
 await page.screenshot({ path: join(OUT, 'hero.png') });
 
 const total = await page.evaluate(() => document.documentElement.scrollHeight);

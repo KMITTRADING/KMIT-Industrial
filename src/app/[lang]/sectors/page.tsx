@@ -61,7 +61,7 @@ export default async function SectorsPage({ params }: { params: Promise<{ lang: 
                   <Link href={pathFor(locale, sectorRoute(slug))} className="sector-index-link">
                     <p className="t-label" style={{ color: 'var(--ink-soft)' }}>
                       {sector.word}
-                    </p>
+                    </p>{' '}
                     <h2 className={i === 0 ? 't-display-l' : 't-h2'}>{sector.h1}</h2>
                     <p className="t-body-l measure" style={{ color: 'var(--ink-soft)' }}>
                       {sector.lead}

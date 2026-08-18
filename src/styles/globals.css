@@ -280,15 +280,21 @@ select {
 /* =========================================================================
    Grain (§8.1) — one fixed overlay, never interactive
    ========================================================================= */
+/*
+ * D4: the grain was there but invisible — `multiply` at 3% over a dark ground
+ * darkens by nothing anyone can see. `overlay` works in both directions, so the
+ * texture now reads on the indigo sections and on the warm white alike, which is
+ * what the original brief asked for and never got.
+ */
 .grain {
   position: fixed;
   inset: 0;
   z-index: var(--z-sticky);
   pointer-events: none;
-  opacity: 0.03;
-  mix-blend-mode: multiply;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
   background-image: var(--grain-url);
-  background-size: 180px 180px;
+  background-size: 170px 170px;
 }
 
 /* =========================================================================

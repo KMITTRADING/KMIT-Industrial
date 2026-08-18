@@ -27,8 +27,6 @@ export const en: Dict = {
     { route: 'calcium-carbonate', label: 'Calcium carbonate' },
     { route: 'quality-hse', label: 'Quality & safety' },
     { route: 'sustainability', label: 'Sustainability' },
-    { route: 'careers', label: 'Careers' },
-    { route: 'contact', label: 'Contact' },
   ],
 
   /* --------------------------------------------------- the three key words */
@@ -60,34 +58,10 @@ export const en: Dict = {
       mobile: 'Mobile',
       email: 'Email',
     },
-    cta: 'Contact the commercial development team',
+    ctaEmail: 'Email us',
+    ctaPhone: 'Call us',
   },
 
-  /* ---------------------------------------------------------------- forms */
-  form: {
-    name: 'Name',
-    email: 'Email address',
-    phone: 'Mobile number',
-    company: 'Company or organisation',
-    subject: 'Subject',
-    field: 'Field',
-    message: 'Message',
-    file: 'Profile or CV',
-    fileHint: 'PDF or Word, up to five megabytes.',
-    optional: 'optional',
-    submitContact: 'Send the message',
-    submitCareers: 'Send the application',
-    required: 'Required field',
-    errorName: 'Give the name you would like us to use.',
-    errorEmail: 'The address needs the form name@example.com so we can reply.',
-    errorMessage: 'Write at least one line about why you are getting in touch.',
-    errorField: 'Pick the field closest to your experience.',
-    errorSummary: 'The message was not sent. The fields below need a change.',
-    noEndpointTitle: 'Sending opens your mail app',
-    noEndpointBody:
-      'There is no receiving address wired to this form yet, so the button opens a prepared message in your own mail app. Once a service is connected, sending happens on the page.',
-    sendingVia: 'Or write to us directly at',
-  },
 
   /* ------------------------------------------------------- placeholders */
   placeholder: {
@@ -165,7 +139,7 @@ export const en: Dict = {
 
     approachHeading: 'How we operate',
     approachLead: 'Three principles govern the way work is done across all three sectors.',
-    approachHint: 'Hover a principle or select it to read it.',
+    approachHint: 'Choose a principle to read it.',
     approachPillars: [
       {
         title: 'Vertical integration',
@@ -369,41 +343,7 @@ export const en: Dict = {
       'Impact and consumption figures are awaiting measurement and approval. They are not published here before they are measured.',
   },
 
-  careers: {
-    h1: 'Careers',
-    lead: 'The work here is industrial by nature: quarries, mills, sites, laboratories and schedules.',
-    body: 'We look for people who measure before they decide, write down what they did, and treat safety as part of the work rather than an extra step.',
-    emptyTitle: 'No open roles at the moment',
-    emptyBody:
-      'Send your profile and we will keep it. When a role that fits your experience opens, we will come back to you.',
-    formHeading: 'Send your profile',
-    fields: [
-      'Quarrying and extraction',
-      'Grinding and operations',
-      'Quality control and laboratory',
-      'Maintenance',
-      'Logistics and transport',
-      'Safety and environment',
-      'Sales and commercial development',
-      'Administration and support',
-    ],
-    fieldPlaceholder: 'Choose a field',
-  },
 
-  contactPage: {
-    h1: 'Contact us',
-    lead: 'Write to us, call, or send an email. All three reach the same team.',
-    formHeading: 'Write to us',
-    detailsHeading: 'Contact details',
-    subjects: [
-      'Calcium carbonate supply enquiry',
-      'Marble stone transport',
-      'Solar panels',
-      'Partnership or supply',
-      'Something else',
-    ],
-    subjectPlaceholder: 'Choose a subject',
-  },
 
   /* ============================================================ metadata */
   meta: {
@@ -451,16 +391,6 @@ export const en: Dict = {
       title: 'Sustainability and impact | KMIT Industrial',
       description:
         'How energy, material and land are accounted for in a group working on industrial minerals, and where solar energy sits in that account.',
-    },
-    careers: {
-      title: 'Careers at KMIT Industrial',
-      description:
-        'Roles in quarrying, grinding, quality control, logistics and safety. Send your profile and we keep it until a suitable role opens.',
-    },
-    contact: {
-      title: 'Contact KMIT Industrial | Jeddah',
-      description:
-        'Reach the commercial development team at KMIT Industrial in Jeddah: mobile, email and a direct contact form.',
     },
   },
 };

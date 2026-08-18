@@ -1,16 +1,32 @@
 import * as THREE from 'three';
+import { getSceneHost, invalidateScenes, registerView } from './sceneHost';
+import {
+  bevelledBox,
+  contactShadow,
+  getStudioEnvironment,
+  productCamera,
+  stoneMaterial,
+  studioFloor,
+} from './studio';
 
 /**
  * The material's journey (§8.4): limestone, crushing, fine grinding, powder.
  *
- * One point cloud of 36,000 particles carries all four stages. Each particle
- * holds four positions as vertex attributes and the shader blends between the
- * two that bracket the scroll value, so the transition happens entirely on the
- * GPU — no buffer is rewritten while scrubbing, in either direction.
+ * A4 fixed the sequence, which was previously wrong: stage 01 showed a particle
+ * cloud because the whole scene was points from the start. Limestone is a solid
+ * rock, so it is now drawn as one. The scene holds two representations and hands
+ * over between them at the point in the process where the material genuinely
+ * stops being lumps and starts being powder:
  *
- * A point cloud rather than instanced solids is the right tool here because the
- * subject *is* the particles: the sequence exists to show one mass of stone
- * becoming a powder, which needs tens of thousands of elements to read at all.
+ *   01 limestone           one bevelled block, whole
+ *   02 extraction/crushing the block separates into seven chunks
+ *   03 fine grinding       chunks fade out, particles take over as a cloud
+ *   04 finished powder     particles settle into a soft bed
+ *
+ * No particle is visible before stage 03, and no chunk after it.
+ *
+ * Cost (§B4): 10,000 points, inside the 8-12k budget, all moved in the vertex
+ * shader; the JavaScript side only writes a single uniform per frame.
  */
 
 export type JourneyScene = {
@@ -19,19 +35,16 @@ export type JourneyScene = {
   dispose: () => void;
 };
 
-const COUNT = 36000;
+const COUNT = 10000;
+const CHUNKS = 7;
 
 const VERTEX = /* glsl */ `
-  attribute vec3 p0;
-  attribute vec3 p1;
-  attribute vec3 p2;
-  attribute vec3 p3;
+  attribute vec3 pRubble;
+  attribute vec3 pCloud;
+  attribute vec3 pBed;
   attribute float aSize;
   attribute float aSeed;
 
-  // Precision is stated explicitly on every uniform shared between the two
-  // stages: a uniform that is highp in the vertex shader and mediump in the
-  // fragment shader fails link validation on strict drivers.
   uniform highp float uProgress;  // 0..3
   uniform highp float uTime;
   uniform highp float uPixelRatio;
@@ -41,63 +54,62 @@ const VERTEX = /* glsl */ `
 
   void main() {
     float t = clamp(uProgress, 0.0, 3.0);
-    float i = floor(t);
-    float f = t - i;
-    // Exponential ease-out on the blend: the stage settles instead of arriving
-    // at a constant rate (§11 forbids linear).
-    f = 1.0 - pow(1.0 - f, 3.0);
 
-    vec3 a = i < 0.5 ? p0 : (i < 1.5 ? p1 : (i < 2.5 ? p2 : p3));
-    vec3 b = i < 0.5 ? p1 : (i < 1.5 ? p2 : (i < 2.5 ? p3 : p3));
-    vec3 pos = mix(a, b, f);
+    // Particles live in the rubble volume until grinding, drift as a cloud
+    // through stage 03, then settle into the bed at stage 04.
+    float toCloud = smoothstep(1.0, 2.0, t);
+    float toBed   = smoothstep(2.15, 3.0, t);
+    // Exponential ease-out rather than a linear ramp (§11).
+    toCloud = 1.0 - pow(1.0 - toCloud, 3.0);
+    toBed   = 1.0 - pow(1.0 - toBed, 3.0);
 
-    // A slow drift, strongest in the ground stage where the material is airborne.
-    float airborne = smoothstep(1.4, 2.2, t) * (1.0 - smoothstep(2.6, 3.0, t));
+    vec3 pos = mix(mix(pRubble, pCloud, toCloud), pBed, toBed);
+
+    // Airborne drift, strongest while the material is actually in the air.
+    float airborne = smoothstep(1.9, 2.4, t) * (1.0 - smoothstep(2.7, 3.0, t));
     pos += vec3(
-      sin(uTime * 0.4 + aSeed * 6.283) * 0.05,
-      cos(uTime * 0.33 + aSeed * 4.712) * 0.05,
-      sin(uTime * 0.27 + aSeed * 2.094) * 0.05
-    ) * airborne;
+      sin(uTime * 0.4 + aSeed * 6.283),
+      cos(uTime * 0.33 + aSeed * 4.712),
+      sin(uTime * 0.27 + aSeed * 2.094)
+    ) * 0.05 * airborne;
 
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     vDepth = -mv.z;
     vSeed = aSeed;
 
     gl_Position = projectionMatrix * mv;
-    gl_PointSize = aSize * uPixelRatio * (3.4 / max(0.4, -mv.z));
+    gl_PointSize = aSize * uPixelRatio * (3.2 / max(0.4, -mv.z));
   }
 `;
 
 const FRAGMENT = /* glsl */ `
   precision mediump float;
 
-  // Must match the vertex stage's precision for the same uniform.
   uniform highp float uProgress;
 
   varying float vDepth;
   varying float vSeed;
 
   void main() {
-    // Round, soft-edged points. The only curve on the site that is not a
-    // rendered particle is none: this is inside a canvas, not a UI surface.
     vec2 d = gl_PointCoord - vec2(0.5);
     float r = dot(d, d);
     if (r > 0.25) discard;
     float edge = 1.0 - smoothstep(0.16, 0.25, r);
 
-    // White solid, indigo shadow: colour comes from the lighting model, not the
-    // material (§10). Nearer particles read white, deeper ones fall to indigo.
+    // A4: nothing appears before stage 03.
+    float reveal = smoothstep(1.85, 2.15, uProgress);
+    if (reveal <= 0.001) discard;
+
     vec3 white  = vec3(1.0);
     vec3 indigo = vec3(0.239, 0.333, 0.643);
     float lit = clamp(1.0 - (vDepth - 2.2) / 3.4, 0.0, 1.0);
     vec3 col = mix(indigo, white, lit * (0.55 + 0.45 * vSeed));
 
-    // In the final stage the light passes through the powder and lifts the white.
-    float settled = smoothstep(2.3, 3.0, uProgress);
+    // Light passing through the settled powder lifts the white.
+    float settled = smoothstep(2.4, 3.0, uProgress);
     col = mix(col, white, settled * 0.5);
 
-    float alpha = edge * (0.32 + 0.52 * lit);
-    gl_FragColor = vec4(col, alpha);
+    gl_FragColor = vec4(col, edge * (0.34 + 0.5 * lit) * reveal);
   }
 `;
 
@@ -109,192 +121,226 @@ function rng(seed: number) {
   };
 }
 
-export function createJourneyScene({ canvas }: { canvas: HTMLCanvasElement }): JourneyScene {
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    alpha: true,
-    antialias: false, // points are already soft-edged; MSAA buys nothing here
-    powerPreference: 'low-power',
-  });
-  renderer.setClearAlpha(0);
+/** Where each chunk sits when the block is whole, and after it breaks. */
+function chunkStates() {
+  const rand = rng(23);
+  const whole: { pos: THREE.Vector3; rot: THREE.Euler; scale: THREE.Vector3 }[] = [];
+  const broken: { pos: THREE.Vector3; rot: THREE.Euler; scale: THREE.Vector3 }[] = [];
+
+  // The block is cut into a 2x2 grid plus three smaller wedges, so the pieces
+  // differ in size the way real fracture does.
+  const cuts: [number, number, number, number, number, number][] = [
+    [-0.5, 0.28, -0.4, 1.0, 0.86, 0.9],
+    [0.52, 0.3, -0.36, 0.96, 0.82, 0.86],
+    [-0.48, -0.5, 0.42, 0.98, 0.74, 0.94],
+    [0.5, -0.48, 0.4, 0.94, 0.78, 0.9],
+    [0.02, 0.62, 0.5, 0.5, 0.42, 0.46],
+    [-0.06, -0.72, -0.5, 0.44, 0.38, 0.5],
+    [0.68, -0.02, 0.62, 0.36, 0.44, 0.34],
+  ];
+
+  for (const [x, y, z, sx, sy, sz] of cuts) {
+    whole.push({
+      pos: new THREE.Vector3(x * 0.52, y * 0.52, z * 0.52),
+      rot: new THREE.Euler(0, 0, 0),
+      scale: new THREE.Vector3(sx * 0.55, sy * 0.55, sz * 0.55),
+    });
+    const dir = new THREE.Vector3(x, y, z).normalize();
+    broken.push({
+      pos: new THREE.Vector3(x * 0.52, y * 0.52, z * 0.52).addScaledVector(
+        dir,
+        0.55 + rand() * 0.5
+      ),
+      rot: new THREE.Euler(
+        (rand() - 0.5) * 1.1,
+        (rand() - 0.5) * 1.4,
+        (rand() - 0.5) * 1.1
+      ),
+      scale: new THREE.Vector3(sx * 0.55, sy * 0.55, sz * 0.55),
+    });
+  }
+  return { whole, broken };
+}
+
+export function createJourneyScene({ element }: { element: HTMLElement }): JourneyScene {
+  const host = getSceneHost();
+  const envMap = getStudioEnvironment(host.renderer);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  camera.position.set(0, 0.35, 4.2);
-  camera.lookAt(0, 0, 0);
+  scene.environment = envMap;
 
-  const rand = rng(7);
+  const { camera, distance } = productCamera(2.3, 0.86, 30);
+  camera.position.set(distance * 0.46, distance * 0.36, distance * 0.8);
+  camera.lookAt(0, -0.2, 0);
 
-  const p0 = new Float32Array(COUNT * 3); // limestone: a solid rough block
-  const p1 = new Float32Array(COUNT * 3); // crushed: rubble clusters
-  const p2 = new Float32Array(COUNT * 3); // ground: an airborne cloud
-  const p3 = new Float32Array(COUNT * 3); // powder: a settled wave surface
+  const key = new THREE.DirectionalLight(0xffffff, 2.3);
+  key.position.set(3.2, 4.5, 2.2);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x3d55a4, 2.5);
+  rim.position.set(-3.2, 1.0, -3.2);
+  scene.add(rim);
+
+  /* --- the solid stages: 01 whole block, 02 broken chunks ---------------- */
+  const chunkGeometry = bevelledBox(1, 1, 1, 0.05, 3);
+  const chunkMaterial = stoneMaterial(envMap);
+  chunkMaterial.transparent = true;
+
+  const { whole, broken } = chunkStates();
+  const chunks: THREE.Mesh[] = [];
+  for (let i = 0; i < CHUNKS; i++) {
+    const mesh = new THREE.Mesh(chunkGeometry, chunkMaterial);
+    mesh.position.copy(whole[i].pos);
+    mesh.scale.copy(whole[i].scale);
+    scene.add(mesh);
+    chunks.push(mesh);
+  }
+
+  const floor = studioFloor(14, -1.18, envMap);
+  scene.add(floor);
+  const shadow = contactShadow(4.0, 3.2, -1.16);
+  scene.add(shadow);
+
+  /* --- the powder stages: 03 cloud, 04 bed -------------------------------- */
+  const rand = rng(11);
+  const pRubble = new Float32Array(COUNT * 3);
+  const pCloud = new Float32Array(COUNT * 3);
+  const pBed = new Float32Array(COUNT * 3);
   const sizes = new Float32Array(COUNT);
   const seeds = new Float32Array(COUNT);
-
-  // A handful of rubble centres, so stage 2 reads as broken lumps rather than
-  // uniform noise.
-  const clusters = Array.from({ length: 14 }, () => ({
-    x: (rand() - 0.5) * 2.9,
-    y: (rand() - 0.5) * 1.5,
-    z: (rand() - 0.5) * 1.8,
-    r: 0.16 + rand() * 0.22,
-  }));
 
   for (let i = 0; i < COUNT; i++) {
     const i3 = i * 3;
     seeds[i] = rand();
-    sizes[i] = 0.9 + rand() * 1.5;
+    sizes[i] = 1.0 + rand() * 1.6;
 
-    /* --- 01 limestone: a rough-surfaced block ---------------------------- */
-    // Biased toward the shell so the mass reads as a solid, not a fog.
-    const shell = Math.pow(rand(), 0.35);
-    const bx = (rand() - 0.5) * 2;
-    const by = (rand() - 0.5) * 2;
-    const bz = (rand() - 0.5) * 2;
-    const len = Math.max(Math.abs(bx), Math.abs(by), Math.abs(bz)) || 1;
-    p0[i3] = bx * (shell / len) * 1.05;
-    p0[i3 + 1] = by * (shell / len) * 0.82;
-    p0[i3 + 2] = bz * (shell / len) * 1.0;
-    // Surface roughness on the block face.
-    p0[i3] += (rand() - 0.5) * 0.08;
-    p0[i3 + 1] += (rand() - 0.5) * 0.08;
+    // Rubble: inside one of the broken chunks, so the powder emerges from the
+    // stone rather than appearing out of empty space.
+    const chunk = broken[Math.floor(rand() * CHUNKS)];
+    pRubble[i3] = chunk.pos.x + (rand() - 0.5) * chunk.scale.x;
+    pRubble[i3 + 1] = chunk.pos.y + (rand() - 0.5) * chunk.scale.y;
+    pRubble[i3 + 2] = chunk.pos.z + (rand() - 0.5) * chunk.scale.z;
 
-    /* --- 02 crushed: rubble clusters ------------------------------------- */
-    const c = clusters[Math.floor(rand() * clusters.length)];
-    p1[i3] = c.x + (rand() - 0.5) * c.r * 2;
-    p1[i3 + 1] = c.y + (rand() - 0.5) * c.r * 2;
-    p1[i3 + 2] = c.z + (rand() - 0.5) * c.r * 2;
-
-    /* --- 03 ground: an airborne cloud ------------------------------------ */
-    // A wide swirl: radius and angle rather than a box, so it turns as a mass.
+    // Cloud: a wide swirl that turns as a mass.
     const angle = rand() * Math.PI * 2;
-    const radius = 0.4 + Math.pow(rand(), 0.7) * 1.9;
-    p2[i3] = Math.cos(angle) * radius;
-    p2[i3 + 1] = (rand() - 0.5) * 1.6 + Math.sin(angle * 2) * 0.18;
-    p2[i3 + 2] = Math.sin(angle) * radius * 0.7;
+    const radius = 0.4 + Math.pow(rand(), 0.7) * 1.7;
+    pCloud[i3] = Math.cos(angle) * radius;
+    pCloud[i3 + 1] = (rand() - 0.5) * 1.5 + Math.sin(angle * 2) * 0.16;
+    pCloud[i3 + 2] = Math.sin(angle) * radius * 0.7;
 
-    /* --- 04 powder: settled into a soft wave ----------------------------- */
-    const px = (rand() - 0.5) * 4.2;
-    const pz = (rand() - 0.5) * 2.4;
-    p3[i3] = px;
-    p3[i3 + 1] =
-      -0.75 +
-      Math.sin(px * 1.15) * 0.16 +
-      Math.cos(pz * 1.5) * 0.1 +
-      // A shallow thickness, so the surface is a powder bed and not a sheet.
-      rand() * 0.09;
-    p3[i3 + 2] = pz;
+    // Bed: a shallow settled surface with real thickness.
+    const px = (rand() - 0.5) * 3.8;
+    const pz = (rand() - 0.5) * 2.2;
+    pBed[i3] = px;
+    pBed[i3 + 1] =
+      -0.95 + Math.sin(px * 1.15) * 0.14 + Math.cos(pz * 1.5) * 0.09 + rand() * 0.08;
+    pBed[i3 + 2] = pz;
   }
 
   const geometry = new THREE.BufferGeometry();
-  // `position` is required by three even though the shader ignores it.
-  geometry.setAttribute('position', new THREE.BufferAttribute(p0, 3));
-  geometry.setAttribute('p0', new THREE.BufferAttribute(p0, 3));
-  geometry.setAttribute('p1', new THREE.BufferAttribute(p1, 3));
-  geometry.setAttribute('p2', new THREE.BufferAttribute(p2, 3));
-  geometry.setAttribute('p3', new THREE.BufferAttribute(p3, 3));
+  geometry.setAttribute('position', new THREE.BufferAttribute(pRubble, 3));
+  geometry.setAttribute('pRubble', new THREE.BufferAttribute(pRubble, 3));
+  geometry.setAttribute('pCloud', new THREE.BufferAttribute(pCloud, 3));
+  geometry.setAttribute('pBed', new THREE.BufferAttribute(pBed, 3));
   geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
   geometry.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 1));
-  // The cloud spans further than `position` suggests; give it an explicit volume
-  // so frustum culling never drops it mid-morph.
   geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 4);
 
   const uniforms = {
     uProgress: { value: 0 },
     uTime: { value: 0 },
-    uPixelRatio: { value: 1 },
+    uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 1.5) },
   };
 
-  const material = new THREE.ShaderMaterial({
+  const pointsMaterial = new THREE.ShaderMaterial({
     vertexShader: VERTEX,
     fragmentShader: FRAGMENT,
     uniforms,
     transparent: true,
     depthWrite: false,
-    blending: THREE.NormalBlending,
   });
 
-  const points = new THREE.Points(geometry, material);
+  const points = new THREE.Points(geometry, pointsMaterial);
   scene.add(points);
 
-  function layout() {
-    const rect = canvas.getBoundingClientRect();
-    const w = Math.max(1, rect.width);
-    const h = Math.max(1, rect.height);
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-    renderer.setPixelRatio(dpr);
-    renderer.setSize(w, h, false);
-    uniforms.uPixelRatio.value = dpr;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
+  /* --- progress ---------------------------------------------------------- */
+  const tmpQuat = new THREE.Quaternion();
+  const fromQuat = new THREE.Quaternion();
+  const toQuat = new THREE.Quaternion();
 
-  let progress = 0;
+  let target = 0;
   let shown = 0;
-  let raf = 0;
-  let running = false;
-  let visible = true;
-  let last = performance.now();
 
-  function frame(now: number) {
-    const dt = Math.min((now - last) / 1000, 1 / 20);
-    last = now;
+  function write(p: number, elapsed: number) {
+    // Stage 0 -> 1: the block separates.
+    const breakT = 1 - Math.pow(1 - Math.min(1, Math.max(0, p)), 3);
+    for (let i = 0; i < CHUNKS; i++) {
+      chunks[i].position.lerpVectors(whole[i].pos, broken[i].pos, breakT);
+      fromQuat.setFromEuler(whole[i].rot);
+      toQuat.setFromEuler(broken[i].rot);
+      tmpQuat.slerpQuaternions(fromQuat, toQuat, breakT);
+      chunks[i].quaternion.copy(tmpQuat);
+    }
 
-    shown += (progress - shown) * Math.min(1, dt * 6);
-    uniforms.uProgress.value = shown;
-    uniforms.uTime.value = now / 1000;
+    // A4: chunks are gone by stage 03, exactly where the particles arrive.
+    const solidFade = 1 - smoothstep(1.6, 2.1, p);
+    chunkMaterial.opacity = solidFade;
+    for (const chunk of chunks) chunk.visible = solidFade > 0.01;
+    shadow.visible = solidFade > 0.01;
+    (shadow.material as THREE.MeshBasicMaterial).opacity = 0.9 * solidFade;
+    // The powder bed becomes its own ground, so the floor recedes with the solids.
+    (floor.material as THREE.MeshStandardMaterial).opacity = 0.92 * (0.35 + 0.65 * solidFade);
+
+    uniforms.uProgress.value = p;
+    uniforms.uTime.value = elapsed;
 
     // A very slow turn, so the mass has volume even when the scroll is parked.
-    points.rotation.y = Math.sin(now / 9000) * 0.22;
-
-    renderer.render(scene, camera);
-    raf = requestAnimationFrame(frame);
+    points.rotation.y = Math.sin(elapsed / 9) * 0.2;
+    for (const chunk of chunks) chunk.rotation.y += 0;
   }
 
-  function start() {
-    if (running || !visible) return;
-    running = true;
-    last = performance.now();
-    raf = requestAnimationFrame(frame);
-  }
-  function stop() {
-    running = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
+  function smoothstep(a: number, b: number, x: number) {
+    const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
   }
 
-  const io = new IntersectionObserver(
-    ([entry]) => {
-      visible = entry.isIntersecting;
-      if (visible) start();
-      else stop();
+  write(0, 0);
+
+  const unregister = registerView({
+    element,
+    scene,
+    camera,
+    update(dt, elapsed) {
+      const delta = target - shown;
+      const settled = Math.abs(delta) < 0.0005;
+      if (!settled) shown += delta * Math.min(1, dt * 6);
+      else shown = target;
+
+      write(shown, elapsed);
+
+      // The airborne drift only runs while the powder is in the air, so the view
+      // can settle completely at either end of the sequence.
+      const drifting = shown > 1.85 && shown < 2.95;
+      return !settled || drifting;
     },
-    { threshold: 0 }
-  );
-  io.observe(canvas);
-
-  const onVisibility = () => (document.hidden ? stop() : start());
-  document.addEventListener('visibilitychange', onVisibility);
-
-  const ro = new ResizeObserver(layout);
-  ro.observe(canvas);
-
-  layout();
-  start();
+    dispose() {
+      chunkGeometry.dispose();
+      chunkMaterial.dispose();
+      geometry.dispose();
+      pointsMaterial.dispose();
+      shadow.geometry.dispose();
+      (shadow.material as THREE.Material).dispose();
+      floor.geometry.dispose();
+      (floor.material as THREE.Material).dispose();
+    },
+  });
 
   return {
     setProgress(p) {
-      progress = Math.min(3, Math.max(0, p));
+      const next = Math.min(3, Math.max(0, p));
+      if (Math.abs(next - target) < 0.0005) return;
+      target = next;
+      invalidateScenes();
     },
-    dispose() {
-      stop();
-      io.disconnect();
-      ro.disconnect();
-      document.removeEventListener('visibilitychange', onVisibility);
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-    },
+    dispose: unregister,
   };
 }

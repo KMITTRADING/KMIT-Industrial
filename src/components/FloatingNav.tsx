@@ -29,13 +29,14 @@ export function FloatingNav({ locale }: { locale: Locale }) {
 
   /* --- compact state ---------------------------------------------------- */
   useEffect(() => {
-    // A sentinel at the top of the document: once it leaves, the bar compacts.
+    // D5: a sentinel 80px tall. While it is on screen the bar is transparent over
+    // the hero; once it leaves, the glass plate appears.
     const sentinel = document.createElement('div');
     sentinel.setAttribute('aria-hidden', 'true');
     Object.assign(sentinel.style, {
       position: 'absolute',
       inset: '0 0 auto 0',
-      height: '120px',
+      height: '80px',
       pointerEvents: 'none',
     });
     document.body.prepend(sentinel);
@@ -133,12 +134,12 @@ export function FloatingNav({ locale }: { locale: Locale }) {
             aria-label={d.shell.logoAlt}
             className="nav-logo"
           >
-            <Logo height={28} />
+            <Logo height={32} />
           </Link>
 
           <ul className="nav-links">
             {d.nav.map((item) => (
-              <li key={item.route}>
+              <li key={item.route}>{' '}
                 <Link
                   className="nav-link"
                   href={pathFor(locale, item.route as RouteKey)}
@@ -148,7 +149,7 @@ export function FloatingNav({ locale }: { locale: Locale }) {
                 </Link>
               </li>
             ))}
-          </ul>
+          </ul>{' '}
 
           <LangSwitch locale={locale} className="nav-link t-label" />
 

@@ -48,7 +48,6 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
         trail={[{ label: d.about.h1, route: 'about' }]}
         h1={d.about.h1}
         lead={d.about.lead}
-        watermark
       />
 
       <Section>

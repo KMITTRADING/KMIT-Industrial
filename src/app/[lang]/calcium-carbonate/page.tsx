@@ -52,7 +52,6 @@ export default async function KnowledgePage({ params }: { params: Promise<{ lang
         trail={[{ label: d.knowledge.h1, route: 'calcium-carbonate' }]}
         h1={d.knowledge.h1}
         lead={d.knowledge.lead}
-        watermark
       />
 
       {/* Interactive calcite explorer. The one bold element on this page — the

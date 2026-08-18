@@ -31,8 +31,15 @@ export function Hero({ locale }: { locale: Locale }) {
     <section className="hero on-dark">
       <div className="content hero-inner">
         <div className="hero-headline">
-          <h1 className="t-display-xl hero-title">
-            <span className="hero-line">{lines[0]}</span>
+          {/*
+            A1: the two lines are separate block spans, so a text extractor would
+            otherwise read them as one glued word — "تعملمن", "minerals,from".
+            An explicit aria-label gives assistive technology and any tool
+            reading the accessibility tree the sentence with its space intact,
+            and a literal space node does the same for plain text extraction.
+          */}
+          <h1 className="t-display-xl hero-title" aria-label={`${lines[0]} ${lines[1]}`}>
+            <span className="hero-line">{lines[0]} </span>
             <span className="hero-line">{lines[1]}</span>
           </h1>
 
@@ -41,13 +48,19 @@ export function Hero({ locale }: { locale: Locale }) {
             <h1>, clipped to the crystal outline and offset from one another.
             Hidden from assistive technology: it is the same sentence again.
           */}
-          <div className="hero-refract" aria-hidden="true">
-            <div className="t-display-xl hero-title hero-refract-layer hero-refract-o crystal-clip">
-              <span className="hero-line">{lines[0]}</span>
+          <div className="hero-refract" aria-hidden="true" role="presentation">
+            <div
+              className="t-display-xl hero-title hero-refract-layer hero-refract-o crystal-clip"
+              role="presentation"
+            >
+              <span className="hero-line">{lines[0]} </span>
               <span className="hero-line">{lines[1]}</span>
-            </div>
-            <div className="t-display-xl hero-title hero-refract-layer hero-refract-e crystal-clip">
-              <span className="hero-line">{lines[0]}</span>
+            </div>{' '}
+            <div
+              className="t-display-xl hero-title hero-refract-layer hero-refract-e crystal-clip"
+              role="presentation"
+            >
+              <span className="hero-line">{lines[0]} </span>
               <span className="hero-line">{lines[1]}</span>
             </div>
           </div>
@@ -55,7 +68,7 @@ export function Hero({ locale }: { locale: Locale }) {
           <CrystalGlass />
 
           {/* Swaps the static glass for the live scene when the device allows. */}
-          <HeroCrystalMount lines={lines} dir={dir} />
+          <HeroCrystalMount dir={dir} />
         </div>
 
         <p className="t-body-l hero-lead">{d.home.heroLead}</p>
@@ -63,7 +76,7 @@ export function Hero({ locale }: { locale: Locale }) {
         <div className="hero-ctas">
           <StatelessCTA href={pathFor(locale, 'about')} variant="primary" chamfer>
             {d.home.heroCtaPrimary}
-          </StatelessCTA>
+          </StatelessCTA>{' '}
           <StatelessCTA href={pathFor(locale, 'calcium-carbonate')} variant="secondary">
             {d.home.heroCtaSecondary}
           </StatelessCTA>

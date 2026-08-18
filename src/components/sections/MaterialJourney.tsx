@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { BrandIcon } from '../brand/Logo';
 import { dict } from '@/content';
 import type { Locale } from '@/lib/i18n';
 import { canRender3D, prefersReducedMotion } from '@/lib/motion';
@@ -24,7 +23,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
   const [interactive, setInteractive] = useState(false);
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const wide = window.matchMedia('(min-width: 62rem)').matches;
@@ -34,8 +33,8 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
   useEffect(() => {
     if (!interactive) return;
     const section = sectionRef.current;
-    const canvas = canvasRef.current;
-    if (!section || !canvas) return;
+    const holder = sceneRef.current;
+    if (!section || !holder) return;
 
     let scene: { setProgress: (p: number) => void; dispose: () => void } | null = null;
     let trigger: { kill: (revert?: boolean) => void } | null = null;
@@ -49,8 +48,11 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
       ]);
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
+      // B5: a resize on mobile is usually just the URL bar collapsing, and
+      // recomputing every pin for it causes a visible jump mid-scroll.
+      ScrollTrigger.config({ ignoreMobileResize: true });
 
-      scene = createJourneyScene({ canvas });
+      scene = createJourneyScene({ element: holder });
 
       trigger = ScrollTrigger.create({
         trigger: section,
@@ -59,6 +61,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
         pin: true,
         pinSpacing: true,
         scrub: 1,
+        invalidateOnRefresh: true,
         onUpdate(self) {
           scene?.setProgress(self.progress * 3);
           const next = Math.min(3, Math.floor(self.progress * 3.999));
@@ -78,7 +81,6 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
   if (!interactive) {
     return (
       <section className="section on-dark" aria-labelledby="journey-heading">
-        <BrandIcon size="60vw" className="watermark" />
         <div className="content">
           <h2 id="journey-heading" className="t-h2">
             {d.home.journeyHeading}
@@ -90,7 +92,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
           <ol className="journey-stack" style={{ marginBlockStart: 'var(--s-16)' }}>
             {stages.map((stage) => (
               <li key={stage.n}>
-                <p className="t-label journey-stage-n ltr-num">{stage.n}</p>
+                <p className="t-label journey-stage-n ltr-num">{stage.n}</p>{' '}
                 <h3 className="t-h3" style={{ marginBlockStart: 'var(--s-2)' }}>
                   {stage.name}
                 </h3>
@@ -108,8 +110,6 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
   /* --------------------------------------------------------- pinned path --- */
   return (
     <section ref={sectionRef} className="journey-pin on-dark" aria-labelledby="journey-heading">
-      <BrandIcon size="60vw" className="watermark" />
-
       <div className="content">
         <h2 id="journey-heading" className="sr-only">
           {d.home.journeyHeading}
@@ -124,7 +124,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
                 data-state={i === active ? 'in' : 'out'}
                 style={{ display: i === active ? 'block' : 'none' }}
               >
-                <p className="t-label journey-stage-n ltr-num">{stage.n}</p>
+                <p className="t-label journey-stage-n ltr-num">{stage.n}</p>{' '}
                 <h3 className="t-h2" style={{ marginBlockStart: 'var(--s-2)' }}>
                   {stage.name}
                 </h3>
@@ -140,7 +140,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
           </div>
 
           <div className="journey-scene">
-            <canvas ref={canvasRef} className="scene" aria-hidden="true" />
+            <div ref={sceneRef} className="scene" aria-hidden="true" />
           </div>
         </div>
       </div>

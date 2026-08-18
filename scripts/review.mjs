@@ -34,8 +34,6 @@ const ROUTES = [
   'calcium-carbonate',
   'quality-hse',
   'sustainability',
-  'careers',
-  'contact',
 ];
 
 const WIDTHS = [
@@ -145,7 +143,7 @@ const audit = () => {
     }
   }
 
-  /* --- touch targets ---------------------------------------------------- */
+  /* --- shared element describer ----------------------------------------- */
   const describe = (el) => {
     const cls = (el.className || '').toString().trim().split(/\s+/).slice(0, 3).join('.');
     const name =
@@ -156,6 +154,7 @@ const audit = () => {
     return `${el.tagName.toLowerCase()}${cls ? '.' + cls : ''}${name ? ` [${name}]` : ''}`;
   };
 
+  /* --- touch targets ---------------------------------------------------- */
   for (const el of document.querySelectorAll('a[href], button, input, select, textarea')) {
     const r = el.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) continue;
@@ -166,6 +165,53 @@ const audit = () => {
     if (cs.visibility === 'hidden' || cs.display === 'none') continue;
     if (r.height < 44 - 0.5) {
       problems.push(`touch target ${Math.round(r.height)}px < 44px on ${describe(el)}`);
+    }
+  }
+
+  /* --- glued label/value pairs (A2) ------------------------------------- */
+  /*
+   * Two elements sitting side by side on the same line with no whitespace
+   * between them read fine on screen — a flex `gap` separates them visually —
+   * but every text extractor concatenates them into one word: "الموقعجدة",
+   * "Vertical integrationWe work". CSS cannot fix that; only a real whitespace
+   * text node can.
+   *
+   * The test is geometric on purpose. Stacked block siblings (paragraphs, list
+   * items) are not a problem: any extractor treats a line box boundary as a
+   * break. Only elements that share a line are flagged.
+   */
+  for (const parent of document.querySelectorAll('body *')) {
+    const kids = [...parent.childNodes];
+    for (let i = 0; i < kids.length - 1; i++) {
+      const a = kids[i];
+      const b = kids[i + 1];
+      if (a.nodeType !== 1 || b.nodeType !== 1) continue;
+
+      const aRaw = a.textContent || '';
+      const bRaw = b.textContent || '';
+      if (!aRaw.trim() || !bRaw.trim()) continue;
+      if (/\s$/.test(aRaw) || /^\s/.test(bRaw)) continue;
+
+      /*
+       * Only label-sized units. Two whole columns or cards that happen to share
+       * a row also concatenate in `textContent`, but any extractor that respects
+       * layout breaks between them, and padding them with spaces would be
+       * noise. The reported defect was specifically a label welded to its value
+       * — "الموقعجدة", "الجوال057" — which is always short on both sides.
+       */
+      if (aRaw.trim().length > 60 || bRaw.trim().length > 60) continue;
+
+      const ra = a.getBoundingClientRect();
+      const rb = b.getBoundingClientRect();
+      if (ra.height === 0 || rb.height === 0) continue;
+
+      // Same line: their vertical extents overlap by more than half a line.
+      const overlap = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+      if (overlap < Math.min(ra.height, rb.height) * 0.5) continue;
+
+      problems.push(
+        `glued text on one line: "${aRaw.trim().slice(-16)}" + "${bRaw.trim().slice(0, 16)}" in ${describe(parent)}`
+      );
     }
   }
 

@@ -52,7 +52,7 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
   const [interactive, setInteractive] = useState(false);
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
 
   /* Decide the path once, on the client. Server-rendered output is always the
      static stack, so the crawler and a no-JS visitor get complete content. */
@@ -64,8 +64,8 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
   useEffect(() => {
     if (!interactive) return;
     const section = sectionRef.current;
-    const canvas = canvasRef.current;
-    if (!section || !canvas) return;
+    const holder = sceneRef.current;
+    if (!section || !holder) return;
 
     let scene: { setProgress: (p: number) => void; dispose: () => void } | null = null;
     let trigger: { kill: (revert?: boolean) => void } | null = null;
@@ -79,8 +79,11 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
       ]);
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
+      // B5: a resize on mobile is usually just the URL bar collapsing, and
+      // recomputing every pin for it causes a visible jump mid-scroll.
+      ScrollTrigger.config({ ignoreMobileResize: true });
 
-      scene = createSectorScene({ canvas, dirSign: dirSign() });
+      scene = createSectorScene({ element: holder, dirSign: dirSign() });
 
       const st = ScrollTrigger.create({
         trigger: section,
@@ -90,6 +93,9 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
         pin: true,
         pinSpacing: true,
         scrub: 0.8,
+        // Pin measurements are recomputed on refresh — after a language change
+        // the direction has flipped and every offset is stale (§6.1).
+        invalidateOnRefresh: true,
         onUpdate(self) {
           // 0..2 across the three states.
           const p = self.progress * 2;
@@ -128,7 +134,7 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
                 </div>
                 <p className="t-label sector-word" style={{ marginBlockStart: 'var(--s-6)' }}>
                   {sector.word}
-                </p>
+                </p>{' '}
                 <h3 className="t-h3 sector-name">{sector.name}</h3>
                 <p className="t-body sector-body measure">{sector.lead}</p>
                 <p className="sector-link">
@@ -157,10 +163,10 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
 
         <div className="sectors-layout">
           <div className="sectors-scene">
-            <canvas ref={canvasRef} className="scene" aria-hidden="true" />
+            <div ref={sceneRef} className="scene" aria-hidden="true" />
           </div>
 
-          <div>
+          <div className="sectors-text">
             {sectors.map((sector, i) => (
               <div
                 key={sector.key}
@@ -173,7 +179,7 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
                   display: i === active ? 'block' : 'none',
                 }}
               >
-                <p className="t-label sector-word">{sector.word}</p>
+                <p className="t-label sector-word">{sector.word}</p>{' '}
                 <h3 className="t-h2 sector-name">{sector.name}</h3>
                 <p className="t-body-l sector-body">{sector.lead}</p>
                 <p className="t-body sector-body">{sector.why}</p>

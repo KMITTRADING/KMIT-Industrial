@@ -33,7 +33,7 @@ export function ContactRows({
           rel="noopener noreferrer"
         >
           <MapPin size={size} className="contact-row-icon" />
-          <span className="contact-row-label t-label">{d.contact.rows.location}</span>
+          <span className="contact-row-label t-label">{d.contact.rows.location}</span>{' '}
           <span className="contact-row-value t-body">{address}</span>
         </a>
       </li>
@@ -41,7 +41,7 @@ export function ContactRows({
       <li>
         <a className="contact-row" href={TEL_HREF}>
           <Phone size={size} className="contact-row-icon" />
-          <span className="contact-row-label t-label">{d.contact.rows.mobile}</span>
+          <span className="contact-row-label t-label">{d.contact.rows.mobile}</span>{' '}
           <span className="contact-row-value t-body ltr-num">{SITE.phoneDisplay}</span>
         </a>
       </li>
@@ -49,7 +49,7 @@ export function ContactRows({
       <li>
         <a className="contact-row" href={MAILTO_HREF}>
           <Envelope size={size} className="contact-row-icon" />
-          <span className="contact-row-label t-label">{d.contact.rows.email}</span>
+          <span className="contact-row-label t-label">{d.contact.rows.email}</span>{' '}
           <span className="contact-row-value t-body" dir="ltr">
             {SITE.email}
           </span>
