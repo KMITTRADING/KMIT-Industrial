@@ -16,7 +16,9 @@
     "review": "node scripts/review.mjs",
     "review:3d": "node scripts/preview-3d.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
-    "check:stress": "node scripts/check-stress.mjs"
+    "check:stress": "node scripts/check-stress.mjs",
+    "check:perf": "node scripts/check-perf.mjs",
+    "check:visual": "node scripts/check-visual.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

@@ -19,6 +19,13 @@ export function HeroCrystalMount({ dir }: { dir: 'rtl' | 'ltr' }) {
   const markerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    /*
+     * Desktop only. At phone widths the heading already runs to three lines and
+     * the crystal's two refracted copies sit on top of them, which reads as
+     * clutter rather than as an effect — the same reason §6 drops the pinned
+     * sections below 1024. The CSS fallback covers the small screens.
+     */
+    if (!window.matchMedia('(min-width: 64rem)').matches) return;
     if (!canRender3D()) return;
 
     const box = markerRef.current?.closest<HTMLElement>('.hero-headline');
@@ -30,10 +37,14 @@ export function HeroCrystalMount({ dir }: { dir: 'rtl' | 'ltr' }) {
     let scene: { dispose: () => void } | null = null;
     let cancelled = false;
 
-    // Wait for idle so the scene never competes with first paint (§15.1.7).
-    const schedule =
-      window.requestIdleCallback ??
-      ((cb: IdleRequestCallback) => window.setTimeout(() => cb({} as IdleDeadline), 200));
+    /* Wait for idle so the scene never competes with first paint (§15.1.7).
+       The timeout is not optional: Lenis and GSAP hold a rAF loop open while the
+       visitor scrolls, so without one the browser can report no idle period at
+       all and the hero crystal simply never appears. */
+    const schedule = (cb: () => void) =>
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback(() => cb(), { timeout: 400 })
+        : window.setTimeout(cb, 200);
 
     const handle = schedule(async () => {
       const { createHeroScene } = await import('@/lib/three/heroCrystal');

@@ -8,16 +8,23 @@
   --brand: #2b3073; /* corporate indigo, the logo colour */
   --brand-mid: #3d55a4; /* light end of the identity gradient */
 
-  /* --- derived from the identity, no new hues --------------------------- */
-  --brand-deep: #1b1f4e; /* dark section grounds and the footer */
+  /* --- derived from the identity, no new hues ---------------------------
+     V1: the colour ratio is inverted. Light is the canvas — 75% of the page —
+     and dark is punctuation. The fatigue never came from the blue itself but
+     from a mid-saturation blue held across enormous areas, so the identity
+     indigo is now reserved for text, icons, buttons and small fields, where it
+     reads strongest and purest, and the large dark grounds take --night: far
+     deeper, far less saturated, and restful at any size. --------------- */
+  --night: #0e1030; /* large dark fields — deep, low-saturation indigo */
+  --night-end: #161a44; /* foot of the dark gradient; felt, not seen */
   --brand-tint: #eef0f7; /* very light wash: bezels, hover surfaces */
-  --line: #d9dbe6; /* hairline border, grey pulled toward the brand */
+  --line: #e3e4ea; /* hairline border, lighter than it used to be */
 
   --ink: #14173a; /* body text: near-black indigo, never neutral black */
   --ink-soft: #4a4f73; /* secondary text, 7.51:1 on --paper */
-  --paper: #faf9f6; /* warm white, the body canvas */
+  --paper: #faf9f6; /* warm white, the default canvas for every section */
   --surface: #ffffff; /* raised surfaces */
-  --mineral: #e8e5de; /* warm stone grey: texture, dividers, image grounds */
+  --mineral: #e8e5de; /* warm stone grey: texture, dividers, solids on light */
 
   /* on dark grounds: pure white, and white at .72 for secondary.
      Grey text over indigo reads as washed out, so it is never used. */
@@ -47,13 +54,20 @@
   --s-32: 8rem;
   --s-44: 11rem;
 
-  /* section rhythm: chapters, not adjacent rows */
-  --section-y: clamp(6rem, 12vh, 11rem);
+  /* section rhythm: chapters, not adjacent rows (§5.8) */
+  --section-y: clamp(6rem, 10vw, 9rem);
 
-  /* --- measure and gutters --------------------------------------------- */
-  --container: 1440px;
-  --content: 1180px;
-  --gutter: 1.5rem;
+  /* --- measure and gutters ---------------------------------------------
+     §5.6: coloured sections run edge to edge and the content inside them sits
+     in one 1280px container. Above 1920 the container does not grow — only the
+     backgrounds do. §6: gutters step 20 / 32 / 48. */
+  --container: 1280px;
+  --content: 1280px;
+  --gutter: 1.25rem;
+  /* §5.5: section headings and their one lead line, centred and narrow. */
+  --head-measure: 620px;
+  /* §5.9: 62-70 characters of running text. */
+  --text-column: clamp(26rem, 40vw, 32.5rem);
 
   /* --- the 45deg chamfer, the geometric signature (§5.4.1) -------------- */
   --chamfer: 20px;
@@ -73,6 +87,12 @@
   --z-toast: 50;
 }
 
+@media (min-width: 46.5rem) {
+  :root {
+    --gutter: 2rem;
+  }
+}
+
 @media (min-width: 64rem) {
   :root {
     --gutter: 3rem;
@@ -87,9 +107,13 @@
      the few places that need a physical side read it from here instead of
      hard-coding left/right (§6.2). */
   --progress-origin: left;
+  /* +1 in LTR, -1 in RTL. Anything translating on the x axis multiplies by this
+     so it moves in the reading direction rather than always to the right. */
+  --dir-sign: 1;
 }
 :root:lang(ar),
 [dir='rtl'] {
   --lh-nudge: 0.12;
   --progress-origin: right;
+  --dir-sign: -1;
 }

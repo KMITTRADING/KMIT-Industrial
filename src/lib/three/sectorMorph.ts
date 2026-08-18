@@ -3,12 +3,11 @@ import { registerView, getSceneHost, invalidateScenes } from './sceneHost';
 import {
   bevelledBox,
   contactShadow,
-  getStudioEnvironment,
+  lightScene,
   marbleMaterial,
   productCamera,
   solarMaterial,
   stoneMaterial,
-  studioFloor,
 } from './studio';
 
 /**
@@ -154,10 +153,9 @@ export function createSectorScene({
   dirSign?: 1 | -1;
 }): SectorScene {
   const host = getSceneHost();
-  const envMap = getStudioEnvironment(host.renderer);
 
   const scene = new THREE.Scene();
-  scene.environment = envMap;
+  const envMap = lightScene(scene, host.renderer);
 
   /* C5: product lens. The subject is about 2.2 units tall and should fill two
      thirds of the frame; the camera distance is solved from that rather than
@@ -197,9 +195,8 @@ export function createSectorScene({
     meshes.push(mesh);
   }
 
-  // C4: a floor to stand on, then the shadow that lands on it.
-  const floor = studioFloor(14, -0.92, envMap);
-  scene.add(floor);
+  /* §3: no floor plane. The canvas is transparent and the light section ground
+     shows straight through; only the contact pool gives the solids weight. */
   const shadow = contactShadow(4.2, 3.0, -0.9);
   scene.add(shadow);
 
@@ -268,8 +265,6 @@ export function createSectorScene({
       solar.dispose();
       shadow.geometry.dispose();
       (shadow.material as THREE.Material).dispose();
-      floor.geometry.dispose();
-      (floor.material as THREE.Material).dispose();
     },
   });
 

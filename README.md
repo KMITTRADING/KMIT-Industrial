@@ -47,12 +47,14 @@ rather than asserted in a comment.
 | `npm run review` | Drives a real browser over all 9 routes at 390 / 834 / 1440 in both languages — the six mandatory states, 54 page states in total. Checks horizontal overflow, heading line counts, zero border-radius, Arabic typography, 44px touch targets, that no layout property is transitioned, that no label and value render glued together, and that the design tokens actually loaded (see below). |
 | `npm run check:a11y` | Runs **axe-core** — the engine Lighthouse's accessibility category is built on — over all 18 pages at WCAG 2.1 A/AA, reporting per rule, per element and per page. |
 | `npm run check:stress` | Three fast full-page scroll passes with the capability gate forced open. Asserts the tab survives, no `webglcontextlost` fires, exactly one `<canvas>` exists, the JS heap does not grow across passes, and nothing throws. |
+| `npm run check:perf` | Vitals under Slow 4G and 4x CPU throttling **on both paths** — the static one and the §10 WebGL one — and fails if the worst single main-thread task on the WebGL path exceeds 1200 ms. |
+| `npm run check:visual` | The visual-overhaul acceptance list: light sections ≥ 70% of page height, exactly two non-adjacent dark sections, dark grounds using `--night`, no scene holder carrying a border/background/radius/shadow/clip, every scene holder actually drawing pixels, the header never white without a measured dark ground, and no pin below 1024px. |
 | `npm run review:3d` | Renders with the capability gate forced open and captures the WebGL scenes. See below. |
 | `npm run check` | typecheck + contrast + copy. |
 
-`npm run review`, `npm run review:3d`, `npm run check:a11y` and `npm run check:stress`
-need a running server; pass the base URL as the first argument if it is not
-`http://localhost:3000`.
+`npm run review`, `npm run review:3d`, `npm run check:a11y`, `npm run check:stress`,
+`npm run check:perf` and `npm run check:visual` need a running server; pass the base URL as the first
+argument if it is not `http://localhost:3000`.
 
 ### Why `review:3d` and `check:stress` exist
 
@@ -63,6 +65,12 @@ have to force the gate open. Real bugs were only ever visible that way: a GLSL
 precision mismatch that failed program validation, every scene canvas rendering
 into a 300×150 buffer because `<canvas>` is a replaced element and `inset: 0` does
 not stretch it, and the context exhaustion that `check:stress` now guards (below).
+
+`check:perf` exists for the same reason and was added after the gate cost real
+points: every vitals number taken here had been measured with the gate shut, so a
+~2.8 s main-thread block on the WebGL path went unnoticed locally and only showed
+up as a 20-point Lighthouse drop on a runner with more cores. It now measures both
+paths and fails on a budget.
 
 ### Regenerating assets
 
@@ -110,6 +118,19 @@ anywhere on the site — those gaps render as designed `PlaceholderBlock` compon
 and are listed in `CONTENT-TODO.md`. Content about calcium carbonate is general
 material science, described qualitatively.
 
+### The colour ratio
+
+Light is the canvas and dark is punctuation, not the other way round. `--paper`
+carries about three quarters of the page; the home page has exactly two dark
+sections — the hero and the material journey — and they are never adjacent.
+
+Large dark grounds do **not** use the identity indigo. `#2B3073` at that scale is
+what made the page tiring to look at, so it is kept for text, icons, buttons and
+small fields, where it reads strongest, and the big fields use `--night`
+(`#0E1030`) instead: far deeper, far less saturated, and restful at any size. It
+also happens to be much kinder to contrast — white on `--night` measures 18.5:1
+against 7.1:1 on the old ground.
+
 ### The 3D layer, and the path without it
 
 **One WebGL context for the whole page.** `lib/three/sceneHost.ts` owns a single
@@ -128,6 +149,20 @@ progress, is mid-animation, or the layout resized. A parked, static scene costs
 zero frames. `lib/three/studio.ts` holds the shared look-dev — a procedural PMREM
 environment (no HDRI request), bevelled solids, materials and contact shadows — so
 the four scenes are lit as one object family rather than four.
+
+Scenes are **not in boxes**. The canvas is transparent, no holder carries a
+border, background, radius, shadow or clip, and the solid is allowed to cross the
+section edge and be clipped by it — partial clipping is what gives a shape scale,
+where clear air on all four sides makes it read as a card. There is no floor
+plane either: a plane is a visible edge between the scene and the section, so the
+section's own ground shows through and only a soft contact pool gives the solid
+weight. That pool darkens on a light ground and lifts on a dark one, because a
+dark shadow on a dark ground is not a shadow.
+
+Each holder keeps its designed still underneath the shared canvas, revealed until
+the host reports that real pixels have landed in that holder. A scene that fails
+to build for any reason therefore degrades to a still rather than to an empty
+coloured field.
 
 | Scene | What it does |
 |---|---|
@@ -164,6 +199,14 @@ Five, all deliberate. Everything else follows the brief as written.
 Against Slow 4G with 4x CPU throttling. Arabic is the heavier language — it runs
 ~33% longer — so it is the number that counts.
 
+**Two paths, measured separately.** This matters more than it sounds: a machine
+reporting four cores or fewer never runs the 3D layer at all (§10), and the build
+container here reports four. Numbers taken without forcing the §10 gate therefore
+describe the static path only and say nothing about the WebGL one — which is the
+path a headless Lighthouse runner, with more cores, actually measures.
+
+### Static path (gate shut)
+
 Four runs against a fresh production build, so these are ranges rather than one
 lucky number:
 
@@ -180,8 +223,31 @@ and 764 ms of long tasks. LCP and long-task time both improved. CLS rose to 0.02
 now sized to their content instead of every one being a viewport tall, so the
 reveal transitions settle against real heights rather than fixed ones.
 
+### WebGL path (gate forced open)
+
 The three.js chunk is **not referenced in the home page HTML** at all: it is fetched
-only when the §10 capability gate opens, at idle, after paint.
+only when the §10 capability gate opens, at idle, after paint. With the gate forced
+open on `/ar`, three runs:
+
+| Metric | This build | Before remediation |
+|---|---|---|
+| Total long-task time | 1306–1411 ms | 1337–1392 ms |
+| Worst single task | **282–301 ms** | 437–470 ms |
+
+Two things keep it there, and both were found by measuring rather than by reasoning:
+
+- **Scenes build near their own viewport, at idle** (`lib/three/defer.ts`), not
+  during hydration. The pin is still created at mount, because a ScrollTrigger pin
+  sets the document height and making one late would move everything below it; only
+  the WebGL work waits.
+- **The environment probe is skipped on a software rasteriser.** Generating the
+  PMREM is by far the most expensive thing the 3D layer does at start-up. On a GPU
+  it is a few milliseconds; on SwiftShader it was measured here as a single ~2.8 s
+  block — most of the page's total blocking time, and exactly what a headless
+  Lighthouse run sees. Every scene also carries a key and a rim light, so where the
+  probe cannot be afforded the scenes light with those plus a hemisphere fill, and
+  the three materials roughen and lift to suit lights instead of reflections. On
+  real hardware nothing changes and the full studio is used.
 
 ### The tab crash
 
@@ -195,7 +261,10 @@ three passes, and no console or page errors.
 
 Netlify's Lighthouse scored the first deploy preview at **Performance 69,
 Accessibility 98, Best Practices 92, SEO 100**. Deferring the scroll libraries moved
-Performance into the **76–80** band — the spread is run-to-run variance on a shared
+Performance into the **76–80** band. The remediation initially dropped it to **56**,
+because the runner has enough cores to open the §10 gate and no GPU to render it
+with; the two changes above brought the WebGL path's blocking time back under the
+pre-remediation figure. The band is otherwise run-to-run variance on a shared
 CI runner, not a difference between commits. Accessibility is **100**, after
 axe-core named the one real defect (the §11.3 row above). LCP and CLS both clear
 their targets by a wide margin, so the Performance number is dominated by Total

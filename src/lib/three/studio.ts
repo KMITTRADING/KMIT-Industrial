@@ -24,12 +24,65 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 
 let envMap: THREE.Texture | null = null;
 let envRenderer: THREE.WebGLRenderer | null = null;
+let software: boolean | null = null;
 
-export function getStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
-  if (envMap && envRenderer === renderer) return envMap;
+/**
+ * True when WebGL is being rasterised on the CPU — SwiftShader, llvmpipe, or a
+ * plain software fallback — rather than on a GPU.
+ *
+ * This matters because generating the PMREM is by far the most expensive thing
+ * the 3D layer does at start-up. On a GPU it is a few milliseconds. On a
+ * software rasteriser, measured here, it is a single ~2.8s block of the main
+ * thread, which is most of the page's total blocking time and is what a
+ * headless Lighthouse run sees. The lighting is an enhancement, not a
+ * requirement — every scene also carries a key and a rim light — so on a
+ * machine that cannot afford it we light with those and skip the probe.
+ */
+function isSoftwareRenderer(renderer: THREE.WebGLRenderer): boolean {
+  if (software !== null) return software;
+  software = false;
+  try {
+    const gl = renderer.getContext();
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = ext
+      ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) ?? '')
+      : String(gl.getParameter(gl.RENDERER) ?? '');
+    software = /swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/i.test(name);
+  } catch {
+    /* If the extension is blocked we assume real hardware and keep the probe. */
+  }
+  return software;
+}
+
+/**
+ * Sets up a scene's ambient lighting and returns the environment map to build
+ * materials against, which is `null` on a software rasteriser. A material with
+ * a null `envMap` is still perfectly valid — it simply has nothing to reflect.
+ */
+export function lightScene(
+  scene: THREE.Scene,
+  renderer: THREE.WebGLRenderer
+): THREE.Texture | null {
+  const env = getStudioEnvironment(renderer);
+  if (env) {
+    scene.environment = env;
+    return env;
+  }
+  /* No probe: a hemisphere stands in for the room, so the shadow sides pick up
+     the rim colour and the tops pick up the key instead of going dead black. */
+  const hemisphere = new THREE.HemisphereLight(0xdfe4f5, 0x2b3073, 1.15);
+  scene.add(hemisphere);
+  return null;
+}
+
+export function getStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture | null {
+  if (envRenderer === renderer && (envMap || software)) return envMap;
+  if (isSoftwareRenderer(renderer)) {
+    envRenderer = renderer;
+    return null;
+  }
 
   const pmrem = new THREE.PMREMGenerator(renderer);
-  pmrem.compileEquirectangularShader();
 
   const room = new THREE.Scene();
   room.background = new THREE.Color(0x0d1030);
@@ -189,7 +242,7 @@ function buildNoiseTextures() {
 }
 
 /** Warm stone white (#E8E5DE), varied roughness, fine grain. */
-export function stoneMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardMaterial {
+export function stoneMaterial(envMapTexture: THREE.Texture | null): THREE.MeshStandardMaterial {
   const { roughness, normal } = buildNoiseTextures();
   return new THREE.MeshStandardMaterial({
     color: 0xe8e5de,
@@ -200,11 +253,15 @@ export function stoneMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardM
     metalness: 0.04,
     envMap: envMapTexture,
     envMapIntensity: 0.9,
+    /* Without a probe there is nothing to reflect, so the broad soft highlight
+       the environment used to supply has to come from the key light instead:
+       a rougher surface spreads it wide rather than leaving a hot pinpoint. */
+    ...(envMapTexture ? {} : { roughness: 0.62 }),
   });
 }
 
 /** Polished marble: the same stone, smoother, for slab faces. */
-export function marbleMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardMaterial {
+export function marbleMaterial(envMapTexture: THREE.Texture | null): THREE.MeshStandardMaterial {
   const { roughness, normal } = buildNoiseTextures();
   return new THREE.MeshStandardMaterial({
     color: 0xf1efea,
@@ -215,6 +272,7 @@ export function marbleMaterial(envMapTexture: THREE.Texture): THREE.MeshStandard
     metalness: 0.05,
     envMap: envMapTexture,
     envMapIntensity: 1.15,
+    ...(envMapTexture ? {} : { roughness: 0.4 }),
   });
 }
 
@@ -224,7 +282,7 @@ export function marbleMaterial(envMapTexture: THREE.Texture): THREE.MeshStandard
  */
 let cellTexture: THREE.Texture | null = null;
 
-export function solarMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardMaterial {
+export function solarMaterial(envMapTexture: THREE.Texture | null): THREE.MeshStandardMaterial {
   if (!cellTexture) {
     const size = 128;
     const canvas = document.createElement('canvas');
@@ -254,6 +312,11 @@ export function solarMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardM
     metalness: 0.1,
     envMap: envMapTexture,
     envMapIntensity: 1.6,
+    /* This is the material that suffers most without a probe: dark glass at
+       roughness 0.1 has nothing to reflect and resolves to a black silhouette.
+       Lifting the base and roughening it trades the mirror for a sheen the key
+       and rim lights can actually produce, which still reads as a panel. */
+    ...(envMapTexture ? {} : { color: 0x3c4788, roughness: 0.38, metalness: 0.3 }),
   });
 }
 
@@ -263,24 +326,8 @@ export function solarMaterial(envMapTexture: THREE.Texture): THREE.MeshStandardM
  * shadow map would cost a second render pass per light (B4 forbids that).
  * ========================================================================= */
 
-let falloffTexture: THREE.Texture | null = null;
 
-/** A radial white-to-transparent ramp, used to fade the floor's edges out. */
-function getFalloffTexture(): THREE.Texture {
-  if (falloffTexture) return falloffTexture;
-  const size = 256;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
-  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-  gradient.addColorStop(0, '#ffffff');
-  gradient.addColorStop(0.45, '#d8d8d8');
-  gradient.addColorStop(1, '#000000');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size, size);
-  falloffTexture = new THREE.CanvasTexture(canvas);
-  return falloffTexture;
-}
+
 
 let shadowTexture: THREE.Texture | null = null;
 
@@ -300,47 +347,35 @@ function getShadowTexture(): THREE.Texture {
   return shadowTexture;
 }
 
-/**
- * A studio sweep for the subject to stand on.
- *
- * A contact shadow alone does nothing on this site: the scenes sit on the deep
- * indigo section ground, and a dark shadow against a dark ground is invisible —
- * which is why the solids still looked like they were floating. A faint floor
- * one step lighter than the section gives the shadow something to fall on, and
- * gives the subject a horizon.
- */
-export function studioFloor(size: number, y: number, envMapTexture: THREE.Texture): THREE.Mesh {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(size, size),
-    new THREE.MeshStandardMaterial({
-      color: 0x232a5e,
-      roughness: 0.86,
-      metalness: 0.0,
-      envMap: envMapTexture,
-      envMapIntensity: 0.55,
-      transparent: true,
-      opacity: 0.92,
-      // Without this the floor is a hard-edged rectangle floating in the
-      // section — a radial alpha ramp dissolves it into the ground instead.
-      alphaMap: getFalloffTexture(),
-      depthWrite: false,
-    })
-  );
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.y = y;
-  mesh.renderOrder = -2;
-  return mesh;
-}
+
 
 /** A soft ground shadow, lying in the XZ plane at `y`. */
-export function contactShadow(width: number, depth: number, y = 0): THREE.Mesh {
+/**
+ * §3: the shadow has to melt into whatever the section's own ground is, with no
+ * visible edge between the two. There is no floor plane any more — a plane is
+ * precisely the visible edge the brief rules out, and it was reading as a dark
+ * dome sitting behind the solid once the sections turned light.
+ *
+ * Instead the canvas is transparent and the section ground shows straight
+ * through, with only a soft radial pool under the solid to give it weight. On a
+ * light ground that pool darkens; on a dark one it lifts, because a dark shadow
+ * on a dark ground is not a shadow, it is nothing.
+ */
+export function contactShadow(
+  width: number,
+  depth: number,
+  y = 0,
+  tone: 'dark' | 'light' = 'dark'
+): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(width, depth),
     new THREE.MeshBasicMaterial({
       map: getShadowTexture(),
       transparent: true,
       depthWrite: false,
-      opacity: 0.9,
+      color: tone === 'light' ? 0xaebbe8 : 0x2a2f52,
+      blending: tone === 'light' ? THREE.AdditiveBlending : THREE.NormalBlending,
+      opacity: tone === 'light' ? 0.5 : 0.8,
     })
   );
   mesh.rotation.x = -Math.PI / 2;
@@ -371,6 +406,4 @@ export function disposeStudio() {
   cellTexture = null;
   shadowTexture?.dispose();
   shadowTexture = null;
-  falloffTexture?.dispose();
-  falloffTexture = null;
 }

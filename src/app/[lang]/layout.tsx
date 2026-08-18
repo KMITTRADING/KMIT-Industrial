@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { notFound } from 'next/navigation';
 import '@/styles/globals.css';
 
-import { FloatingNav } from '@/components/FloatingNav';
+import { SiteHeader } from '@/components/SiteHeader';
 import { Footer } from '@/components/Footer';
 import { GrainOverlay } from '@/components/GrainOverlay';
 import { ScrollProgress } from '@/components/ScrollProgress';
@@ -82,7 +82,7 @@ export default async function LangLayout({
         <ScrollProgress />
         <GrainOverlay />
 
-        <FloatingNav locale={locale} />
+        <SiteHeader locale={locale} />
 
         <main id="main">{children}</main>
 

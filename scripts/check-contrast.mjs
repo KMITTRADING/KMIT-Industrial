@@ -7,7 +7,8 @@
 const TOKENS = {
   brand: '#2B3073',
   'brand-mid': '#3D55A4',
-  'brand-deep': '#1B1F4E',
+  night: '#0E1030',
+  'night-end': '#161A44',
   'brand-tint': '#EEF0F7',
   line: '#D9DBE6',
   ink: '#14173A',
@@ -56,28 +57,28 @@ const PAIRS = [
   ['brand on brand-tint (links)', t.brand, t['brand-tint'], 4.5],
   ['brand-mid on paper (links)', t['brand-mid'], t.paper, 4.5],
   ['brand-mid on surface (links)', t['brand-mid'], t.surface, 4.5],
-  ['white on brand-deep (body)', t.white, t['brand-deep'], 4.5],
+  ['white on night (body)', t.white, t.night, 4.5],
   ['white on brand (body)', t.white, t.brand, 4.5],
   ['white on brand-mid (body)', t.white, t['brand-mid'], 4.5],
-  ['white .72 on brand-deep (secondary)', overWhite(0.72, t['brand-deep']), t['brand-deep'], 4.5],
+  ['white .72 on night (secondary)', overWhite(0.72, t.night), t.night, 4.5],
   ['white .72 on brand (secondary)', overWhite(0.72, t.brand), t.brand, 4.5],
   // gradient endpoints: white must clear AA at both ends of --grad-brand
   ['white on grad start #2B3073', t.white, '#2B3073', 4.5],
   ['white on grad end #3D55A4', t.white, '#3D55A4', 4.5],
   // focus ring must be visible against every ground it can land on
   ['focus ring brand-mid vs paper', t['brand-mid'], t.paper, 3],
-  ['focus ring white vs brand-deep', t.white, t['brand-deep'], 3],
+  ['focus ring white vs night', t.white, t.night, 3],
 ];
 
 /*
- * A dark section is not actually --brand-deep: `.on-dark::before` lays the 135deg
- * identity gradient over it at 34% opacity, so the ground text really sits on is
- * lighter than the token. Testing against the token alone would pass while the
- * rendered page failed, so both ends of the gradient are flattened and checked.
+ * V1: a dark section is a vertical --night -> --night-end gradient under a
+ * radial vignette. The vignette only ever darkens, so the lightest ground any
+ * text actually sits on is the bare gradient — both ends of which are checked
+ * here. Testing the token alone would pass while the rendered page failed.
  */
 const GRADIENT_ENDS = [
-  ['grad start', '#2B3073'],
-  ['grad end', '#3D55A4'],
+  ['grad start', '#0E1030'],
+  ['grad end', '#161A44'],
 ];
 
 function overColour(fgHex, alpha, bgHex) {
@@ -92,8 +93,7 @@ function overColour(fgHex, alpha, bgHex) {
   );
 }
 
-for (const [label, end] of GRADIENT_ENDS) {
-  const ground = overColour(end, 0.34, t['brand-deep']);
+for (const [label, ground] of GRADIENT_ENDS) {
   PAIRS.push([`white on dark section (${label})`, t.white, ground, 4.5]);
   PAIRS.push([
     `white .72 on dark section (${label})`,
