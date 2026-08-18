@@ -42,6 +42,8 @@ type Registered = SceneView & {
   visible: boolean;
   /** Set while this view still wants frames. */
   active: boolean;
+  /** Set once this view has actually rendered at least one frame. */
+  drawn: boolean;
 };
 
 let host: Host | null = null;
@@ -139,7 +141,7 @@ class Host {
   }
 
   register(view: SceneView): () => void {
-    const entry: Registered = { ...view, visible: false, active: true };
+    const entry: Registered = { ...view, visible: false, active: true, drawn: false };
     this.views.add(entry);
     this.io.observe(view.element);
 
@@ -244,6 +246,15 @@ class Host {
         }
       }
       this.renderer.render(view.scene, camera);
+
+      /* Mark the holder the first time real pixels land in it. The designed
+         still sits underneath and is hidden by CSS only once this is set, so a
+         scene that fails to build — for any reason, on any engine — degrades to
+         the still rather than to an empty coloured box. */
+      if (!view.drawn) {
+        view.drawn = true;
+        view.element.dataset.drawn = 'true';
+      }
     }
 
     if (anyActive || this.needsFrame) {

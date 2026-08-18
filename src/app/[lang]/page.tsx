@@ -7,7 +7,7 @@ import { IntroStrip } from '@/components/sections/IntroStrip';
 import { MaterialJourney } from '@/components/sections/MaterialJourney';
 import { OperatingApproach } from '@/components/sections/OperatingApproach';
 import { PresenceContact } from '@/components/sections/PresenceContact';
-import { SectorsPinned } from '@/components/sections/SectorsPinned';
+import { SectorsMorph } from '@/components/sections/SectorsMorph';
 import { WhyMaterial } from '@/components/sections/WhyMaterial';
 import { isLocale, LOCALES, type Locale } from '@/lib/i18n';
 import { buildMetadata } from '@/lib/metadata';
@@ -37,7 +37,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       <JsonLd data={pageGraph(locale, 'home')} />
       <Hero locale={locale} />
       <IntroStrip locale={locale} />
-      <SectorsPinned locale={locale} />
+      <SectorsMorph locale={locale} />
       <MaterialJourney locale={locale} />
       <WhyMaterial locale={locale} />
       <OperatingApproach locale={locale} />

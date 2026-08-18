@@ -25,116 +25,179 @@
    §8.0: detached from the top edge, width follows its content, no curve, a
    45deg cut on the outer top corner, glass only here and on overlays (§14).
    ========================================================================= */
-.nav-shell {
+/* =========================================================================
+   V2 — SITE HEADER
+   Full-bleed and flush to the top edge: the frame of the site, not a widget
+   floating over it. 64px tall on desktop, 56px on mobile.
+
+   The colour rule is the important part. `data-ground` has three values and
+   they are exhaustive:
+     plate  — scrolled past 64px. Opaque light surface, ink text, always legible.
+     dark   — at rest over a measured .on-dark section. Transparent, white text.
+     light  — at rest over anything else. Transparent, ink text.
+   White text is only ever used in the one state where a dark ground has
+   actually been measured underneath the bar, which is what stops the old
+   white-on-near-white failure from coming back.
+   ========================================================================= */
+.site-header {
   position: fixed;
-  inset-block-start: var(--s-6);
+  inset-block-start: 0;
   inset-inline: 0;
   z-index: var(--z-sticky);
-  display: flex;
-  justify-content: center;
-  padding-inline: var(--gutter);
-  pointer-events: none;
-}
-
-/*
- * D5: over the dark hero the bar is simply transparent — no plate, no border —
- * because a dark chip on a dark ground reads as a smudge. The glass surface only
- * appears once the visitor has scrolled past the hero's first 80px.
- *
- * B5: `backdrop-filter` is gone. Backdrop blur on a fixed element sitting over a
- * moving canvas is a known source of scroll jank in Safari and Firefox, and it
- * was buying very little here. A solid translucent plate does the same job.
- */
-.nav-bar {
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--s-6);
-  padding: var(--s-3) var(--s-5);
+  block-size: 56px;
   background: transparent;
-  border: 1px solid transparent;
-  color: var(--on-dark);
-  transform-origin: top center;
-  transition: background var(--dur-standard) var(--ease-out-expo),
-    color var(--dur-standard) var(--ease-out-expo),
-    border-color var(--dur-standard) var(--ease-out-expo),
-    transform var(--dur-standard) var(--ease-out-expo);
+  border-block-end: 1px solid transparent;
+  /* §2 specifies 300ms for this transition. */
+  transition: background 300ms var(--ease-out-expo), color 300ms var(--ease-out-expo),
+    border-color 300ms var(--ease-out-expo);
 }
-
-/* Past 80px: the plate appears and the bar shrinks slightly. The scale keeps the
-   motion on `transform` only (§11). */
-.nav-bar[data-compact='true'] {
-  transform: scale(0.96);
-  background: rgba(250, 249, 246, 0.94);
-  border-color: var(--line);
-  box-shadow: var(--shadow-1);
-  color: var(--brand);
-}
-
-/* Scrolled, but currently over an indigo section: keep the plate, invert it. */
-.nav-bar[data-compact='true'][data-on-dark='true'] {
-  background: rgba(20, 24, 62, 0.94);
-  border-color: var(--on-dark-line);
-  color: var(--on-dark);
-}
-
-.nav-links {
-  display: none;
-  align-items: center;
-  gap: var(--s-1);
-}
-@media (min-width: 68rem) {
-  .nav-links {
-    display: flex;
+@media (min-width: 64rem) {
+  .site-header {
+    block-size: 64px;
   }
 }
 
-.nav-logo {
+.site-header-inner {
+  block-size: 100%;
+  max-inline-size: 100%;
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: var(--s-6);
+}
+@media (min-width: 64rem) {
+  .site-header-inner {
+    padding-inline: 2rem;
+  }
+}
+
+/* At rest over a dark section. */
+.site-header[data-ground='dark'] {
+  color: var(--on-dark);
+}
+/* At rest over a light section — the state the old header got wrong. */
+.site-header[data-ground='light'] {
+  color: var(--ink);
+}
+/*
+ * Scrolled: a translucent light plate. The brief asks for backdrop blur here
+ * specifically, so it is back after having been removed for scroll jank; it is
+ * scoped to this one 64px strip and paired with an opaque-enough background
+ * that the text stays legible if a browser drops the filter entirely.
+ */
+.site-header[data-ground='plate'] {
+  background: rgba(250, 249, 246, 0.82);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-block-end-color: rgba(20, 23, 58, 0.08);
+  color: var(--ink);
+}
+
+.header-logo {
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
+  color: inherit;
+}
+/* The mark inherits the header's colour, so it flips with the ground. */
+.header-logo svg path,
+.header-logo svg polygon,
+.header-logo svg rect {
+  fill: currentColor;
 }
 
-.nav-link {
+/* §2: the links sit in the middle of the bar, not beside the logo. */
+.header-nav {
+  display: none;
+  margin-inline: auto;
+}
+@media (min-width: 68rem) {
+  .header-nav {
+    display: block;
+  }
+}
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+
+.header-link {
   position: relative;
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
-  padding: var(--s-2) var(--s-3);
   font-size: 0.9375rem;
   font-weight: 500;
   white-space: nowrap;
-  transition: color var(--dur-micro) var(--ease-micro);
+  color: inherit;
+  text-decoration: none;
+  transition: opacity var(--dur-micro) var(--ease-micro);
 }
-/* Hairline underline that grows from the reading edge. No colour change alone,
-   so the affordance survives for anyone who cannot separate the two indigos. */
-.nav-link::after {
+.header-link:hover {
+  opacity: 0.72;
+}
+/* A 2px rule in the identity colour, sliding in from the reading edge. On a
+   dark ground it uses the text colour, because indigo on indigo is invisible. */
+.header-link::after {
   content: '';
   position: absolute;
-  inset-block-end: calc(var(--s-2) - 2px);
-  inset-inline-start: var(--s-3);
-  inline-size: calc(100% - var(--s-6));
-  block-size: 1px;
-  background: currentColor;
+  inset-block-end: 12px;
+  inset-inline: 0;
+  block-size: 2px;
+  background: var(--brand);
   transform: scaleX(0);
   transform-origin: var(--progress-origin) center;
   transition: transform var(--dur-standard) var(--ease-out-expo);
 }
-.nav-link:hover::after,
-.nav-link[aria-current='page']::after {
+.site-header[data-ground='dark'] .header-link::after {
+  background: currentColor;
+}
+.header-link:hover::after,
+.header-link[aria-current='page']::after {
   transform: scaleX(1);
 }
 
-.nav-toggle {
+.header-end {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-inline-start: auto;
+}
+@media (min-width: 68rem) {
+  .header-end {
+    margin-inline-start: 0;
+  }
+  .header-lang {
+    display: inline-flex;
+  }
+}
+/* §2: the language switch is separated by a 20px vertical hairline. */
+/* §2: mobile shows the logo and the menu button only — the language switch
+   lives at the foot of the full-screen menu instead. */
+.header-lang {
+  display: none;
+  padding-inline-start: var(--s-4);
+  border-inline-start: 1px solid currentColor;
+  /* The rule is a hairline, not a full-height divider. */
+  border-image: linear-gradient(transparent calc(50% - 10px), currentColor calc(50% - 10px), currentColor calc(50% + 10px), transparent calc(50% + 10px)) 1;
+  opacity: 0.9;
+}
+.header-lang:hover {
+  opacity: 1;
+}
+
+.header-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   inline-size: 44px;
   block-size: 44px;
-  margin-inline-start: auto;
+  color: inherit;
 }
 @media (min-width: 68rem) {
-  .nav-toggle {
+  .header-toggle {
     display: none;
   }
 }
@@ -153,24 +216,50 @@
 }
 
 /* ------------------------------------------------------- mobile overlay -- */
+/*
+ * §2: a full-screen layer on a SOLID --paper ground. It used to be translucent
+ * indigo over a blurred page, which meant the page's own text showed through
+ * behind the menu items and both were harder to read than either alone.
+ */
 .nav-overlay {
   position: fixed;
   inset: 0;
   z-index: var(--z-overlay);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: rgba(27, 31, 78, 0.92);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  color: var(--on-dark);
-  padding: var(--s-6) var(--gutter) var(--s-12);
+  background: var(--paper);
+  color: var(--ink);
+  padding: var(--s-4) var(--gutter) var(--s-12);
+}
+.nav-overlay-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  block-size: 56px;
+}
+.nav-overlay-foot {
+  display: grid;
+  gap: var(--s-4);
+}
+.nav-overlay-contact {
+  display: grid;
+  gap: var(--s-2);
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+.nav-overlay-contact a {
+  min-block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
 }
 
 .nav-overlay-links {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--s-2);
+  gap: 20px;
+  list-style: none;
 }
 
 /* Each link rises out of a mask below it, staggered 60ms (§8.0). The initial
@@ -178,10 +267,14 @@
    JS disabled (§11, §15.1). */
 .nav-overlay-link {
   display: block;
-  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-size: 1.75rem;
   font-weight: 500;
-  padding-block: var(--s-2);
-  border-block-end: 1px solid var(--on-dark-line);
+  min-block-size: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+.nav-overlay-link[aria-current='page'] {
+  color: var(--brand);
 }
 
 .nav-overlay[data-animate='true'] .nav-overlay-link-inner {
@@ -209,11 +302,14 @@
    ========================================================================= */
 /* D6: the two hero buttons used to carry identical visual weight, so neither
    read as primary. One is now a solid plate, the other a hairline outline. */
+/* §7: 52px tall, 32px of horizontal padding, no radius, and a 45deg cut on the
+   outer top corner via .chamfer. Both hero buttons therefore share a height and
+   a baseline, which they did not before. */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: var(--s-3);
-  padding: 0 28px;
+  padding: 0 32px;
   font-weight: 500;
   font-size: 0.9375rem;
   min-block-size: 52px;
@@ -235,10 +331,11 @@
   background: var(--brand-mid);
 }
 
+/* §7: a 1px border in the text's own colour at 35%, not a grey hairline. */
 .btn-secondary {
   background: transparent;
   color: var(--brand);
-  border-color: var(--line);
+  border-color: color-mix(in srgb, currentColor 35%, transparent);
 }
 .btn-secondary:hover {
   background: var(--brand-tint);
@@ -301,37 +398,28 @@
 }
 
 /* ==================================================== dark section ground */
+/*
+ * V1: a dark section is punctuation, not a backdrop. There are exactly two on
+ * the home page and they are never adjacent, so this ground has to hold its own
+ * without the identity indigo, which at this size was what tired the eye. The
+ * gradient runs --night to --night-end: a difference you feel as depth rather
+ * than notice as a gradient.
+ */
 .on-dark {
-  background: var(--brand-deep);
+  background: linear-gradient(180deg, var(--night) 0%, var(--night-end) 100%);
   color: var(--on-dark);
   position: relative;
   isolation: isolate;
 }
-/* The 135deg identity gradient, held back so the ground stays readable. */
-.on-dark::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--grad-brand);
-  opacity: 0.34;
-  pointer-events: none;
-}
-/*
- * D4: the indigo field was one flat colour edge to edge. Two more very light
- * layers give it depth without becoming a visible gradient in their own right:
- * a vertical shift from --brand-deep at the top toward --brand at the bottom,
- * and a soft radial vignette pulling the corners down.
- */
+/* A single soft vignette. The 135deg identity wash is gone from large grounds:
+   at this scale it was the saturation the brief asked to remove. */
 .on-dark::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(125% 85% at 50% 42%, transparent 42%, rgba(5, 7, 24, 0.3) 100%),
-    linear-gradient(180deg, rgba(27, 31, 78, 0.5) 0%, rgba(43, 48, 115, 0.32) 100%);
+  background: radial-gradient(125% 85% at 50% 42%, transparent 48%, rgba(4, 5, 20, 0.34) 100%);
 }
 .on-dark .t-body,
 .on-dark .t-body-l {
@@ -511,28 +599,35 @@
 }
 
 /* ============================================ horizontal accordion (§8.6) */
+/*
+ * V: the strips used to hide the prose of every closed panel while keeping the
+ * panel 380px tall, which is exactly how you get three tall empty white boxes.
+ * Nothing is hidden now — every panel always shows its heading and its text, and
+ * the open one simply gets more room and a tinted ground. The widths still
+ * animate, so the interaction reads without anything having to disappear, and
+ * the component no longer needs a caption telling people to hover it.
+ */
 .accordion {
   display: grid;
   gap: 1px;
   background: var(--line);
-  border: 1px solid var(--line);
 }
-@media (min-width: 62rem) {
+@media (min-width: 64rem) {
   .accordion {
     /* Three vertical strips; the open one takes the extra room. */
     grid-template-columns: var(--accordion-cols, 1.9fr 1fr 1fr);
-    min-block-size: 380px;
     transition: grid-template-columns var(--dur-cinematic) var(--ease-out-expo);
   }
 }
 .accordion-panel {
-  background: var(--surface);
+  background: var(--paper);
   display: flex;
   flex-direction: column;
-  gap: var(--s-4);
-  padding: var(--s-6);
+  gap: var(--s-3);
+  padding: var(--s-8) var(--s-6);
   text-align: start;
   inline-size: 100%;
+  min-block-size: 44px;
   transition: background var(--dur-standard) var(--ease-out-expo);
 }
 .accordion-panel[data-open='true'] {
@@ -551,14 +646,9 @@
 .accordion-body {
   color: var(--ink-soft);
 }
-@media (min-width: 62rem) {
-  /* Closed panels keep their heading and hide the prose, with no height
-     animation: opacity and visibility only (§11). */
-  .accordion-panel[data-open='false'] .accordion-body {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--dur-standard) var(--ease-out-expo);
-  }
+/* Closed panels are dimmed, never emptied. */
+.accordion-panel[data-open='false'] .accordion-body {
+  color: var(--ink-soft);
 }
 
 /* ================================================================= forms */
@@ -858,8 +948,9 @@ select.field-control {
   font-size: clamp(1.75rem, 7.4vw, 5.25rem);
 }
 @media (min-width: 48rem) {
+  /* §6.1 fixes the main heading at clamp(2.5rem, 6vw, 5.25rem). */
   .hero-title {
-    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    font-size: clamp(2.5rem, 6vw, 5.25rem);
   }
   /*
    * Arabic still needs a lower ceiling than English — the longest Arabic line
@@ -868,8 +959,15 @@ select.field-control {
    * the 1180px content measure (see .hero-inner below), which buys the room for
    * both: at 1440 Arabic now sets at ~84px and still holds two lines.
    */
+  /*
+   * Arabic keeps a lower ceiling than English, and the numbers moved when §5.6
+   * pulled the container in from 1440 to 1280. The longest Arabic line needs
+   * 15.3x its font size; against the 1184px of content a 1280 container leaves
+   * at 1440, that caps Arabic at ~77px. §6.1's 84px would set it in three lines,
+   * so English keeps the specified scale and only Arabic takes the lower cap.
+   */
   [dir='rtl'] .hero-title {
-    font-size: clamp(2.75rem, 6.1vw, 5.25rem);
+    font-size: clamp(2.5rem, 5.4vw, 4.75rem);
   }
 }
 .hero-line {
@@ -886,6 +984,9 @@ select.field-control {
 .hero-ctas {
   display: flex;
   flex-wrap: wrap;
+  /* §7: the two buttons sit on the same baseline, so they stretch to a shared
+     height rather than each sizing to its own content. */
+  align-items: stretch;
   gap: var(--s-4);
   margin-block-start: var(--s-12);
 }
@@ -992,52 +1093,60 @@ select.field-control {
 }
 
 /* ============================================ sectors, pinned (§8.3) ===== */
-.sectors-pin {
+/* ====================================== V — sectors, morphing not pinned ==
+   The stage runs the full width of the viewport while the text stays inside the
+   container, so the solid can cross the container edge and be clipped by the
+   section. That partial clipping is what gives it scale.
+   ========================================================================= */
+.sectors-morph {
   position: relative;
-  min-block-size: 100svh;
-  display: grid;
-  align-items: center;
   overflow: hidden;
 }
-.sectors-layout {
+.sectors-stage {
+  position: relative;
+  margin-block-start: var(--s-16);
   display: grid;
-  gap: var(--s-8);
   grid-template-columns: 1fr;
+  gap: var(--s-8);
   align-items: center;
 }
-@media (min-width: 62rem) {
-  .sectors-layout {
-    /*
-     * D2/D3: the text column was collapsing to about 200px, which is why the
-     * paragraphs read as a narrow ribbon. Seven columns of scene against five of
-     * text, with the text column held to a real reading width, and the gap
-     * tightened so the two overlap rather than sit apart.
-     */
-    grid-template-columns: 7fr 5fr;
-    gap: var(--s-8);
-  }
-  .sectors-text {
-    min-inline-size: 380px;
-    max-inline-size: 460px;
-  }
+.sectors-text {
+  position: relative;
+  z-index: 2;
 }
-
 .sectors-scene {
   position: relative;
-  aspect-ratio: 4 / 3;
-  min-block-size: 320px;
+  block-size: 42vh;
+}
+
+@media (min-width: 64rem) {
+  .sectors-stage {
+    /* The scene column is wider than the container's own half and starts before
+       it, so the solid runs off the outer edge of the screen. */
+    grid-template-columns: minmax(0, var(--text-column)) minmax(0, 1fr);
+    gap: var(--s-12);
+    align-items: center;
+  }
+  .sectors-text {
+    /* Keep the text inside the 1280px container even though the grid is not. */
+    margin-inline-start: max(var(--gutter), calc((100vw - var(--container)) / 2 + var(--gutter)));
+  }
+  .sectors-scene {
+    block-size: min(64vh, 620px);
+    /* §3: cross the section edge on the outer side. */
+    margin-inline-end: calc(var(--gutter) * -1);
+  }
 }
 
 .sector-word {
-  color: var(--on-dark-soft);
+  color: var(--ink-soft);
 }
 .sector-name {
   margin-block-start: var(--s-2);
 }
 .sector-body {
   margin-block-start: var(--s-4);
-  color: var(--on-dark-soft);
-  max-inline-size: 62ch;
+  color: var(--ink-soft);
 }
 .sector-link {
   margin-block-start: var(--s-6);
@@ -1050,24 +1159,20 @@ select.field-control {
   display: flex;
   gap: var(--s-2);
   margin-block-start: var(--s-8);
+  list-style: none;
 }
 .sector-dot {
   inline-size: 8px;
   block-size: 8px;
-  background: var(--on-dark-line);
+  background: var(--line);
   transition: background var(--dur-standard) var(--ease-out-expo),
     transform var(--dur-standard) var(--ease-out-expo);
 }
 .sector-dot[data-active='true'] {
-  background: #fff;
+  background: var(--brand);
   transform: scale(1.35);
 }
 
-/* The text column swaps behind a vertical mask (§8.3). */
-.sector-panel-clip {
-  position: relative;
-  overflow: hidden;
-}
 .sector-panel[data-state='out'] {
   opacity: 0;
   transform: translateY(-18px);
@@ -1079,15 +1184,16 @@ select.field-control {
     transform var(--dur-standard) var(--ease-out-expo);
 }
 
-/* Mobile and low-power path: three stacked blocks, no pin, no morph (§8.3). */
+/* Mobile and low-power path: three stacked blocks, no morph (§8.3). */
 .sectors-stack {
   display: flex;
   flex-direction: column;
   gap: var(--s-16);
+  margin-block-start: var(--s-16);
 }
 .sector-block-scene {
   position: relative;
-  aspect-ratio: 16 / 10;
+  block-size: 42vh;
 }
 
 /* ================================== material journey, pinned (§8.4) ====== */
@@ -1104,16 +1210,24 @@ select.field-control {
   grid-template-columns: 1fr;
   align-items: center;
 }
-@media (min-width: 62rem) {
+@media (min-width: 64rem) {
   .journey-layout {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--s-16);
+    grid-template-columns: minmax(0, var(--text-column)) minmax(0, 1fr);
+    gap: var(--s-12);
   }
 }
+/* §3: the solid fills two thirds of the section and runs off the outer edge. */
 .journey-scene {
   position: relative;
-  aspect-ratio: 1 / 1;
-  min-block-size: 300px;
+  block-size: 42vh;
+}
+@media (min-width: 64rem) {
+  .journey-scene {
+    /* §3: the solid has to occupy 65-75% of the section, and the section is a
+       full viewport tall here, so the stage takes three quarters of it. */
+    block-size: min(76vh, 700px);
+    margin-inline-end: calc(var(--gutter) * -2);
+  }
 }
 .journey-stage-n {
   color: var(--on-dark-soft);
@@ -1561,4 +1675,144 @@ select.field-control {
 .scene-interactive {
   pointer-events: auto;
   touch-action: pan-y;
+}
+
+/* =========================================================================
+   V — VISUAL OVERHAUL
+   The rules below are the ones the overhaul brief states as measurable, kept
+   together so the intent behind each is readable rather than scattered.
+   ========================================================================= */
+
+/* ------------------------------------------------ §5.2 / §5.5 section head --
+   Every section opens the same way: a short centred heading, one line beneath
+   it, then the scene or the content. The consistency is the point — it is what
+   makes a page of very different sections feel organised.
+   Running detail text goes back to start-alignment; only the head is centred,
+   which works identically in Arabic and English.
+   ========================================================================= */
+.section-head {
+  max-inline-size: var(--head-measure);
+  margin-inline: auto;
+  text-align: center;
+}
+.section-head .section-lead {
+  margin-block-start: var(--s-4);
+  color: var(--ink-soft);
+}
+.on-dark .section-head .section-lead {
+  color: var(--on-dark-soft);
+}
+
+/* §5.9: a readable column. The old panels were ~230px — barely 20 characters
+   in Arabic — which is why the text read as a caption stuck to one edge. */
+.text-column {
+  max-inline-size: var(--text-column);
+}
+
+/* ------------------------------------------------------- §3 unboxed scenes --
+   A shape inside a bordered box reads as a card on an ordinary website. A shape
+   that sits in the page itself reads as product photography. So: no background,
+   no border, no radius, no shadow and no clipping on a scene holder, ever. The
+   canvas is transparent and the section ground shows straight through it.
+
+   `overflow` is deliberately NOT hidden — §3 wants the solid to cross the
+   section edge in at least one place, because partial clipping is what gives a
+   sense of scale. A shape with clear air on all four sides looks small and
+   packaged.
+   ========================================================================= */
+.scene-bleed {
+  position: relative;
+  inline-size: 100%;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+/* The designed still sits underneath the shared canvas and is hidden only once
+   the host reports that real pixels have landed in this holder. A scene that
+   fails to build therefore degrades to the still, never to an empty field. */
+.scene-bleed > .scene-still {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transition: opacity var(--dur-standard) var(--ease-out-expo);
+}
+.scene-bleed[data-drawn='true'] > .scene-still {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------ §4 contact columns --
+   Three equal columns, hairlines between them, no cards.
+   ========================================================================= */
+.contact-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-block-start: var(--s-16);
+  list-style: none;
+}
+.contact-column + .contact-column {
+  border-block-start: 1px solid var(--line);
+}
+.contact-column-link {
+  display: grid;
+  gap: var(--s-2);
+  padding-block: var(--s-6);
+  min-block-size: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+.contact-column-icon {
+  color: var(--brand);
+  margin-block-end: var(--s-2);
+}
+.contact-column-label {
+  color: var(--ink-soft);
+}
+.contact-column-value {
+  font-weight: 500;
+}
+.contact-column-link:hover .contact-column-value {
+  color: var(--brand-mid);
+}
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  justify-content: center;
+  margin-block-start: var(--s-12);
+}
+.contact-city {
+  margin-block-start: var(--s-8);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+@media (min-width: 46.5rem) {
+  .contact-columns {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .contact-column + .contact-column {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--line);
+  }
+  .contact-column-link {
+    padding-inline: var(--s-8);
+  }
+  .contact-column:first-child .contact-column-link {
+    padding-inline-start: 0;
+  }
+}
+
+/* §7: the arrow inside a button carries no box of its own and slides 3px in the
+   reading direction on hover. `--progress-origin` already resolves to the
+   reading edge, so the sign comes from the same place as every other x motion. */
+.btn svg {
+  transition: transform var(--dur-micro) var(--ease-micro);
+}
+.btn:hover svg {
+  transform: translateX(calc(3px * var(--dir-sign, 1)));
 }

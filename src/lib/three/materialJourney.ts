@@ -6,7 +6,6 @@ import {
   lightScene,
   productCamera,
   stoneMaterial,
-  studioFloor,
 } from './studio';
 
 /**
@@ -168,7 +167,7 @@ export function createJourneyScene({ element }: { element: HTMLElement }): Journ
   const scene = new THREE.Scene();
   const envMap = lightScene(scene, host.renderer);
 
-  const { camera, distance } = productCamera(2.3, 0.86, 30);
+  const { camera, distance } = productCamera(2.3, 0.9, 30);
   camera.position.set(distance * 0.46, distance * 0.36, distance * 0.8);
   camera.lookAt(0, -0.2, 0);
 
@@ -194,9 +193,9 @@ export function createJourneyScene({ element }: { element: HTMLElement }): Journ
     chunks.push(mesh);
   }
 
-  const floor = studioFloor(14, -1.18, envMap);
-  scene.add(floor);
-  const shadow = contactShadow(4.0, 3.2, -1.16);
+  /* §3: no floor plane — the dark section ground is the floor, seen through a
+     transparent canvas. */
+  const shadow = contactShadow(4.0, 3.2, -1.16, 'light');
   scene.add(shadow);
 
   /* --- the powder stages: 03 cloud, 04 bed -------------------------------- */
@@ -270,8 +269,17 @@ export function createJourneyScene({ element }: { element: HTMLElement }): Journ
   let shown = 0;
 
   function write(p: number, elapsed: number) {
-    // Stage 0 -> 1: the block separates.
-    const breakT = 1 - Math.pow(1 - Math.min(1, Math.max(0, p)), 3);
+    /*
+     * Stage 0 -> 1: the block separates.
+     *
+     * This used to be an ease-OUT (1 - (1-p)^3), which put two thirds of the
+     * separation into the first third of the scroll — so while the label still
+     * read "01 limestone" the screen already showed a scattered pile. The break
+     * belongs to the handover into stage 02, not to the dwell on 01, so it is a
+     * smoothstep across the back half instead: 01 reads as one quarried block
+     * for as long as it is named.
+     */
+    const breakT = smoothstep(0.55, 1.0, p);
     for (let i = 0; i < CHUNKS; i++) {
       chunks[i].position.lerpVectors(whole[i].pos, broken[i].pos, breakT);
       fromQuat.setFromEuler(whole[i].rot);
@@ -285,9 +293,8 @@ export function createJourneyScene({ element }: { element: HTMLElement }): Journ
     chunkMaterial.opacity = solidFade;
     for (const chunk of chunks) chunk.visible = solidFade > 0.01;
     shadow.visible = solidFade > 0.01;
-    (shadow.material as THREE.MeshBasicMaterial).opacity = 0.9 * solidFade;
-    // The powder bed becomes its own ground, so the floor recedes with the solids.
-    (floor.material as THREE.MeshStandardMaterial).opacity = 0.92 * (0.35 + 0.65 * solidFade);
+    // The powder bed becomes its own ground, so the pool recedes with the solids.
+    (shadow.material as THREE.MeshBasicMaterial).opacity = 0.5 * (0.35 + 0.65 * solidFade);
 
     uniforms.uProgress.value = p;
     uniforms.uTime.value = elapsed;
@@ -328,8 +335,6 @@ export function createJourneyScene({ element }: { element: HTMLElement }): Journ
       pointsMaterial.dispose();
       shadow.geometry.dispose();
       (shadow.material as THREE.Material).dispose();
-      floor.geometry.dispose();
-      (floor.material as THREE.Material).dispose();
     },
   });
 

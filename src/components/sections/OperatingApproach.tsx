@@ -27,12 +27,12 @@ export function OperatingApproach({ locale }: { locale: Locale }) {
   return (
     <section className="section" aria-labelledby="approach-heading">
       <div className="content">
-        <h2 id="approach-heading" className="t-h2">
-          {d.home.approachHeading}
-        </h2>
-        <p className="t-body-l measure" style={{ marginBlockStart: 'var(--s-4)', color: 'var(--ink-soft)' }}>
-          {d.home.approachLead}
-        </p>
+        <div className="section-head">
+          <h2 id="approach-heading" className="t-h2">
+            {d.home.approachHeading}
+          </h2>
+          <p className="t-body-l section-lead">{d.home.approachLead}</p>
+        </div>
 
         <div
           className="accordion"
@@ -58,9 +58,6 @@ export function OperatingApproach({ locale }: { locale: Locale }) {
           ))}
         </div>
 
-        <p className="t-label" style={{ marginBlockStart: 'var(--s-4)', color: 'var(--ink-soft)' }}>
-          {d.home.approachHint}
-        </p>
       </div>
     </section>
   );

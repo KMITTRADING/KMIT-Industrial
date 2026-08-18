@@ -48,11 +48,12 @@ rather than asserted in a comment.
 | `npm run check:a11y` | Runs **axe-core** — the engine Lighthouse's accessibility category is built on — over all 18 pages at WCAG 2.1 A/AA, reporting per rule, per element and per page. |
 | `npm run check:stress` | Three fast full-page scroll passes with the capability gate forced open. Asserts the tab survives, no `webglcontextlost` fires, exactly one `<canvas>` exists, the JS heap does not grow across passes, and nothing throws. |
 | `npm run check:perf` | Vitals under Slow 4G and 4x CPU throttling **on both paths** — the static one and the §10 WebGL one — and fails if the worst single main-thread task on the WebGL path exceeds 1200 ms. |
+| `npm run check:visual` | The visual-overhaul acceptance list: light sections ≥ 70% of page height, exactly two non-adjacent dark sections, dark grounds using `--night`, no scene holder carrying a border/background/radius/shadow/clip, every scene holder actually drawing pixels, the header never white without a measured dark ground, and no pin below 1024px. |
 | `npm run review:3d` | Renders with the capability gate forced open and captures the WebGL scenes. See below. |
 | `npm run check` | typecheck + contrast + copy. |
 
-`npm run review`, `npm run review:3d`, `npm run check:a11y`, `npm run check:stress`
-and `npm run check:perf` need a running server; pass the base URL as the first
+`npm run review`, `npm run review:3d`, `npm run check:a11y`, `npm run check:stress`,
+`npm run check:perf` and `npm run check:visual` need a running server; pass the base URL as the first
 argument if it is not `http://localhost:3000`.
 
 ### Why `review:3d` and `check:stress` exist
@@ -117,6 +118,19 @@ anywhere on the site — those gaps render as designed `PlaceholderBlock` compon
 and are listed in `CONTENT-TODO.md`. Content about calcium carbonate is general
 material science, described qualitatively.
 
+### The colour ratio
+
+Light is the canvas and dark is punctuation, not the other way round. `--paper`
+carries about three quarters of the page; the home page has exactly two dark
+sections — the hero and the material journey — and they are never adjacent.
+
+Large dark grounds do **not** use the identity indigo. `#2B3073` at that scale is
+what made the page tiring to look at, so it is kept for text, icons, buttons and
+small fields, where it reads strongest, and the big fields use `--night`
+(`#0E1030`) instead: far deeper, far less saturated, and restful at any size. It
+also happens to be much kinder to contrast — white on `--night` measures 18.5:1
+against 7.1:1 on the old ground.
+
 ### The 3D layer, and the path without it
 
 **One WebGL context for the whole page.** `lib/three/sceneHost.ts` owns a single
@@ -135,6 +149,20 @@ progress, is mid-animation, or the layout resized. A parked, static scene costs
 zero frames. `lib/three/studio.ts` holds the shared look-dev — a procedural PMREM
 environment (no HDRI request), bevelled solids, materials and contact shadows — so
 the four scenes are lit as one object family rather than four.
+
+Scenes are **not in boxes**. The canvas is transparent, no holder carries a
+border, background, radius, shadow or clip, and the solid is allowed to cross the
+section edge and be clipped by it — partial clipping is what gives a shape scale,
+where clear air on all four sides makes it read as a card. There is no floor
+plane either: a plane is a visible edge between the scene and the section, so the
+section's own ground shows through and only a soft contact pool gives the solid
+weight. That pool darkens on a light ground and lifts on a dark one, because a
+dark shadow on a dark ground is not a shadow.
+
+Each holder keeps its designed still underneath the shared canvas, revealed until
+the host reports that real pixels have landed in that holder. A scene that fails
+to build for any reason therefore degrades to a still rather than to an empty
+coloured field.
 
 | Scene | What it does |
 |---|---|

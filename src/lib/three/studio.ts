@@ -326,24 +326,8 @@ export function solarMaterial(envMapTexture: THREE.Texture | null): THREE.MeshSt
  * shadow map would cost a second render pass per light (B4 forbids that).
  * ========================================================================= */
 
-let falloffTexture: THREE.Texture | null = null;
 
-/** A radial white-to-transparent ramp, used to fade the floor's edges out. */
-function getFalloffTexture(): THREE.Texture {
-  if (falloffTexture) return falloffTexture;
-  const size = 256;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
-  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-  gradient.addColorStop(0, '#ffffff');
-  gradient.addColorStop(0.45, '#d8d8d8');
-  gradient.addColorStop(1, '#000000');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size, size);
-  falloffTexture = new THREE.CanvasTexture(canvas);
-  return falloffTexture;
-}
+
 
 let shadowTexture: THREE.Texture | null = null;
 
@@ -363,47 +347,35 @@ function getShadowTexture(): THREE.Texture {
   return shadowTexture;
 }
 
-/**
- * A studio sweep for the subject to stand on.
- *
- * A contact shadow alone does nothing on this site: the scenes sit on the deep
- * indigo section ground, and a dark shadow against a dark ground is invisible —
- * which is why the solids still looked like they were floating. A faint floor
- * one step lighter than the section gives the shadow something to fall on, and
- * gives the subject a horizon.
- */
-export function studioFloor(size: number, y: number, envMapTexture: THREE.Texture | null): THREE.Mesh {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(size, size),
-    new THREE.MeshStandardMaterial({
-      color: 0x232a5e,
-      roughness: 0.86,
-      metalness: 0.0,
-      envMap: envMapTexture,
-      envMapIntensity: 0.55,
-      transparent: true,
-      opacity: 0.92,
-      // Without this the floor is a hard-edged rectangle floating in the
-      // section — a radial alpha ramp dissolves it into the ground instead.
-      alphaMap: getFalloffTexture(),
-      depthWrite: false,
-    })
-  );
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.y = y;
-  mesh.renderOrder = -2;
-  return mesh;
-}
+
 
 /** A soft ground shadow, lying in the XZ plane at `y`. */
-export function contactShadow(width: number, depth: number, y = 0): THREE.Mesh {
+/**
+ * §3: the shadow has to melt into whatever the section's own ground is, with no
+ * visible edge between the two. There is no floor plane any more — a plane is
+ * precisely the visible edge the brief rules out, and it was reading as a dark
+ * dome sitting behind the solid once the sections turned light.
+ *
+ * Instead the canvas is transparent and the section ground shows straight
+ * through, with only a soft radial pool under the solid to give it weight. On a
+ * light ground that pool darkens; on a dark one it lifts, because a dark shadow
+ * on a dark ground is not a shadow, it is nothing.
+ */
+export function contactShadow(
+  width: number,
+  depth: number,
+  y = 0,
+  tone: 'dark' | 'light' = 'dark'
+): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(width, depth),
     new THREE.MeshBasicMaterial({
       map: getShadowTexture(),
       transparent: true,
       depthWrite: false,
-      opacity: 0.9,
+      color: tone === 'light' ? 0xaebbe8 : 0x2a2f52,
+      blending: tone === 'light' ? THREE.AdditiveBlending : THREE.NormalBlending,
+      opacity: tone === 'light' ? 0.5 : 0.8,
     })
   );
   mesh.rotation.x = -Math.PI / 2;
@@ -434,6 +406,4 @@ export function disposeStudio() {
   cellTexture = null;
   shadowTexture?.dispose();
   shadowTexture = null;
-  falloffTexture?.dispose();
-  falloffTexture = null;
 }

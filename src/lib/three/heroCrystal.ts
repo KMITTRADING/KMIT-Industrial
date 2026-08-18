@@ -78,30 +78,41 @@ const FRAGMENT = /* glsl */ `
     float edge = clamp(length(fwidth(N)) * 2.2, 0.0, 1.0);
     float rim = pow(1.0 - clamp(abs(N.z), 0.0, 1.0), 3.0);
 
-    // The text canvas shares the view's box, so its UV is the screen UV flipped.
-    vec2 uv = vec2(vScreenUV.x, 1.0 - vScreenUV.y);
+    /*
+     * The text canvas shares the view's box, so screen UV IS its UV — no flip.
+     *
+     * This used to read 1.0 minus vScreenUV.y, which flipped the sample
+     * vertically: three's CanvasTexture defaults to flipY, so the top of the
+     * canvas already lands at v = 1, and inverting it again sampled the image
+     * upside down. On Latin text that might have passed for distortion; on
+     * Arabic it rendered the heading as unreadable mirrored glyphs, which is
+     * what made the hero look broken rather than refracted.
+     */
+    vec2 uv = vScreenUV;
     vec2 disp = N.xy * uRefract;
     vec2 split = vec2(cos(uAngle), sin(uAngle)) * uSplit;
 
     float o = texture2D(uText, uv + disp).a;
     float e = texture2D(uText, uv + disp + split).a;
 
-    vec3 bodyDeep = vec3(0.106, 0.121, 0.306);  // --brand-deep
+    vec3 bodyDeep = vec3(0.055, 0.063, 0.188);  // --night
     vec3 bodyMid  = vec3(0.239, 0.333, 0.643);  // --brand-mid
     vec3 rayO     = vec3(1.0);
     vec3 rayE     = vec3(0.561, 0.643, 0.863);
 
-    vec3 col = mix(bodyDeep, bodyMid, facet);
-    // Denser than before: the crystal was so faint it read as a rendering fault.
-    float a = 0.34 + facet * 0.26 + rim * 0.32;
+    // Facet contrast carries the solid; a wider range reads as cut faces rather
+    // than as one flat translucent slab.
+    vec3 col = mix(bodyDeep, bodyMid, pow(facet, 1.4));
+    float a = 0.30 + facet * 0.34 + rim * 0.34;
 
-    col = mix(col, rayE, e * 0.68);
-    a   = max(a, e * 0.68);
-    col = mix(col, rayO, o * 0.94);
-    a   = max(a, o * 0.94);
+    // The extraordinary ray is a faint echo, not a second word.
+    col = mix(col, rayE, e * 0.26);
+    a   = max(a, e * 0.26);
+    col = mix(col, rayO, o * 0.96);
+    a   = max(a, o * 0.96);
 
-    col = mix(col, vec3(0.72, 0.79, 0.97), edge * 0.9);
-    a   = max(a, edge * 0.9);
+    col = mix(col, vec3(0.78, 0.84, 1.0), edge);
+    a   = max(a, edge);
 
     gl_FragColor = vec4(col, a);
   }
@@ -239,8 +250,15 @@ export function createHeroScene({ box, lineEls, dir }: Options): HeroScene {
     group.scale.setScalar(r * 2);
 
     // Displacements are in UV, so they scale with the view rather than with px.
-    uniforms.uRefract.value = (r * 0.22) / boxWidth;
-    uniforms.uSplit.value = Math.max(5, r * 0.085) / boxWidth;
+    /*
+     * Calcite's double refraction is a small offset, not a second copy of the
+     * word. These used to be large enough (~25px of split on a wide hero) that
+     * the ghost read as its own legible line of text overlapping the real one,
+     * which looks like a rendering fault rather than like light through a
+     * crystal. Held down to a few pixels the two rays stay visibly one word.
+     */
+    uniforms.uRefract.value = (r * 0.06) / boxWidth;
+    uniforms.uSplit.value = Math.max(3, r * 0.028) / boxWidth;
 
     drawText();
   }

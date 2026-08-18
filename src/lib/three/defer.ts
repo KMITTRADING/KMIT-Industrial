@@ -14,25 +14,65 @@
  * the document, so creating one late would move everything below it. The pin is
  * still made at mount; only the WebGL work waits, and the scene's `setProgress`
  * is simply not called until it exists.
+ *
+ * ------------------------------------------------------------------------
+ * Deferring is an optimisation, and an optimisation that can silently never
+ * finish is a bug. Two failure modes are guarded explicitly, because a scene
+ * that never builds leaves an empty field where the whole visual argument of
+ * the page was supposed to be:
+ *
+ *   1. `requestIdleCallback` with no timeout can be starved indefinitely. Lenis
+ *      and GSAP both hold a rAF loop open for as long as the visitor keeps
+ *      scrolling, so on a real machine the browser may never report an idle
+ *      period at all. Every call here passes a timeout, which makes the
+ *      callback fire regardless.
+ *
+ *   2. The IntersectionObserver may never report an intersection — a zero-sized
+ *      element at observe time, a transformed or pinned ancestor, an engine
+ *      quirk. A deadline timer builds the scene anyway rather than waiting
+ *      forever for an event that is not coming.
+ *
+ * The rule behind both: the scene always gets built. Deferring may only decide
+ * *when*, never *whether*.
+ * ------------------------------------------------------------------------
  */
 
 /** How much room to give it: build the scene one viewport before it is needed. */
 const ROOT_MARGIN = '100% 0px';
 
+/** Longest the idle queue may hold the build back. */
+const IDLE_TIMEOUT_MS = 400;
+
+/**
+ * Longest we wait for an intersection before building regardless. Generous
+ * enough that a visitor who never scrolls does not pay for scenes far down the
+ * page during the load window, short enough that a missed event is invisible.
+ */
+const INTERSECTION_DEADLINE_MS = 4000;
+
 export type Deferred = { cancel: () => void };
 
 export function buildWhenNear(element: HTMLElement, build: () => void): Deferred {
   let cancelled = false;
+  let built = false;
   let idle = 0;
+  let deadline = 0;
   let observer: IntersectionObserver | null = null;
 
-  const schedule =
-    window.requestIdleCallback ??
-    ((cb: IdleRequestCallback) => window.setTimeout(() => cb({} as IdleDeadline), 200));
+  const schedule = (cb: () => void) => {
+    if (typeof window.requestIdleCallback === 'function') {
+      return window.requestIdleCallback(() => cb(), { timeout: IDLE_TIMEOUT_MS });
+    }
+    // Safari shipped requestIdleCallback late; the timeout is the whole point.
+    return window.setTimeout(cb, 200);
+  };
 
   const run = () => {
+    if (cancelled || built) return;
+    built = true;
     observer?.disconnect();
     observer = null;
+    window.clearTimeout(deadline);
     idle = schedule(() => {
       if (!cancelled) build();
     }) as unknown as number;
@@ -48,12 +88,14 @@ export function buildWhenNear(element: HTMLElement, build: () => void): Deferred
       { rootMargin: ROOT_MARGIN }
     );
     observer.observe(element);
+    deadline = window.setTimeout(run, INTERSECTION_DEADLINE_MS);
   }
 
   return {
     cancel() {
       cancelled = true;
       observer?.disconnect();
+      window.clearTimeout(deadline);
       if (idle && window.cancelIdleCallback) window.cancelIdleCallback(idle);
     },
   };

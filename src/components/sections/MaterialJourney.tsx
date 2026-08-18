@@ -6,6 +6,7 @@ import { dict } from '@/content';
 import type { Locale } from '@/lib/i18n';
 import { canRender3D, prefersReducedMotion } from '@/lib/motion';
 import { buildWhenNear, type Deferred } from '@/lib/three/defer';
+import { JourneyStill } from '../scenes/JourneyStill';
 
 /**
  * The material's journey (§8.4). Pinned dark chapter, four stages, the point
@@ -130,7 +131,7 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
         </h2>
 
         <div className="journey-layout">
-          <div>
+          <div className="journey-text text-column">
             {stages.map((stage, i) => (
               <div
                 key={stage.n}
@@ -153,8 +154,10 @@ export function MaterialJourney({ locale }: { locale: Locale }) {
             </ul>
           </div>
 
-          <div className="journey-scene">
-            <div ref={sceneRef} className="scene" aria-hidden="true" />
+          <div ref={sceneRef} className="journey-scene scene-bleed" aria-hidden="true">
+            <div className="scene-still">
+              <JourneyStill stage={active} />
+            </div>
           </div>
         </div>
       </div>

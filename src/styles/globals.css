@@ -11,7 +11,7 @@
 @theme inline {
   --color-brand: var(--brand);
   --color-brand-mid: var(--brand-mid);
-  --color-brand-deep: var(--brand-deep);
+  --color-night: var(--night);
   --color-brand-tint: var(--brand-tint);
   --color-line: var(--line);
   --color-ink: var(--ink);

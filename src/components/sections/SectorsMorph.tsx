@@ -11,16 +11,27 @@ import { canRender3D, dirSign, prefersReducedMotion } from '@/lib/motion';
 import { buildWhenNear, type Deferred } from '@/lib/three/defer';
 
 /**
- * The three sectors (§8.3) — pinned, two thirds scene and one third text, with
- * the geometry morphing between sector states rather than cross-fading.
+ * The three sectors (§8.3), rebuilt for the visual overhaul.
  *
- * Explicitly not three matching cards with an icon, a title and a paragraph:
- * that is the template answer the brief bans (§8.3, §14).
+ * Three things changed and each was a stated defect:
  *
- * Two paths, and the static one has to stand on its own (§8.3):
- *  - capable device: 300vh of scroll, section pinned, morph scrubbed
- *  - mobile, weak device, no WebGL, or reduced motion: three stacked blocks,
- *    each with its own still and the same text. No pin, no morph.
+ * 1. It is a LIGHT section now. The home page carries exactly two dark grounds —
+ *    the hero and the material journey — and they are never adjacent. On a light
+ *    ground the stone solids read as what they are, and the solar panel finally
+ *    has something to be dark against.
+ *
+ * 2. It is NOT pinned. Only one pin survives on the home page (§8), and it is
+ *    the journey. The morph is still a morph — nothing is created or destroyed
+ *    between the three states — but it is scrubbed across the section's own
+ *    scroll range instead of holding the page still to do it.
+ *
+ * 3. The scene is not in a box. It bleeds past the container's edge and is
+ *    clipped by the section, which is what gives it scale; a shape with clear
+ *    air on all four sides reads as a card on an ordinary website.
+ *
+ * The designed still sits underneath the shared canvas and is only hidden once
+ * the host reports the scene has actually drawn, so a scene that fails to build
+ * leaves a still rather than an empty field.
  */
 
 const SECTOR_ROUTES: RouteKey[] = [
@@ -29,7 +40,7 @@ const SECTOR_ROUTES: RouteKey[] = [
   'sectors/solar-panels',
 ];
 
-export function SectorsPinned({ locale }: { locale: Locale }) {
+export function SectorsMorph({ locale }: { locale: Locale }) {
   const d = dict(locale);
   const sectorKeys = ['industrial-minerals', 'marble-transport', 'solar-panels'] as const;
 
@@ -58,7 +69,7 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
   /* Decide the path once, on the client. Server-rendered output is always the
      static stack, so the crawler and a no-JS visitor get complete content. */
   useEffect(() => {
-    const wide = window.matchMedia('(min-width: 62rem)').matches;
+    const wide = window.matchMedia('(min-width: 64rem)').matches;
     setInteractive(wide && canRender3D() && !prefersReducedMotion());
   }, []);
 
@@ -82,13 +93,8 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
       ]);
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
-      // B5: a resize on mobile is usually just the URL bar collapsing, and
-      // recomputing every pin for it causes a visible jump mid-scroll.
       ScrollTrigger.config({ ignoreMobileResize: true });
 
-      /* B4: the pin is created now, because it sets the document height; the
-         WebGL scene waits until the section is within a viewport and the main
-         thread is idle. Until then setProgress simply has nothing to call. */
       deferred = buildWhenNear(holder, () => {
         void import('@/lib/three/sectorMorph').then(({ createSectorScene }) => {
           if (cancelled) return;
@@ -97,19 +103,15 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
         });
       });
 
-      const st = ScrollTrigger.create({
+      /* No pin. The morph runs across the section's own travel through the
+         viewport, which is roughly one screen of scrolling for three states. */
+      trigger = ScrollTrigger.create({
         trigger: section,
-        start: 'top top',
-        // 300vh of scroll distance for three sectors (§8.3).
-        end: '+=300%',
-        pin: true,
-        pinSpacing: true,
+        start: 'top 80%',
+        end: 'bottom 20%',
         scrub: 0.8,
-        // Pin measurements are recomputed on refresh — after a language change
-        // the direction has flipped and every offset is stale (§6.1).
         invalidateOnRefresh: true,
         onUpdate(self) {
-          // 0..2 across the three states.
           const p = self.progress * 2;
           progress = p;
           scene?.setProgress(p);
@@ -117,7 +119,6 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
           setActive(next < 0 ? 0 : next);
         },
       });
-      trigger = st;
     })();
 
     return () => {
@@ -131,26 +132,24 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
   /* ---------------------------------------------------------- static path --- */
   if (!interactive) {
     return (
-      <section className="section on-dark" aria-labelledby="sectors-heading">
+      <section className="section" aria-labelledby="sectors-heading">
         <div className="content">
-          <h2 id="sectors-heading" className="t-h2">
-            {d.home.sectorsHeading}
-          </h2>
-          <p className="t-body-l measure" style={{ marginBlockStart: 'var(--s-4)' }}>
-            {d.home.sectorsLead}
-          </p>
+          <div className="section-head">
+            <h2 id="sectors-heading" className="t-h2">
+              {d.home.sectorsHeading}
+            </h2>
+            <p className="t-body-l section-lead">{d.home.sectorsLead}</p>
+          </div>
 
-          <div className="sectors-stack" style={{ marginBlockStart: 'var(--s-16)' }}>
+          <div className="sectors-stack">
             {sectors.map((sector) => (
               <article key={sector.key}>
-                <div className="sector-block-scene">
+                <div className="sector-block-scene scene-bleed">
                   <SectorStill sector={sector.key} />
                 </div>
-                <p className="t-label sector-word" style={{ marginBlockStart: 'var(--s-6)' }}>
-                  {sector.word}
-                </p>{' '}
+                <p className="t-label sector-word">{sector.word}</p>{' '}
                 <h3 className="t-h3 sector-name">{sector.name}</h3>
-                <p className="t-body sector-body measure">{sector.lead}</p>
+                <p className="t-body sector-body text-column">{sector.lead}</p>
                 <p className="sector-link">
                   <Link className="link-inline" href={pathFor(locale, sector.route)}>
                     <span>{sector.linkText}</span>
@@ -167,57 +166,60 @@ export function SectorsPinned({ locale }: { locale: Locale }) {
     );
   }
 
-  /* -------------------------------------------------------- pinned path --- */
+  /* ------------------------------------------------------- morphing path --- */
   return (
-    <section ref={sectionRef} className="sectors-pin on-dark" aria-labelledby="sectors-heading">
+    <section ref={sectionRef} className="section sectors-morph" aria-labelledby="sectors-heading">
       <div className="content">
-        <h2 id="sectors-heading" className="sr-only">
-          {d.home.sectorsHeading}
-        </h2>
+        <div className="section-head">
+          <h2 id="sectors-heading" className="t-h2">
+            {d.home.sectorsHeading}
+          </h2>
+          <p className="t-body-l section-lead">{d.home.sectorsLead}</p>
+        </div>
+      </div>
 
-        <div className="sectors-layout">
-          <div className="sectors-scene">
-            <div ref={sceneRef} className="scene" aria-hidden="true" />
-          </div>
+      {/* Full-bleed: the scene is not confined to a grid column, and the solid
+          is allowed to cross the container edge. */}
+      <div className="sectors-stage">
+        <div className="sectors-text content">
+          {sectors.map((sector, i) => (
+            <div
+              key={sector.key}
+              className="sector-panel text-column"
+              data-state={i === active ? 'in' : 'out'}
+              aria-hidden={i === active ? undefined : true}
+              style={{ display: i === active ? 'block' : 'none' }}
+            >
+              <p className="t-label sector-word">{sector.word}</p>{' '}
+              <h3 className="t-h2 sector-name">{sector.name}</h3>
+              <p className="t-body-l sector-body">{sector.lead}</p>
+              <p className="t-body sector-body">{sector.why}</p>
+              <p className="sector-link">
+                <Link className="link-inline" href={pathFor(locale, sector.route)}>
+                  <span>{sector.linkText}</span>
+                  <ArrowForward size={16} />
+                </Link>
+              </p>
+            </div>
+          ))}
 
-          <div className="sectors-text">
+          <ul className="sector-dots" aria-label={d.home.sectorsProgressLabel}>
             {sectors.map((sector, i) => (
-              <div
+              <li
                 key={sector.key}
-                className="sector-panel"
-                data-state={i === active ? 'in' : 'out'}
-                aria-hidden={i === active ? undefined : true}
-                style={{
-                  // Panels are stacked so the column height never jumps as the
-                  // text swaps. Only the active one is visible or reachable.
-                  display: i === active ? 'block' : 'none',
-                }}
+                className="sector-dot"
+                data-active={i === active}
+                aria-current={i === active ? 'true' : undefined}
               >
-                <p className="t-label sector-word">{sector.word}</p>{' '}
-                <h3 className="t-h2 sector-name">{sector.name}</h3>
-                <p className="t-body-l sector-body">{sector.lead}</p>
-                <p className="t-body sector-body">{sector.why}</p>
-                <p className="sector-link">
-                  <Link className="link-inline" href={pathFor(locale, sector.route)}>
-                    <span>{sector.linkText}</span>
-                    <ArrowForward size={16} />
-                  </Link>
-                </p>
-              </div>
+                <span className="sr-only">{sector.word}</span>
+              </li>
             ))}
+          </ul>
+        </div>
 
-            <ul className="sector-dots" aria-label={d.home.sectorsProgressLabel}>
-              {sectors.map((sector, i) => (
-                <li
-                  key={sector.key}
-                  className="sector-dot"
-                  data-active={i === active}
-                  aria-current={i === active ? 'true' : undefined}
-                >
-                  <span className="sr-only">{sector.word}</span>
-                </li>
-              ))}
-            </ul>
+        <div ref={sceneRef} className="sectors-scene scene-bleed" aria-hidden="true">
+          <div className="scene-still">
+            <SectorStill sector={sectors[active].key} />
           </div>
         </div>
       </div>
