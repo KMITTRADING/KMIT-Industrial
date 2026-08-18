@@ -53,7 +53,6 @@ export default async function SustainabilityPage({
         trail={[{ label: d.sustainability.h1, route: 'sustainability' }]}
         h1={d.sustainability.h1}
         lead={d.sustainability.lead}
-        watermark
       />
 
       <Section>

@@ -112,8 +112,8 @@ for (const [lang, file] of Object.entries(files)) {
     const titles = [...metaBlock.matchAll(/title:\s*\n?\s*'([^']+)'/g)].map((m) => m[1]);
     const descs = [...metaBlock.matchAll(/description:\s*\n?\s*'([^']+)'/g)].map((m) => m[1]);
 
-    if (titles.length !== 11) fail(`${lang}: expected 11 titles, found ${titles.length}`);
-    if (descs.length !== 11) fail(`${lang}: expected 11 descriptions, found ${descs.length}`);
+    if (titles.length !== 9) fail(`${lang}: expected 9 titles, found ${titles.length}`);
+    if (descs.length !== 9) fail(`${lang}: expected 9 descriptions, found ${descs.length}`);
 
     for (const t of titles) {
       if (t.length > 60) fail(`${lang}: title ${t.length} chars (max 60) -> ${t}`);
@@ -127,7 +127,7 @@ for (const [lang, file] of Object.entries(files)) {
     }
     const maxT = Math.max(...titles.map((t) => t.length));
     const maxD = Math.max(...descs.map((d) => d.length));
-    pass(`${lang}: 11 unique titles (longest ${maxT}/60), 11 unique descriptions (longest ${maxD}/155)`);
+    pass(`${lang}: 9 unique titles (longest ${maxT}/60), 9 unique descriptions (longest ${maxD}/155)`);
   }
 }
 

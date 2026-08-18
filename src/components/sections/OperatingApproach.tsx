@@ -50,7 +50,7 @@ export function OperatingApproach({ locale }: { locale: Locale }) {
               onClick={() => setOpen(i)}
             >
               <span className="accordion-index" aria-hidden="true" />
-              <span className="t-h3">{pillar.title}</span>
+              <span className="t-h3">{pillar.title}</span>{' '}
               {/* Always in the DOM and always readable text; only its opacity
                   changes when the strip is closed on wide screens. */}
               <span className="t-body accordion-body">{pillar.body}</span>

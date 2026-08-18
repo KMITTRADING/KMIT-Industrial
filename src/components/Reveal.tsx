@@ -45,19 +45,30 @@ export function Reveal({
 
     el.dataset.reveal = 'pending';
 
+    let settle: number | undefined;
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           el.dataset.reveal = 'in';
           io.disconnect();
+          // B5: drop the compositor hint once the transition has finished, so
+          // the page does not carry a promoted layer per revealed element for
+          // the rest of its life.
+          settle = window.setTimeout(() => {
+            el.dataset.reveal = 'done';
+          }, 900 + delay);
         }
       },
       { rootMargin: '0px 0px -12% 0px', threshold: 0.01 }
     );
     io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    return () => {
+      io.disconnect();
+      if (settle) window.clearTimeout(settle);
+    };
+  }, [delay]);
 
   return (
     <Tag

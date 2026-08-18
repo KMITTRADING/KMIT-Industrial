@@ -1,4 +1,3 @@
-import { BrandIcon } from './brand/Logo';
 import { Breadcrumbs } from './Breadcrumbs';
 import type { Locale, RouteKey } from '@/lib/i18n';
 
@@ -16,7 +15,6 @@ export function PageHead({
   lead,
   word,
   children,
-  watermark = false,
 }: {
   locale: Locale;
   trail: { label: string; route: RouteKey }[];
@@ -25,7 +23,6 @@ export function PageHead({
   word?: string;
   /** Optional scene column, e.g. the sector's own geometry. */
   children?: React.ReactNode;
-  watermark?: boolean;
 }) {
   const head = (
     <>
@@ -40,7 +37,6 @@ export function PageHead({
 
   return (
     <section className="page-head on-dark">
-      {watermark && <BrandIcon size="60vw" className="watermark" />}
       <div className="content">
         {children ? (
           <div className="page-head-grid">

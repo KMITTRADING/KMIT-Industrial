@@ -28,13 +28,13 @@ export function SectorScenePanel({
   sector: SectorSlug;
   description: string;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const holderRef = useRef<HTMLDivElement>(null);
   const [live, setLive] = useState(false);
 
   useEffect(() => {
     if (!canRender3D()) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const holder = holderRef.current;
+    if (!holder) return;
 
     let scene: { setProgress: (p: number) => void; dispose: () => void } | null = null;
     let cancelled = false;
@@ -46,7 +46,7 @@ export function SectorScenePanel({
     const handle = schedule(async () => {
       const { createSectorScene } = await import('@/lib/three/sectorMorph');
       if (cancelled) return;
-      scene = createSectorScene({ canvas, dirSign: dirSign() });
+      scene = createSectorScene({ element: holder, dirSign: dirSign() });
       // Park the morph on this sector's own state.
       scene.setProgress(STATE_INDEX[sector]);
       setLive(true);
@@ -64,12 +64,7 @@ export function SectorScenePanel({
   return (
     <>
       {!live && <SectorStill sector={sector} />}
-      <canvas
-        ref={canvasRef}
-        className="scene"
-        aria-hidden="true"
-        style={{ opacity: live ? 1 : 0, transition: 'opacity 900ms var(--ease-out-expo)' }}
-      />
+      <div ref={holderRef} className="scene" aria-hidden="true" />
       <p className="sr-only">{description}</p>
     </>
   );

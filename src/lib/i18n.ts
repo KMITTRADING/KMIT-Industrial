@@ -33,8 +33,6 @@ export const ROUTES = [
   'calcium-carbonate',
   'quality-hse',
   'sustainability',
-  'careers',
-  'contact',
 ] as const;
 
 export type RouteKey = (typeof ROUTES)[number];

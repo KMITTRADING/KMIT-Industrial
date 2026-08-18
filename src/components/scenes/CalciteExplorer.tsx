@@ -21,14 +21,14 @@ export function CalciteExplorer({ locale }: { locale: Locale }) {
   const d = dict(locale);
   const hotspots = d.knowledge.hotspots;
   const [active, setActive] = useState(0);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const holderRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<{ focusFace: (i: number) => void; dispose: () => void } | null>(null);
   const [live, setLive] = useState(false);
 
   useEffect(() => {
     if (!canRender3D()) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const holder = holderRef.current;
+    if (!holder) return;
 
     let cancelled = false;
     const schedule =
@@ -38,7 +38,7 @@ export function CalciteExplorer({ locale }: { locale: Locale }) {
     const handle = schedule(async () => {
       const { createCalciteExplorer } = await import('@/lib/three/calciteExplorer');
       if (cancelled) return;
-      sceneRef.current = createCalciteExplorer({ canvas });
+      sceneRef.current = createCalciteExplorer({ element: holder });
       setLive(true);
     });
 
@@ -66,12 +66,7 @@ export function CalciteExplorer({ locale }: { locale: Locale }) {
       <div className="explorer" style={{ marginBlockStart: 'var(--s-12)' }}>
         <div className="explorer-scene">
           {!live && <CalciteStill />}
-          <canvas
-            ref={canvasRef}
-            className="scene"
-            aria-hidden="true"
-            style={{ opacity: live ? 1 : 0, transition: 'opacity 900ms var(--ease-out-expo)' }}
-          />
+          <div ref={holderRef} className="scene scene-interactive" aria-hidden="true" />
         </div>
 
         <div>

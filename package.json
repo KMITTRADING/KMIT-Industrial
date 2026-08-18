@@ -15,7 +15,8 @@
     "check": "npm run typecheck && npm run check:contrast && npm run check:copy",
     "review": "node scripts/review.mjs",
     "review:3d": "node scripts/preview-3d.mjs",
-    "check:a11y": "node scripts/check-a11y.mjs"
+    "check:a11y": "node scripts/check-a11y.mjs",
+    "check:stress": "node scripts/check-stress.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

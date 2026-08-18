@@ -20,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     if (route === 'home') return 1;
     if (route === 'calcium-carbonate') return 0.9;
     if (route.startsWith('sectors')) return 0.8;
-    if (route === 'contact' || route === 'about') return 0.7;
+    if (route === 'about') return 0.7;
     return 0.6;
   };
 

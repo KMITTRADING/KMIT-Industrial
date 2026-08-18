@@ -141,7 +141,7 @@ export default async function SectorPage({
                 >
                   <span className="t-label" style={{ color: 'var(--ink-soft)' }}>
                     {otherContent.word}
-                  </span>
+                  </span>{' '}
                   <span className="t-h3">{otherContent.h1}</span>
                   <span className="t-body" style={{ color: 'var(--ink-soft)' }}>
                     {otherContent.lead}

@@ -25,18 +25,18 @@ export function Breadcrumbs({
 
   return (
     <nav aria-label={d.shell.breadcrumb} className="crumbs t-label">
-      <Link href={pathFor(locale, 'home')}>{d.shell.home}</Link>
+      <Link href={pathFor(locale, 'home')}>{d.shell.home}</Link>{' '}
       {ancestors.map((item) => (
         <span key={item.route} style={{ display: 'inline-flex', gap: 'var(--s-2)' }}>
           <span className="crumbs-sep" aria-hidden="true">
             /
-          </span>
+          </span>{' '}
           <Link href={pathFor(locale, item.route)}>{item.label}</Link>
         </span>
-      ))}
+      ))}{' '}
       <span className="crumbs-sep" aria-hidden="true">
         /
-      </span>
+      </span>{' '}
       <span aria-current="page">{current.label}</span>
     </nav>
   );

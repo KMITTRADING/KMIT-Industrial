@@ -56,8 +56,9 @@
   line-height: calc(1.06 + var(--lh-nudge) * 1.16);
 }
 
+/* D2: section headings were undersized next to the new hero. */
 .t-h2 {
-  font-size: clamp(1.75rem, 2.8vw, 2.5rem);
+  font-size: clamp(2rem, 3.4vw, 3.25rem);
   line-height: calc(1.14 + var(--lh-nudge));
   font-weight: 600;
   letter-spacing: -0.015em;

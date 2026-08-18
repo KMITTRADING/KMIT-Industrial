@@ -37,8 +37,6 @@ const ROUTES = [
   'calcium-carbonate',
   'quality-hse',
   'sustainability',
-  'careers',
-  'contact',
 ];
 const LOCALES = ['ar', 'en'];
 

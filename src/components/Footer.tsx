@@ -27,7 +27,6 @@ const GROUP_ROUTES: RouteKey[] = [
   'calcium-carbonate',
   'quality-hse',
   'sustainability',
-  'careers',
 ];
 
 export function Footer({ locale }: { locale: Locale }) {
@@ -41,7 +40,7 @@ export function Footer({ locale }: { locale: Locale }) {
 
   return (
     <footer className="on-dark" style={{ paddingBlockStart: 'var(--s-24)' }}>
-      <BrandIcon size="60vw" className="watermark" />
+      <BrandIcon size="40vw" className="watermark" />
 
       <div className="shell">
         <div className="footer-grid">
@@ -103,12 +102,12 @@ export function Footer({ locale }: { locale: Locale }) {
         <p className="t-label" style={{ color: 'var(--on-dark-soft)' }}>
           <span className="ltr-num">©</span> <span className="ltr-num">{year}</span>{' '}
           {d.footer.rights}
-        </p>
+        </p>{' '}
         <p className="t-label">
-          <span className="sr-only">{d.footer.langHeading}</span>
+          <span className="sr-only">{d.footer.langHeading}</span>{' '}
           <LangSwitch locale={locale} className="footer-link" />
         </p>
-      </div>
+      </div>{' '}
 
       {/* City and country named in the footer for local targeting, as prose
           rather than a keyword string (§15.1.3). */}

@@ -75,46 +75,18 @@ grep -rn "TODO-CONTENT" src/
 
 ---
 
-## 5. الوظائف المفتوحة / Open vacancies
-
-- **الموضع:** `src/app/[lang]/careers/page.tsx`
-- **ما يظهر الآن:** حالة فارغة مصممة: «لا وظائف مفتوحة حاليًا — أرسل ملفك ونحتفظ به.»
-  هذه حالة حقيقية وليست عطلًا.
-- **المطلوب:** لكل وظيفة: المسمى، الموقع، نوع التعاقد، المهام، المؤهلات. بالعربية
-  والإنجليزية.
-
-> For each role: title, location, contract type, responsibilities, requirements, in
-> both languages. The current empty state is a real state, not a fault.
+> **تغيّر في النطاق:** حُذفت صفحتا الوظائف والتواصل ونماذجهما بالكامل، فسقطت معها
+> ثلاثة بنود كانت هنا: قائمة الوظائف المفتوحة، وعنوان استقبال النماذج، ومساحة رفع
+> الملفات. التواصل صار عبر البريد والجوال مباشرة من الفوتر وقسم الوجود.
+>
+> **Scope change:** the careers and contact pages and their forms were removed, so
+> three items that used to be listed here are gone with them — the vacancy list, a
+> form endpoint, and file storage. Contact is now a direct mailto: and tel: from
+> the footer and the presence section.
 
 ---
 
-## 6. عنوان استقبال النماذج / Form submission endpoint
-
-- **الموضع:** `src/components/forms/SiteForm.tsx` · نصوص التنبيه في `src/content/*.ts`
-- **ما يظهر الآن:** النموذج يتحقق من المدخلات في المتصفح ثم يفتح رسالة جاهزة في برنامج
-  البريد عند الزائر، مع تنبيه يشرح ذلك بوضوح.
-- **المطلوب:** عنوان خدمة استقبال (Formspree / Resend / API داخلي)، ووجهة البريد
-  المؤسسي. عند التزويد يصبح الإرسال داخل الصفحة ويُحذف التنبيه.
-
-> A receiving endpoint (Formspree, Resend, or an internal API) plus the destination
-> mailbox. Once wired, submission happens on the page and the notice is removed.
-
----
-
-## 7. رفع الملفات في نموذج الوظائف / File upload on the careers form
-
-- **الموضع:** `src/components/forms/SiteForm.tsx`
-- **ما يظهر الآن:** سطر يطلب إرفاق الملف بالرسالة، بدل حقل رفع لا يذهب إلى أي مكان.
-- **المطلوب:** مساحة تخزين للملفات (S3 / Supabase / غيرها) مع الحد الأقصى للحجم
-  والصيغ المقبولة.
-
-> File storage (S3, Supabase, or similar) with the size limit and accepted formats.
-> Today the form asks for the attachment on the e-mail rather than rendering an
-> upload control that silently discards the file.
-
----
-
-## 8. الصور الفوتوغرافية / Photography
+## 5. الصور الفوتوغرافية / Photography
 
 - **الموضع:** `src/components/sections/WhyMaterial.tsx` (خلية الصورة الكبيرة في شبكة
   «لماذا تهمّ هذه المادة»)
@@ -131,7 +103,7 @@ grep -rn "TODO-CONTENT" src/
 
 ---
 
-## 9. حسابات التواصل الاجتماعي / Social accounts
+## 6. حسابات التواصل الاجتماعي / Social accounts
 
 - **الموضع:** `src/lib/schema.ts` (`sameAs` في `Organization`)
 - **ما يظهر الآن:** الحقل محذوف من البيانات المنظمة بالكامل، لا مملوء بروابط مخمّنة.
@@ -142,7 +114,7 @@ grep -rn "TODO-CONTENT" src/
 
 ---
 
-## 10. النطاق النهائي / Production domain
+## 7. النطاق النهائي / Production domain
 
 - **الموضع:** `src/lib/site.ts` (`SITE.origin`) ومتغير البيئة `SITE_URL`
 - **ما يظهر الآن:** `https://kmit.co` كقيمة افتراضية، وتُبنى عليها الروابط القانونية

@@ -36,18 +36,24 @@
   pointer-events: none;
 }
 
+/*
+ * D5: over the dark hero the bar is simply transparent — no plate, no border —
+ * because a dark chip on a dark ground reads as a smudge. The glass surface only
+ * appears once the visitor has scrolled past the hero's first 80px.
+ *
+ * B5: `backdrop-filter` is gone. Backdrop blur on a fixed element sitting over a
+ * moving canvas is a known source of scroll jank in Safari and Firefox, and it
+ * was buying very little here. A solid translucent plate does the same job.
+ */
 .nav-bar {
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--s-6);
-  padding: var(--s-3) var(--s-4);
-  background: rgba(250, 249, 246, 0.72);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: var(--shadow-1);
-  color: var(--brand);
+  padding: var(--s-3) var(--s-5);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--on-dark);
   transform-origin: top center;
   transition: background var(--dur-standard) var(--ease-out-expo),
     color var(--dur-standard) var(--ease-out-expo),
@@ -55,16 +61,19 @@
     transform var(--dur-standard) var(--ease-out-expo);
 }
 
-/* Shrinks on scroll (§8.0). Done with a scale rather than by animating padding:
-   §11 restricts motion to transform, opacity, clip-path and filter, and a scale
-   also takes the mark down with it, which is what "shrinks" should mean. */
+/* Past 80px: the plate appears and the bar shrinks slightly. The scale keeps the
+   motion on `transform` only (§11). */
 .nav-bar[data-compact='true'] {
-  transform: scale(0.94);
+  transform: scale(0.96);
+  background: rgba(250, 249, 246, 0.94);
+  border-color: var(--line);
+  box-shadow: var(--shadow-1);
+  color: var(--brand);
 }
 
-/* Reads the colour of the section behind it and inverts over indigo grounds. */
-.nav-bar[data-on-dark='true'] {
-  background: rgba(27, 31, 78, 0.62);
+/* Scrolled, but currently over an indigo section: keep the plate, invert it. */
+.nav-bar[data-compact='true'][data-on-dark='true'] {
+  background: rgba(20, 24, 62, 0.94);
   border-color: var(--on-dark-line);
   color: var(--on-dark);
 }
@@ -92,7 +101,7 @@
   align-items: center;
   min-block-size: 44px;
   padding: var(--s-2) var(--s-3);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   white-space: nowrap;
   transition: color var(--dur-micro) var(--ease-micro);
@@ -198,14 +207,16 @@
    §5.4.1 hard rectangles, never capsules. §11.4 the icon square shifts
    diagonally and grows 5% on hover; the button itself presses to 0.98.
    ========================================================================= */
+/* D6: the two hero buttons used to carry identical visual weight, so neither
+   read as primary. One is now a solid plate, the other a hairline outline. */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: var(--s-3);
-  padding: var(--s-4) var(--s-6);
+  padding: 0 28px;
   font-weight: 500;
   font-size: 0.9375rem;
-  min-block-size: 48px;
+  min-block-size: 52px;
   border: 1px solid transparent;
   transition: background var(--dur-micro) var(--ease-micro),
     color var(--dur-micro) var(--ease-micro),
@@ -244,28 +255,25 @@
 }
 .on-dark .btn-secondary {
   color: #fff;
-  border-color: var(--on-dark-line);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 .on-dark .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.42);
 }
 
-/* The nested icon square: a real box inside the button, not a floating glyph. */
+/* D6: the boxed icon is gone. A plain arrow that steps 3px along the reading
+   direction on hover is quieter and reads better at this button size. */
 .btn-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 26px;
-  block-size: 26px;
-  border: 1px solid currentColor;
-  opacity: 0.55;
+  opacity: 0.7;
   transition: transform var(--dur-micro) var(--ease-micro),
     opacity var(--dur-micro) var(--ease-micro);
 }
 .btn:hover .btn-icon {
-  /* Diagonal drift along the 45deg logic of the identity, mirrored in RTL. */
-  transform: translate(calc(4px * var(--icon-flip, 1)), -2px) scale(1.05);
+  transform: translateX(calc(3px * var(--icon-flip, 1)));
   opacity: 1;
 }
 
@@ -309,6 +317,22 @@
   opacity: 0.34;
   pointer-events: none;
 }
+/*
+ * D4: the indigo field was one flat colour edge to edge. Two more very light
+ * layers give it depth without becoming a visible gradient in their own right:
+ * a vertical shift from --brand-deep at the top toward --brand at the bottom,
+ * and a soft radial vignette pulling the corners down.
+ */
+.on-dark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(125% 85% at 50% 42%, transparent 42%, rgba(5, 7, 24, 0.3) 100%),
+    linear-gradient(180deg, rgba(27, 31, 78, 0.5) 0%, rgba(43, 48, 115, 0.32) 100%);
+}
 .on-dark .t-body,
 .on-dark .t-body-l {
   color: var(--on-dark-soft);
@@ -317,12 +341,17 @@
 /* ------------------------------------------------------------- watermark --
    The only permitted enlargement of the mark (§5.6): the icon at 60vw, 4%
    white, cropped by the section edge. */
+/*
+ * D7: one watermark, in the footer, and nowhere else. Repeated at 60vw across
+ * several dark sections it stopped reading as the mark at all and became random
+ * diagonal shapes. Held at 40vw and 3% it reads as what it is.
+ */
 .watermark {
   position: absolute;
-  inset-block-end: -12%;
-  inset-inline-end: -8%;
+  inset-block-end: -10%;
+  inset-inline-end: -4%;
   z-index: -1;
-  color: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.03);
   pointer-events: none;
 }
 
@@ -609,18 +638,28 @@ select.field-control {
 [data-reveal] {
   will-change: auto;
 }
+/*
+ * B5: the 6px blur is gone. Blurring dozens of elements while the page scrolls
+ * was the single most expensive thing in the CSS — every blurred element needs
+ * its own offscreen buffer, re-filtered each frame. Transform and opacity are
+ * compositor-only and give the same sense of weight.
+ *
+ * `will-change` is added when the reveal is armed and removed once it lands, so
+ * nothing keeps a promoted layer alive for the life of the page.
+ */
 [data-reveal='pending'] {
   opacity: 0;
-  transform: translateY(48px);
-  filter: blur(6px);
+  transform: translateY(40px);
+  will-change: transform, opacity;
 }
 [data-reveal='in'] {
   opacity: 1;
   transform: none;
-  filter: none;
-  transition: opacity 800ms var(--ease-out-expo), transform 800ms var(--ease-out-expo),
-    filter 800ms var(--ease-out-expo);
+  transition: opacity 800ms var(--ease-out-expo), transform 800ms var(--ease-out-expo);
   transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal='done'] {
+  will-change: auto;
 }
 
 /* ------------------------------------------------------------ image mask --
@@ -676,6 +715,15 @@ select.field-control {
   inline-size: 100%;
   block-size: 100%;
   object-fit: contain;
+}
+
+/* D3: a hairline between adjacent sections, so the page has articulation
+   instead of one continuous field of white. */
+.section + .section {
+  border-block-start: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+}
+.on-dark + .on-dark {
+  border-block-start: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ============================================================ dividers ==
@@ -748,18 +796,35 @@ select.field-control {
    canvas sits above it, transparent except where the crystal is, and never
    takes pointer events.
    ========================================================================= */
+/*
+ * D1: `min-height: 100vh` survives on the hero and the two pinned sections and
+ * nowhere else. Every other section is now as tall as its content plus its
+ * padding, which is what removes the ~250px of dead space that used to sit above
+ * and below every paragraph.
+ */
 .hero {
   position: relative;
   display: grid;
   align-items: center;
   min-block-size: 100svh;
-  padding-block: calc(var(--s-32) + var(--s-12)) var(--s-24);
+  padding-block: calc(var(--s-24) + var(--s-8)) var(--s-16);
   overflow: hidden;
 }
 
-.hero-inner {
+/* D2: the hero runs wider than the site's 1180px content measure, which is what
+   allows the heading to be genuinely large and still break in two. */
+/*
+ * D2: the hero runs to the shell width rather than the 1180px content measure.
+ * Measured: the longest Arabic line needs 15.3x the font size, so an 84px
+ * heading needs 1285px of line box. At 1440 this container gives 1344px, which
+ * holds it in two lines with room to spare; the old 1180px measure could not.
+ */
+/* Specificity note: .hero-inner also carries .content, whose max-inline-size is
+   defined later in globals.css and would otherwise win on source order. */
+.hero .hero-inner {
   position: relative;
   z-index: 1;
+  max-inline-size: var(--container);
 }
 
 /* Wide container so the heading never wraps past two lines (§8.1). */
@@ -794,10 +859,17 @@ select.field-control {
 }
 @media (min-width: 48rem) {
   .hero-title {
-    font-size: clamp(2.75rem, 6vw, 5.25rem);
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
   }
+  /*
+   * Arabic still needs a lower ceiling than English — the longest Arabic line
+   * needs 15.3x the font size against English's 11.46x — but D2 requires the
+   * heading to clear 80px at 1440. The hero container was therefore widened past
+   * the 1180px content measure (see .hero-inner below), which buys the room for
+   * both: at 1440 Arabic now sets at ~84px and still holds two lines.
+   */
   [dir='rtl'] .hero-title {
-    font-size: clamp(2.5rem, 5.4vw, 4.25rem);
+    font-size: clamp(2.75rem, 6.1vw, 5.25rem);
   }
 }
 .hero-line {
@@ -808,6 +880,7 @@ select.field-control {
   margin-block-start: var(--s-8);
   color: var(--on-dark-soft);
   max-inline-size: 62ch;
+  font-size: 1.25rem;
 }
 
 .hero-ctas {
@@ -905,14 +978,17 @@ select.field-control {
 }
 
 /* ================================================= intro strip (§8.2) ==== */
+/* D1 + D3: the strip is as tall as its paragraph, and the paragraph is aligned
+   to the grid rather than centred, which breaks the everything-in-the-middle
+   symmetry the whole page had. */
 .intro-strip {
   background: var(--paper);
-  padding-block: var(--section-y);
+  padding-block: clamp(4.5rem, 9vh, 7rem);
 }
 .intro-paragraph {
-  margin-inline: auto;
-  max-inline-size: 65ch;
-  text-align: center;
+  max-inline-size: 62ch;
+  /* Starts at the second grid column rather than the centre. */
+  margin-inline-start: clamp(0px, 8vw, 12rem);
 }
 
 /* ============================================ sectors, pinned (§8.3) ===== */
@@ -931,9 +1007,18 @@ select.field-control {
 }
 @media (min-width: 62rem) {
   .sectors-layout {
-    /* Two thirds scene, one third text (§8.3). */
-    grid-template-columns: 2fr 1fr;
-    gap: var(--s-16);
+    /*
+     * D2/D3: the text column was collapsing to about 200px, which is why the
+     * paragraphs read as a narrow ribbon. Seven columns of scene against five of
+     * text, with the text column held to a real reading width, and the gap
+     * tightened so the two overlap rather than sit apart.
+     */
+    grid-template-columns: 7fr 5fr;
+    gap: var(--s-8);
+  }
+  .sectors-text {
+    min-inline-size: 380px;
+    max-inline-size: 460px;
   }
 }
 
@@ -952,6 +1037,7 @@ select.field-control {
 .sector-body {
   margin-block-start: var(--s-4);
   color: var(--on-dark-soft);
+  max-inline-size: 62ch;
 }
 .sector-link {
   margin-block-start: var(--s-6);
@@ -1448,4 +1534,31 @@ select.field-control {
 }
 .sector-index-link:hover > * {
   transform: translateX(calc(var(--s-3) * var(--icon-flip, 1)));
+}
+
+/* Two direct contact actions replacing the old link to a contact page (A3). */
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-block-start: var(--s-8);
+}
+
+/* =============================================== shared scene canvas (B1) ==
+   One canvas for the whole page, fixed to the viewport, with each scene drawn
+   through its own scissor rectangle. It sits above the section grounds so the
+   scenes are visible, and below the navigation and the grain. It never takes a
+   pointer event: the one draggable scene listens on its own holder instead.
+   ========================================================================= */
+.scene-host {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* A scene "holder" is now a plain box that tells the host where to draw. */
+.scene-interactive {
+  pointer-events: auto;
+  touch-action: pan-y;
 }
