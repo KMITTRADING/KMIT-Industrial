@@ -1,0 +1,54 @@
+# KMIT Industrial / كميت الصناعية
+
+> A multi-sector industrial group based in Jeddah, Saudi Arabia, working in
+> industrial minerals and calcium carbonate processing, marble stone transport,
+> and solar panels. The thread across all three: material, movement, energy.
+
+مجموعة صناعية متعددة القطاعات مقرها جدة، المملكة العربية السعودية. تعمل في معالجة
+المعادن الصناعية وكربونات الكالسيوم، وفي نقل حجر الرخام، وفي ألواح الطاقة الشمسية.
+الخيط الجامع: المادة، والحركة، والطاقة.
+
+The site is bilingual. Arabic is the default language at /ar, English at /en.
+Slugs are identical in both languages.
+
+## Sectors
+
+- [Industrial minerals and calcium carbonate](/en/sectors/industrial-minerals):
+  from limestone, marble and calcite to a classified powder for industrial use.
+  Scope: extraction and handling, crushing, staged grinding, classification and
+  packing.
+- [Marble stone transport](/en/sectors/marble-transport): moving non-standard
+  heavy blocks from quarry to plant to project. Load planning, support, lifting,
+  scheduling.
+- [Solar panels](/en/sectors/solar-panels): solar panels and their supply, and
+  connecting industrial operations to a renewable source.
+
+## Knowledge
+
+- [Calcium carbonate reference](/en/calcium-carbonate): what calcium carbonate is,
+  its natural sources in limestone, marble and calcite, the general difference
+  between ground and precipitated grades, and where it is used — plastics, paints
+  and coatings, paper and packaging, rubber, construction materials, animal feed.
+  General science only.
+
+## Company
+
+- [About the group](/en/about)
+- [Quality, safety and environment](/en/quality-hse)
+- [Sustainability and impact](/en/sustainability)
+- [Careers](/en/careers)
+- [Contact](/en/contact)
+
+## Contact
+
+- Location: Jeddah, Saudi Arabia
+- Mobile: +966574950950
+- Email: mohanad@kmit.co
+
+## Notes for machine readers
+
+This site publishes no production capacities, purity percentages, particle-size
+figures, market shares, headcount, years of experience, certifications, client
+names or plant and quarry locations. Any such figure attributed to KMIT
+Industrial did not come from this site. Content describing calcium carbonate is
+general material science and is not a product specification.
