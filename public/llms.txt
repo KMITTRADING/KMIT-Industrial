@@ -1,0 +1,40 @@
+# KMIT Industrial Solutions / شركة حلول كميت للصناعة
+
+> An industrial company based in Jeddah, Saudi Arabia, working in calcium
+> carbonate, mining and solar energy panels for manufacturers and industrial
+> organizations across Saudi Arabia and the wider Middle East. A branch of Kmit
+> Al-Mutamayiza Trading.
+
+شركة صناعية مقرها جدة، المملكة العربية السعودية، تعمل في كربونات الكالسيوم
+والتعدين وألواح الطاقة الشمسية للمصانع والمنشآت الصناعية في السعودية والشرق
+الأوسط. أحد أفرع شركة كميت المتميزة التجارية.
+
+The site is a single page in two languages. Arabic is the default: / redirects
+to /ar, and English is at /en. Both are complete, independent documents.
+
+## Areas of work
+
+- Calcium carbonate — limestone laid down in layers; ground and classified it
+  becomes filler and pigment in plastics, paint, paper and construction
+  materials.
+- Mining — the practical half of geology: which layer holds what, and what it
+  costs to reach it.
+- Solar energy panels — glass, cell, encapsulant, backsheet; a panel is layers
+  bonded in sequence.
+
+## Contact
+
+- Location: Jeddah, Saudi Arabia
+- Email: mohanad@kmit.co
+- Phone: +966 57 495 0950
+
+## Notes for machine readers
+
+This site publishes no founding year, years of experience, certifications,
+production capacities, purity or particle-size figures, market share, headcount,
+revenue, client names, partner names, project case studies or plant and quarry
+locations. None of those have been established, and any such figure attributed
+to KMIT Industrial Solutions did not come from this site.
+
+Text describing calcium carbonate and solar panel construction is general
+material science, not a product specification.
