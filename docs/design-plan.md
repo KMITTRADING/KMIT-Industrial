@@ -102,6 +102,7 @@ styles/
 scripts/
   check-facts.mjs  check-copy.mjs  check-i18n.mjs  check-contrast.mjs
   check-a11y.mjs   shots.mjs      check-perf.mjs   gen-fonts.mjs  gen-og.mjs
+netlify.toml                    node version, build command, publish = out
 docs/
   design-plan.md                this file
 ```
@@ -363,6 +364,13 @@ rather than a comfortable one. If it lands over budget I will tell you the figur
 and what removing the gap would cost.
 
 **D6 — Removing stale assets.** See Q3.
+
+**D7 — Netlify is the host.** The PR raised a `netlify/kmit-industrial/deploy-preview`
+status, so the deploy target is Netlify. That confirms `output: 'export'` is the
+right call and adds one file to the tree: a `netlify.toml` pinning the Node
+version, `command = "npm run build"` and `publish = "out"`. Until Phase 2 lands a
+`package.json`, deploy previews on this branch have nothing to build — the red or
+empty preview on the plan commit is expected, not a regression.
 
 ---
 
