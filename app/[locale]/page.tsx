@@ -1,26 +1,47 @@
 import { notFound } from 'next/navigation';
+import { getCopy } from '@/content';
 import { isLocale } from '@/lib/locales';
-import { StrataRule } from '@/components/ui/StrataRule';
-import { Label } from '@/components/ui/Label';
-import { Button } from '@/components/ui/Button';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { Hero } from '@/components/sections/Hero';
+import { Areas } from '@/components/sections/Areas';
+import { Approach } from '@/components/sections/Approach';
+import { Strata } from '@/components/sections/Strata';
+import { Region } from '@/components/sections/Region';
+import { About } from '@/components/sections/About';
+import { Cta } from '@/components/sections/Cta';
 
+/**
+ * The whole site. One page, seven sections, in the order the brief sets out.
+ *
+ * Every section is a server component: none of this ships as JavaScript. The
+ * only client code on the page arrives in step 4 (the scroll driver) and step
+ * 5 (the core sample), both as small islands.
+ */
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const copy = getCopy(locale);
 
-  // Step 1 shell only — the seven sections land in step 3, once the typed
-  // content layer exists. This renders the primitives so the token layer,
-  // the type scale and both directions can be checked before anything is
-  // built on top of them.
   return (
-    <main className="content section-y">
-      <Label index="01">Shell check</Label>
-      <h1 className="t-display-xl mt-6">Materials.</h1>
-      <p className="t-body-l text-ink-soft mt-6 max-w-[46ch]">
-        Token layer, type scale and layout primitives. Sections follow.
-      </p>
-      <StrataRule className="my-12" />
-      <Button href="#">Discuss a project</Button>
-    </main>
+    <>
+      <a href="#main" className="skip-link t-label">
+        {copy.nav.skipToContent}
+      </a>
+
+      <Header locale={locale} />
+
+      <main id="main">
+        <Hero locale={locale} />
+        <Areas locale={locale} />
+        <Approach locale={locale} />
+        <Strata locale={locale} />
+        <Region locale={locale} />
+        <About locale={locale} />
+        <Cta locale={locale} />
+      </main>
+
+      <Footer locale={locale} />
+    </>
   );
 }

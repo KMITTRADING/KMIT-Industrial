@@ -50,13 +50,20 @@
 
 /* =========================================================================
    Base
+
+   Wrapped in @layer base deliberately. Tailwind v4 puts its own reset and its
+   utilities into cascade layers; anything declared OUTSIDE a layer beats
+   everything inside one, regardless of specificity. An unlayered `p { margin:
+   0 }` therefore silently defeats every `mt-*` utility on a paragraph, which
+   is a whole-site spacing failure that looks like a dozen unrelated bugs.
    ========================================================================= */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -133,6 +140,8 @@ button {
   outline-color: var(--on-dark);
 }
 
+}
+
 /* =========================================================================
    Layout primitives
 
@@ -186,6 +195,40 @@ button {
 
 .skip-link:focus-visible {
   transform: translateY(0);
+}
+
+/* =========================================================================
+   Gradient text
+
+   Used once, on the third hero word. Two things make it safe:
+
+   - `color` is declared first and stays declared. A browser that cannot clip a
+     background to text ignores the rest and renders solid brand blue, rather
+     than rendering transparent text on no background. Never reorder these.
+   - the box hugs the word (`width: fit-content`), so the ramp is spent across
+     the glyphs instead of across the full column, which is what makes it read
+     as a gradient at all.
+
+   The angle mirrors in RTL so the ramp always runs with the reading direction.
+   ========================================================================= */
+
+.text-gradient {
+  display: inline-block;
+  inline-size: fit-content;
+  color: var(--brand);
+  background-image: linear-gradient(100deg, var(--brand) 8%, var(--brand-2) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[dir='rtl'] .text-gradient {
+  background-image: linear-gradient(260deg, var(--brand) 8%, var(--brand-2) 92%);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .text-gradient {
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 /* =========================================================================

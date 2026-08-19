@@ -66,7 +66,11 @@
 .t-display-xl {
   font-size: clamp(3rem, 9.5vw, 7.5rem);
   font-weight: calc(600 + var(--wt-step) * 0.5);
-  line-height: calc(0.98 + var(--lh-nudge) * 1.3);
+  /* Arabic needs far more leading than Latin at this size: the dots below bāʾ
+     and the tails of the previous line collide well before Latin descenders
+     do. The multiplier on --lh-nudge is 2 here rather than the ~1.3 the
+     smaller steps use, because the problem scales with the type. */
+  line-height: calc(1.06 + var(--lh-nudge) * 2);
   letter-spacing: calc(-0.038em * var(--ls-step));
 }
 

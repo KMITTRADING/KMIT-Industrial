@@ -55,6 +55,9 @@
   --shell: 1440px;
   --content: 1180px;
   --gutter: clamp(1.25rem, 4vw, 5rem);
+  /* The fixed header's height. The mobile menu panel starts where it ends, and
+     scroll-padding keeps anchored sections clear of it. */
+  --header-h: 4.5rem;
   --section-y: clamp(5rem, 9vw, 8.5rem);
 
   /* -- Motion ---------------------------------------------------------
