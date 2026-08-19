@@ -38,7 +38,7 @@ export function Header({ locale }: { locale: Locale }) {
 
         {/* Desktop navigation. Hidden rather than removed below 1024px so the
             same markup serves both, and the anchors stay in the document. */}
-        <nav aria-label={copy.footer.navLabel} className="hidden lg:block">
+        <nav aria-label={copy.nav.primaryLabel} className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {links.map((link) => (
               <li key={link.href}>
@@ -74,7 +74,7 @@ export function Header({ locale }: { locale: Locale }) {
             </summary>
 
             <div className="fixed inset-x-0 top-[var(--header-h,4.5rem)] bottom-0 z-40 overflow-y-auto bg-paper px-[var(--gutter)] pb-16 pt-8">
-              <nav aria-label={copy.footer.navLabel}>
+              <nav aria-label={copy.nav.primaryLabel}>
                 <ul>
                   {links.map((link, i) => (
                     <li key={link.href} className="border-t border-line first:border-t-0">

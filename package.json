@@ -12,7 +12,12 @@
     "check:copy": "node --experimental-strip-types --no-warnings scripts/check-copy.mjs",
     "check:facts": "node scripts/check-facts.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
-    "check": "npm run typecheck && npm run check:i18n && npm run check:copy && npm run check:contrast"
+    "check": "npm run typecheck && npm run check:i18n && npm run check:copy && npm run check:contrast",
+    "check:a11y": "node scripts/check-a11y.mjs",
+    "check:motion": "node scripts/check-motion.mjs",
+    "check:perf": "node scripts/check-perf.mjs",
+    "shots": "node scripts/shots.mjs",
+    "gen:og": "node scripts/gen-og.mjs"
   },
   "dependencies": {
     "next": "^16.3.1",

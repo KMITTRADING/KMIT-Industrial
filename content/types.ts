@@ -48,6 +48,10 @@ export type Copy = {
     readonly approach: string;
     readonly about: string;
     readonly contact: string;
+    /* Names the header's navigation landmark. It must differ from
+       footer.navLabel: two landmarks with the same role and the same
+       accessible name are indistinguishable to a screen reader. */
+    readonly primaryLabel: string;
     readonly openMenu: string;
     readonly closeMenu: string;
     readonly skipToContent: string;

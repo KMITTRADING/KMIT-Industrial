@@ -23,6 +23,7 @@ export const ar: Copy = {
     approach: 'المنهج',
     about: 'عن كميت',
     contact: 'تواصل',
+    primaryLabel: 'التنقل الرئيسي',
     openMenu: 'القائمة',
     closeMenu: 'إغلاق',
     skipToContent: 'تخطَّ إلى المحتوى',

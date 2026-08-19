@@ -23,6 +23,7 @@ export const en: Copy = {
     approach: 'Approach',
     about: 'About',
     contact: 'Contact',
+    primaryLabel: 'Primary',
     openMenu: 'Menu',
     closeMenu: 'Close',
     skipToContent: 'Skip to content',
