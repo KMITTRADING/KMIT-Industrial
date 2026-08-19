@@ -17,7 +17,7 @@ export function Cta({ locale }: { locale: Locale }) {
   const mailto = `mailto:${FACTS.email}?subject=${encodeURIComponent(copy.cta.mailSubject)}`;
 
   return (
-    <section id="contact" className="section-y">
+    <section id="contact" className="section-y relative z-10 bg-paper">
       <div className="content" data-reveal>
         <StrataRule variant="close" className="mb-16" />
 

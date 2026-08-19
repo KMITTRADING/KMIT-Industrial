@@ -15,7 +15,7 @@ export function About({ locale }: { locale: Locale }) {
   const copy = getCopy(locale);
 
   return (
-    <section id="about" className="section-y">
+    <section id="about" className="section-y relative z-10 bg-paper">
       <div className="content grid gap-16 lg:grid-cols-12">
         <div className="lg:col-span-6" data-reveal>
           <Label>{copy.about.label}</Label>

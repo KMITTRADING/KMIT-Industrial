@@ -25,7 +25,7 @@ export function Region({ locale }: { locale: Locale }) {
   return (
     <section
       id="region"
-      className="on-dark section-y relative overflow-hidden bg-[image:var(--gradient)] text-on-dark"
+      className="on-dark section-y relative z-10 overflow-hidden bg-[image:var(--gradient)] text-on-dark"
     >
       <div className="content relative grid items-center gap-16 lg:grid-cols-12">
         <div className="lg:col-span-5" data-reveal>

@@ -297,6 +297,14 @@ html[data-motion='on'] [data-reveal='shown'] {
   transform: scaleX(1);
 }
 
+/* The CSS core yields to the WebGL one when that is running. Both are in the
+   markup: the fallback is the default, and it comes straight back if the
+   context is lost. */
+html[data-core='webgl'] [data-core-fallback] {
+  opacity: 0;
+  transition: opacity 400ms var(--ease-micro);
+}
+
 /* =========================================================================
    The signature scroll
 

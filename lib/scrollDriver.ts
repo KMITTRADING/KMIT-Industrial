@@ -77,3 +77,41 @@ export function progress(value: number, from: number, to: number): number {
   if (to <= from) return 0;
   return Math.min(1, Math.max(0, (value - from) / (to - from)));
 }
+
+/**
+ * An element's top in document coordinates.
+ *
+ * Not `offsetTop`: that is measured from the nearest positioned ancestor, so
+ * it silently changes meaning the moment someone adds `position: relative` to
+ * a section — which is exactly the kind of change nobody connects to broken
+ * scroll maths. getBoundingClientRect is absolute and cannot be fooled that
+ * way.
+ *
+ * It does force a layout, so callers cache the result and recompute it only
+ * when the viewport changes rather than reading it every frame.
+ */
+export function documentTop(element: HTMLElement): number {
+  return element.getBoundingClientRect().top + window.scrollY;
+}
+
+/**
+ * Recomputes `compute()` only when the viewport size changes.
+ *
+ * This is what keeps the single-listener design honest: the whole point of one
+ * rAF is to avoid N forced layouts per frame, and it would be self-defeating
+ * to then call getBoundingClientRect on eight elements inside it.
+ */
+export function createMetricsCache<T>(compute: () => T): (viewportHeight: number) => T {
+  let cached: T | null = null;
+  let lastHeight = -1;
+  let lastWidth = -1;
+  return (viewportHeight: number) => {
+    const width = window.innerWidth;
+    if (cached === null || viewportHeight !== lastHeight || width !== lastWidth) {
+      lastHeight = viewportHeight;
+      lastWidth = width;
+      cached = compute();
+    }
+    return cached;
+  };
+}

@@ -87,7 +87,9 @@ for (const locale of ['ar', 'en']) {
 
     await page.evaluate(() => {
       const t = document.querySelector('[data-strata-track]');
-      window.scrollTo(0, t.offsetTop + t.offsetHeight - window.innerHeight * 0.5);
+      // Document-absolute: the track's offsetParent is a positioned section.
+      const top = t.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo(0, top + t.offsetHeight - window.innerHeight * 0.5);
     });
     await page.waitForTimeout(700);
     const active = await page.evaluate(() =>

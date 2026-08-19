@@ -10,6 +10,7 @@ import { Strata } from '@/components/sections/Strata';
 import { Region } from '@/components/sections/Region';
 import { About } from '@/components/sections/About';
 import { Cta } from '@/components/sections/Cta';
+import { CoreSampleMount } from '@/components/three/CoreSampleMount';
 
 /**
  * The whole site. One page, seven sections, in the order the brief sets out.
@@ -30,6 +31,11 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       </a>
 
       <Header locale={locale} />
+
+      {/* One canvas, fixed to the viewport, shared by the hero and the
+          signature scroll. Sections that must not show it are opaque and sit
+          above it. */}
+      <CoreSampleMount heroId="home" strataId="strata" />
 
       <main id="main">
         <Hero locale={locale} />

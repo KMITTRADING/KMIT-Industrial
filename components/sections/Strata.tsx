@@ -1,6 +1,7 @@
 import { getCopy } from '@/content';
 import type { Locale } from '@/lib/locales';
 import { Label } from '@/components/ui/Label';
+import { StrataFallback } from '@/components/three/StrataFallback';
 
 /**
  * §5.04 — the signature scroll, and the defining experience of the site.
@@ -26,7 +27,7 @@ export function Strata({ locale }: { locale: Locale }) {
     <section
       id="strata"
       data-strata
-      className="section-y"
+      className="section-y relative"
       style={{ '--steps': copy.strata.steps.length } as React.CSSProperties}
     >
       <div className="content">
@@ -40,7 +41,7 @@ export function Strata({ locale }: { locale: Locale }) {
           measured against once motion is on; with motion off it collapses to
           the height of its content. */}
       <div data-strata-track className="content mt-16">
-        <div data-strata-stage className="grid gap-12 lg:grid-cols-12">
+        <div data-strata-stage className="relative z-10 grid items-center gap-12 lg:grid-cols-12">
           {/* The position rail. Four ticks, the active one filled with the
               gradient — a depth gauge, not a progress bar. It is decoration:
               the steps themselves are numbered, so a reader who cannot see
@@ -70,7 +71,13 @@ export function Strata({ locale }: { locale: Locale }) {
           {/* The core sample sits here in step 5. Until then the column simply
               does not exist on small screens and holds its share of the grid on
               large ones, so adding the canvas later shifts nothing. */}
-          <div data-strata-figure aria-hidden="true" className="hidden lg:col-span-7 lg:block" />
+          {/* The core, again. Same fourteen bands from the same module — the
+              WebGL layer draws over this when it is available. */}
+          <div data-strata-figure aria-hidden="true" className="hidden lg:col-span-7 lg:block">
+            <div data-core-fallback className="mx-auto h-[62svh] w-24">
+              <StrataFallback />
+            </div>
+          </div>
         </div>
       </div>
     </section>

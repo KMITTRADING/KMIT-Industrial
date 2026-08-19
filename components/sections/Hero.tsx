@@ -3,6 +3,7 @@ import { FACTS } from '@/content/facts';
 import type { Locale } from '@/lib/locales';
 import { Button } from '@/components/ui/Button';
 import { StrataRule } from '@/components/ui/StrataRule';
+import { StrataFallback } from '@/components/three/StrataFallback';
 
 /**
  * §5.01 — state what KMIT is in two seconds.
@@ -27,8 +28,19 @@ export function Hero({ locale }: { locale: Locale }) {
       id="home"
       className="relative flex min-h-svh flex-col justify-center overflow-hidden pt-[var(--header-h)]"
     >
-      {/* Reserved for the core sample in step 5. The scrim ships now, so the
-          type is never rendered against an unknown backdrop. */}
+      {/* The CSS core, always in the markup. The WebGL canvas — when the gate
+          in CoreSampleMount lets it load — sits in front of this. Cropped top
+          and bottom by the viewport so it reads as continuing beyond frame. */}
+      <div
+        aria-hidden="true"
+        data-core-fallback
+        className="pointer-events-none absolute inset-y-[-8%] end-[6%] w-[14vw] max-w-40 min-w-20 sm:end-[10%]"
+      >
+        <StrataFallback />
+      </div>
+
+      {/* The scrim sits between the object and the type and is present whether
+          or not WebGL ever initialises: contrast must not depend on the 3D. */}
       <div
         aria-hidden="true"
         data-hero-scrim

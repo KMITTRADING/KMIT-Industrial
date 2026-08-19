@@ -36,7 +36,7 @@ export function Footer({ locale }: { locale: Locale }) {
   ];
 
   return (
-    <footer className="section-y border-t border-line">
+    <footer className="section-y relative z-10 border-t border-line bg-paper">
       <div className="content">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">

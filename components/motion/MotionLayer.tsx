@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { onScroll, progress } from '@/lib/scrollDriver';
+import { createMetricsCache, documentTop, onScroll, progress } from '@/lib/scrollDriver';
 
 /**
  * Every piece of scroll-driven behaviour on the site, in one island.
@@ -94,17 +94,29 @@ export function MotionLayer() {
     const arc = document.querySelector<SVGPathElement>('[data-region-arc]');
     const region = arc?.closest('section') ?? null;
 
+    /* Document-absolute positions, recomputed only when the viewport changes.
+       These were offsetTop until adding `position: relative` to the sections
+       silently reparented the measurement and broke every threshold. */
+    const metrics = createMetricsCache(() => ({
+      sections: spySections.map((section) => ({ id: section.id, top: documentTop(section) })),
+      trackTop: track ? documentTop(track) : 0,
+      trackHeight: track?.offsetHeight ?? 0,
+      regionTop: region ? documentTop(region) : 0,
+      regionHeight: region?.offsetHeight ?? 0,
+    }));
+
     cleanups.push(
       onScroll(({ scrollY, viewportHeight }) => {
+        const m = metrics(viewportHeight);
         // Header gains its backdrop once the hero has started to leave.
         if (header) header.dataset.scrolled = scrollY > 48 ? 'true' : 'false';
 
         // Scrollspy: the last section whose top has passed the upper third.
-        if (spySections.length) {
+        if (m.sections.length) {
           const line = scrollY + viewportHeight * 0.33;
           let active = '';
-          for (const section of spySections) {
-            if (section.offsetTop <= line) active = section.id;
+          for (const section of m.sections) {
+            if (section.top <= line) active = section.id;
           }
           setCurrent(active);
         }
@@ -113,8 +125,8 @@ export function MotionLayer() {
         // and the band separation in the 3D layer (step 5), which is why it is
         // published on the section rather than kept local.
         if (track && strata && steps.length) {
-          const start = track.offsetTop - viewportHeight * 0.1;
-          const end = track.offsetTop + track.offsetHeight - viewportHeight;
+          const start = m.trackTop - viewportHeight * 0.1;
+          const end = m.trackTop + m.trackHeight - viewportHeight;
           const p = progress(scrollY, start, end);
           strata.style.setProperty('--strata-progress', p.toFixed(4));
 
@@ -133,8 +145,8 @@ export function MotionLayer() {
         if (arc && region) {
           const p = progress(
             scrollY,
-            region.offsetTop - viewportHeight * 0.85,
-            region.offsetTop + region.offsetHeight * 0.35 - viewportHeight * 0.5,
+            m.regionTop - viewportHeight * 0.85,
+            m.regionTop + m.regionHeight * 0.35 - viewportHeight * 0.5,
           );
           arc.style.strokeDashoffset = String(1 - p);
         }

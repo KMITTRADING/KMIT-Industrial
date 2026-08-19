@@ -13,7 +13,7 @@ export function Approach({ locale }: { locale: Locale }) {
   const copy = getCopy(locale);
 
   return (
-    <section id="approach" className="section-y bg-surface">
+    <section id="approach" className="section-y relative z-10 bg-surface">
       <div className="content">
         <div className="max-w-[52ch]" data-reveal>
           <Label>{copy.approach.label}</Label>

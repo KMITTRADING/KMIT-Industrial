@@ -19,7 +19,7 @@ export function Areas({ locale }: { locale: Locale }) {
   const copy = getCopy(locale);
 
   return (
-    <section id="solutions" className="section-y">
+    <section id="solutions" className="section-y relative z-10 bg-paper">
       <div className="content">
         <div data-reveal>
           <Label>{copy.areas.label}</Label>
