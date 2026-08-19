@@ -4,6 +4,17 @@ Status: **awaiting approval.** No implementation code has been written.
 Scope of this document: technical architecture, file tree, dependency list,
 section-by-section wireframe logic, and the 3D approach — per brief §0.
 
+**Decisions taken (2026-08-19).** Three questions were put and answered:
+
+1. **Arabic is the default language.** `/` 301s to `/ar`; `x-default` → `/ar`.
+2. **The supplied English lockup is used on both locales.** No Arabic lockup is
+   invented or typeset.
+3. **The three stale asset sets are deleted** — `public/og/**`, `public/llms.txt`,
+   `public/contact-icons/**`.
+
+They are folded into D3, D4 and D6 below. Nothing else in this plan has been
+approved yet.
+
 ---
 
 ## 0. What is actually in the repository right now
@@ -130,7 +141,10 @@ mechanical rather than a reading exercise.
 **Routing.** `app/[locale]/page.tsx` with
 `generateStaticParams() => [{locale:'en'},{locale:'ar'}]`. Both are real
 prerendered HTML documents, independently indexable, with `lang` and `dir` set on
-`<html>` in the locale layout. The language switch is an `<a href>` to the
+`<html>` in the locale layout. **Arabic is the default**: `/` 301s to `/ar`, and
+`hreflang="x-default"` points at `/ar` alongside the explicit `ar` and `en`
+alternates. Arabic is therefore the primary composition, not a mirrored
+afterthought — RTL is the case I design first and check first at every width. The language switch is an `<a href>` to the
 mirrored URL — a real navigation, not a client toggle — and it appends the
 current section anchor read from the scrollspy, so `/en#approach` lands on
 `/ar#approach`.
@@ -345,16 +359,25 @@ only carry weights **400–700**; §6 wants the range down to 200. I will regene
 both subsets across **200–700** from the upstream variable font. Verified
 reachable and correct at plan time.
 
-**D3 — `/` is a generated redirect stub.**
-A static export has no server, so the root is an `index.html` carrying
-`<meta http-equiv="refresh">` to the default locale plus a canonical link and a
-visible one-line fallback with both language links. Works on any static host.
-`/en` and `/ar` remain the real, independently indexable documents.
+**D3 — `/` issues a real 301 to `/ar`, from a static export. Resolved.**
+The previous `next.config.ts` rejected `output: 'export'` on the grounds that a
+static export cannot issue a real redirect for `/`, only a meta-refresh stub —
+a weaker canonical signal. That reasoning was sound for a generic static host but
+does not apply here: Netlify evaluates `netlify.toml` redirect rules at the edge,
+before any file is served. So `[[redirects]] from = "/" to = "/ar" status = 301
+force = true` gives a genuine HTTP 301 **and** keeps the whole site a static
+export with no server runtime. Both objections answered at once. `/en` and `/ar`
+remain the real, independently indexable documents.
 
-**D4 — The logos are in the repo and I will use them.**
+**D4 — The logos are in the repo and I will use them. Resolved.**
 `public/brand/logo.svg` and `icon.svg` are genuine Illustrator exports carrying
-`#2b3073`. Nothing will be redrawn, traced or generated. There is no Arabic
-lockup — see Q2.
+`#2b3073`. Nothing will be redrawn, traced or generated. No Arabic lockup exists,
+and the decision is to **use the supplied English lockup on both locales** — zero
+invention, which outranks script symmetry here. `<Logo />` therefore renders the
+same file for `en` and `ar`; only its clear-space and the flow position mirror.
+Its `alt` / `aria-label` is still per-locale, so a screen reader on `/ar` hears
+the Arabic company name even though the artwork is Latin. If an Arabic lockup is
+supplied later it drops into one place in the component.
 
 **D5 — The < 100 KB initial JS budget is the one I cannot promise in advance.**
 Next 16 + React 19 carry a framework baseline before a line of my code ships.
@@ -363,7 +386,11 @@ route prefetch, `optimizePackageImports`), and I will report the measured number
 rather than a comfortable one. If it lands over budget I will tell you the figure
 and what removing the gap would cost.
 
-**D6 — Removing stale assets.** See Q3.
+**D6 — Removing stale assets. Resolved: all three sets go.**
+`public/og/**` (18 cards, 4 MB), `public/llms.txt`, and `public/contact-icons/**`
+are deleted in the first Phase 2 commit. Two OG cards and a rewritten `llms.txt`
+are regenerated in step 6 of the build order; contact rows are typographic, so
+the icon set is not replaced.
 
 **D7 — Netlify is the host.** The PR raised a `netlify/kmit-industrial/deploy-preview`
 status, so the deploy target is Netlify. That confirms `output: 'export'` is the
@@ -398,3 +425,14 @@ in a README table.
 
 Commits in small logical units, with a short note after each section on what is
 done and what is still stubbed.
+
+---
+
+## 12. Deploy preview status on this branch
+
+The Netlify checks (`Deploy Preview`, `Pages changed`, `Header rules`,
+`Redirect rules`) are **red on both plan commits, and would be red on `main`
+too**: the reset left no `package.json`, so there is nothing for Netlify to
+build. This is not a regression introduced by the plan, and there is no fix that
+belongs in a docs-only commit. The checks go green when Phase 2 lands
+`package.json`, `next.config.ts` and `netlify.toml` in step 1 of the build order.
