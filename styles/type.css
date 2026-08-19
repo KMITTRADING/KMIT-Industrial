@@ -1,0 +1,148 @@
+/* =========================================================================
+   Alexandria is the only family on the site (§2). No second face, not even a
+   mono for the technical labels — the technical register is built out of
+   weight, size and letter-spacing contrast instead.
+
+   One variable file per script, split by unicode-range, so an Arabic page
+   never downloads the Latin outlines and a Latin page never downloads the
+   Arabic ones. The 200-700 axis covers every weight the scale uses in a single
+   request per script rather than six.
+
+   Regenerate with `npm run gen:fonts`.
+   ========================================================================= */
+
+@font-face {
+  font-family: 'Alexandria';
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url('/fonts/alexandria-arabic-var.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF,
+    U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32,
+    U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B,
+    U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D,
+    U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77,
+    U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3,
+    U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+@font-face {
+  font-family: 'Alexandria';
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url('/fonts/alexandria-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =========================================================================
+   The scale.
+
+   Every rule is script-agnostic: the Arabic adjustments arrive through the
+   three variables set in tokens.css, so there is no `[dir='rtl'] .t-h2 {}`
+   anywhere and the two languages cannot drift apart.
+
+     --ls-step  multiplies Latin tracking; 0 in Arabic, because letter-spacing
+                breaks the joins between Arabic letters
+     --lh-nudge adds leading in Arabic
+     --wt-step  adds 100 to every weight in Arabic, because Alexandria's Arabic
+                is too fragile at the light end to hold next to the same size
+                of Latin
+   ========================================================================= */
+
+.t-display-xl,
+.t-display-l,
+.t-h2,
+.t-h3 {
+  text-wrap: balance;
+}
+
+/* The hero thesis. Three words, nothing else at this size anywhere on the
+   site — it is the loudest thing on the page and it only speaks once. */
+.t-display-xl {
+  font-size: clamp(3rem, 9.5vw, 7.5rem);
+  font-weight: calc(600 + var(--wt-step) * 0.5);
+  line-height: calc(0.98 + var(--lh-nudge) * 1.3);
+  letter-spacing: calc(-0.038em * var(--ls-step));
+}
+
+/* Section statements and the closing CTA. */
+.t-display-l {
+  font-size: clamp(2.125rem, 4.6vw, 3.75rem);
+  font-weight: calc(500 + var(--wt-step));
+  line-height: calc(1.08 + var(--lh-nudge) * 1.15);
+  letter-spacing: calc(-0.028em * var(--ls-step));
+}
+
+.t-h2 {
+  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  font-weight: calc(500 + var(--wt-step));
+  line-height: calc(1.16 + var(--lh-nudge));
+  letter-spacing: calc(-0.022em * var(--ls-step));
+}
+
+.t-h3 {
+  font-size: clamp(1.25rem, 1.9vw, 1.625rem);
+  font-weight: calc(500 + var(--wt-step));
+  line-height: calc(1.28 + var(--lh-nudge));
+  letter-spacing: calc(-0.015em * var(--ls-step));
+}
+
+/* The lead paragraph under a heading. Light, because the size carries it. */
+.t-body-l {
+  font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
+  font-weight: calc(300 + var(--wt-step));
+  line-height: calc(1.6 + var(--lh-nudge));
+  letter-spacing: calc(-0.006em * var(--ls-step));
+}
+
+.t-body {
+  font-size: 1rem;
+  font-weight: calc(300 + var(--wt-step));
+  line-height: calc(1.65 + var(--lh-nudge));
+}
+
+.t-small {
+  font-size: 0.875rem;
+  font-weight: calc(300 + var(--wt-step));
+  line-height: calc(1.55 + var(--lh-nudge));
+}
+
+/* Eyebrows and field labels. The wide tracking is where most of the technical
+   register comes from — it reads as an engineering drawing's annotation rather
+   than as a heading. Arabic gets the weight and loses the tracking. */
+.t-label {
+  font-size: 0.75rem;
+  font-weight: calc(500 + var(--wt-step));
+  line-height: calc(1.4 + var(--lh-nudge));
+  letter-spacing: calc(0.15em * var(--ls-step));
+  text-transform: uppercase;
+}
+
+/* Section and row indices — 01, 02, 03. Light and large, the way a figure
+   number is set on a technical plate. Tabular so the column cannot shift.
+   Western numerals in both languages, per §6. */
+.t-index {
+  font-size: clamp(0.8125rem, 1vw, 0.9375rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* The coordinate readout in the Region section. The one place a monospaced
+   face would traditionally be reached for; tabular figures and wide tracking
+   do the same job without a second family. */
+.t-coordinate {
+  font-size: clamp(0.75rem, 0.95vw, 0.875rem);
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}

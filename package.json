@@ -1,0 +1,38 @@
+{
+  "name": "kmit-industrial",
+  "private": true,
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx serve out",
+    "typecheck": "tsc --noEmit",
+    "gen:fonts": "node scripts/gen-fonts.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:copy": "node scripts/check-copy.mjs",
+    "check:facts": "node scripts/check-facts.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check": "npm run typecheck && npm run check:i18n && npm run check:copy && npm run check:contrast"
+  },
+  "dependencies": {
+    "next": "^16.3.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@types/three": "^0.185.4",
+    "axe-core": "^4.13.0",
+    "playwright": "^1.62.1",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9"
+  },
+  "engines": {
+    "node": ">=20.9"
+  }
+}
