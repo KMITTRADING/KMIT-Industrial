@@ -8,8 +8,8 @@
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "gen:fonts": "node scripts/gen-fonts.mjs",
-    "check:i18n": "node scripts/check-i18n.mjs",
-    "check:copy": "node scripts/check-copy.mjs",
+    "check:i18n": "node --experimental-strip-types --no-warnings scripts/check-i18n.mjs",
+    "check:copy": "node --experimental-strip-types --no-warnings scripts/check-copy.mjs",
     "check:facts": "node scripts/check-facts.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check": "npm run typecheck && npm run check:i18n && npm run check:copy && npm run check:contrast"
