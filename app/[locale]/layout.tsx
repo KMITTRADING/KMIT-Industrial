@@ -1,7 +1,16 @@
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { DIR, HTML_LANG, LOCALES, isLocale } from '@/lib/locales';
+import { MotionLayer } from '@/components/motion/MotionLayer';
 import '@/styles/globals.css';
+
+/*
+ * Runs before first paint, so the page never renders its revealed state and
+ * then hides it. Setting the flag here rather than in the React effect is what
+ * keeps the no-JS and reduced-motion paths honest: without this script nothing
+ * is ever hidden, and the site is simply the static composition.
+ */
+const MOTION_FLAG = `try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.dataset.motion='on'}}catch(e){}`;
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -37,8 +46,12 @@ export default async function LocaleLayout({
           href={locale === 'ar' ? '/fonts/alexandria-arabic-var.woff2' : '/fonts/alexandria-latin-var.woff2'}
           crossOrigin="anonymous"
         />
+        <script dangerouslySetInnerHTML={{ __html: MOTION_FLAG }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <MotionLayer />
+      </body>
     </html>
   );
 }

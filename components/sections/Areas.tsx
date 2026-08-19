@@ -21,12 +21,14 @@ export function Areas({ locale }: { locale: Locale }) {
   return (
     <section id="solutions" className="section-y">
       <div className="content">
-        <Label>{copy.areas.label}</Label>
+        <div data-reveal>
+          <Label>{copy.areas.label}</Label>
         <h2 className="t-h2 mt-6 max-w-[20ch]">{copy.areas.heading}</h2>
+        </div>
 
         <ol className="mt-16">
           {copy.areas.items.map((area, i) => (
-            <li key={area.index}>
+            <li key={area.index} data-reveal style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}>
               {i === 0 ? <StrataRule variant="row" /> : null}
 
               <article className="group relative transition-colors duration-300 ease-[var(--ease-micro)] focus-within:bg-brand-wash hover:bg-brand-wash">

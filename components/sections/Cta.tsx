@@ -18,7 +18,7 @@ export function Cta({ locale }: { locale: Locale }) {
 
   return (
     <section id="contact" className="section-y">
-      <div className="content">
+      <div className="content" data-reveal>
         <StrataRule variant="close" className="mb-16" />
 
         <Label>{copy.cta.label}</Label>

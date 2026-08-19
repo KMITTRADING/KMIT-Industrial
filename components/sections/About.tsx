@@ -17,7 +17,7 @@ export function About({ locale }: { locale: Locale }) {
   return (
     <section id="about" className="section-y">
       <div className="content grid gap-16 lg:grid-cols-12">
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-6" data-reveal>
           <Label>{copy.about.label}</Label>
           <h2 className="t-h2 mt-6">{copy.about.heading}</h2>
 
@@ -47,7 +47,7 @@ export function About({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
           <AboutImage locale={locale} />
         </div>
       </div>

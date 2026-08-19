@@ -28,7 +28,7 @@ export function Region({ locale }: { locale: Locale }) {
       className="on-dark section-y relative overflow-hidden bg-[image:var(--gradient)] text-on-dark"
     >
       <div className="content relative grid items-center gap-16 lg:grid-cols-12">
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5" data-reveal>
           <Label tone="on-dark">{copy.region.label}</Label>
           <h2 className="t-h2 mt-6">{copy.region.heading}</h2>
           <p className="t-body-l mt-6 max-w-[46ch] text-on-dark-soft">{copy.region.body}</p>

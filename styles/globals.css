@@ -234,11 +234,18 @@ button {
 /* =========================================================================
    Motion
 
-   Reveals are CSS transitions toggled by a data attribute, so switching them
-   off is one media query rather than a branch in every component.
+   Every rule here is gated on html[data-motion='on'], which an inline script
+   in the layout sets before first paint and only when prefers-reduced-motion
+   does not match.
+
+   The gating direction matters. If reveals defaulted to opacity 0 and relied
+   on JavaScript to show them, a page whose JS failed would be a page with no
+   visible content. Defaulting to visible and opting into hiding means the
+   worst case is a site with no animation, which is exactly the fallback the
+   brief asks for.
    ========================================================================= */
 
-[data-reveal] {
+html[data-motion='on'] [data-reveal] {
   opacity: 0;
   transform: translateY(14px);
   transition:
@@ -247,18 +254,116 @@ button {
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-[data-reveal='shown'] {
+html[data-motion='on'] [data-reveal='shown'] {
   opacity: 1;
   transform: none;
 }
+
+/* The header earns its backdrop once the hero starts to leave. Before that it
+   sits transparent over white space. */
+[data-site-header][data-scrolled='true'] {
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border-block-end: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+}
+
+/* The active nav anchor. A gradient hairline that draws from the leading edge,
+   so it mirrors in RTL without an override. */
+[data-nav-anchor] {
+  position: relative;
+}
+
+[data-nav-anchor]::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0.75rem;
+  inset-block-end: 0.5rem;
+  block-size: 1px;
+  background-image: var(--gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-micro) var(--ease-out-expo);
+}
+
+[dir='rtl'] [data-nav-anchor]::after {
+  transform-origin: right;
+}
+
+[data-nav-anchor][aria-current='true'] {
+  color: var(--brand);
+}
+
+[data-nav-anchor][aria-current='true']::after {
+  transform: scaleX(1);
+}
+
+/* =========================================================================
+   The signature scroll
+
+   Off by default: the four steps are an ordinary vertical list that reads
+   without JavaScript and without motion. With motion on, the track grows tall,
+   the stage sticks, and the steps stack and crossfade.
+   ========================================================================= */
+
+html[data-motion='on'] [data-strata-track] {
+  /* Four steps, roughly a viewport each, plus a little to land on. */
+  min-block-size: calc(var(--steps, 4) * 85svh);
+}
+
+html[data-motion='on'] [data-strata-stage] {
+  position: sticky;
+  inset-block-start: var(--header-h);
+  min-block-size: calc(100svh - var(--header-h));
+  align-content: center;
+}
+
+html[data-motion='on'] [data-strata-steps] {
+  display: grid;
+}
+
+html[data-motion='on'] [data-strata-step] {
+  /* All four occupy the same cell, so the column does not jump as they swap.
+     They stay in flow and in the accessibility tree — opacity only. Never
+     display:none, never visibility:hidden, never aria-hidden (§10). */
+  grid-area: 1 / 1;
+  border-block-start: 0;
+  padding-block: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 450ms var(--ease-out-expo),
+    transform 450ms var(--ease-out-expo);
+}
+
+html[data-motion='on'] [data-strata-step][data-active='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* The rail's ticks fill as their step becomes current. Off by default so the
+   static rendering shows a plain gauge rather than a stuck one. */
+[data-strata-tick] {
+  transition: background-color var(--dur-micro) var(--ease-micro);
+}
+
+html[data-motion='on'] [data-strata-tick][data-active='true'] {
+  background-color: transparent;
+  background-image: var(--gradient);
+}
+
+/* =========================================================================
+   Reduced motion
+
+   Belt and braces: data-motion is never set when the user asks for reduced
+   motion, so none of the rules above apply. This block also neutralises the
+   micro-transitions declared inline on hover states.
+   ========================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  /* Nothing animates, and nothing is left mid-transition in a hidden state.
-     The site has to be complete and understandable with every animation off. */
   *,
   *::before,
   *::after {
@@ -266,10 +371,5 @@ button {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
   }
 }

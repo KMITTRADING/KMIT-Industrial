@@ -41,7 +41,17 @@ export function Strata({ locale }: { locale: Locale }) {
           the height of its content. */}
       <div data-strata-track className="content mt-16">
         <div data-strata-stage className="grid gap-12 lg:grid-cols-12">
-          <ol data-strata-steps className="lg:col-span-5">
+          {/* The position rail. Four ticks, the active one filled with the
+              gradient — a depth gauge, not a progress bar. It is decoration:
+              the steps themselves are numbered, so a reader who cannot see
+              this loses nothing. */}
+          <ol aria-hidden="true" data-strata-rail className="hidden gap-3 lg:col-span-1 lg:flex lg:flex-col lg:justify-center">
+            {copy.strata.steps.map((step) => (
+              <li key={step.index} data-strata-tick className="h-10 w-0.5 bg-line" />
+            ))}
+          </ol>
+
+          <ol data-strata-steps className="lg:col-span-4">
             {copy.strata.steps.map((step) => (
               <li
                 key={step.index}

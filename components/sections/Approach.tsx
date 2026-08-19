@@ -15,15 +15,15 @@ export function Approach({ locale }: { locale: Locale }) {
   return (
     <section id="approach" className="section-y bg-surface">
       <div className="content">
-        <div className="max-w-[52ch]">
+        <div className="max-w-[52ch]" data-reveal>
           <Label>{copy.approach.label}</Label>
           <h2 className="t-h2 mt-6">{copy.approach.heading}</h2>
           <p className="t-body-l mt-6 text-ink-soft">{copy.approach.lead}</p>
         </div>
 
         <ol className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-          {copy.approach.items.map((principle) => (
-            <li key={principle.index}>
+          {copy.approach.items.map((principle, i) => (
+            <li key={principle.index} data-reveal style={{ ["--reveal-delay" as string]: `${i * 80}ms` }}>
               <span aria-hidden="true" className="block h-px w-full bg-line-strong" />
               <p aria-hidden="true" className="t-index mt-5 text-ink-soft">
                 {principle.index}
