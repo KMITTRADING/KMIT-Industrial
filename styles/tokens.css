@@ -1,0 +1,89 @@
+/* =========================================================================
+   Tokens — the whole identity, declared once.
+
+   Brief §2 fixes three values: #2B3073, #3D55A4, and the 135° gradient between
+   them. Everything else here is neutral. The foundation is white and the site
+   is dominantly white; blue is spent on CTAs, heading accents, graphic
+   elements, interactive states, the 3D object, and the one full-bleed section.
+
+   Two of the neutrals are lifted straight off the core sample's colour ramp
+   (--mineral is its limestone floor, --line-strong its grey band) so the page
+   and the object are demonstrably the same material system rather than two
+   palettes that happen to sit near each other.
+   ========================================================================= */
+
+:root {
+  /* -- Identity ------------------------------------------------------- */
+  --brand: #2b3073;
+  --brand-2: #3d55a4;
+  --gradient: linear-gradient(135deg, var(--brand), var(--brand-2));
+
+  /* A 4% wash used behind an active row. Tinted, never a grey box. */
+  --brand-wash: #f3f4f9;
+
+  /* -- Neutrals ------------------------------------------------------- */
+  --paper: #ffffff;
+  --surface: #f7f7f5;
+  --mineral: #efece6; /* the core sample's limestone floor */
+
+  --ink: #12141c;
+  --ink-soft: #565b6d;
+
+  /* Hairlines are classified by role, because the accessibility floor differs.
+     The strata rules are decoration — they carry no information a reader needs
+     in order to understand or operate anything — so WCAG 1.4.11 does not apply
+     and they are free to be quiet. Anything that carries meaning is a separate
+     token held to 3:1. check-contrast.mjs enforces exactly that split. */
+  --line: #e2e3e8; /* decorative: strata rules, list separators */
+  --line-strong: #b9becf; /* decorative: the core sample's grey band */
+
+  /* Focus rings and the hover edge are UI state, so they are held to 3:1. */
+  --focus: var(--brand);
+
+  /* -- On the one dark section ---------------------------------------- */
+  --on-dark: #ffffff;
+  --on-dark-soft: #d7dbee;
+
+  /* The Region arc, its node and the active ring are a meaningful graphic, so
+     this clears 3:1 against BOTH ends of the gradient — the light end is the
+     harder test and the one that governs. */
+  --on-dark-line: #a3aed8;
+  /* The rings behind the arc are decoration and stay recessive. */
+  --on-dark-line-soft: #6d7cb4;
+
+  /* -- Structure ------------------------------------------------------- */
+  --shell: 1440px;
+  --content: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 5rem);
+  /* The fixed header's height. The mobile menu panel starts where it ends, and
+     scroll-padding keeps anchored sections clear of it. */
+  --header-h: 4.5rem;
+  --section-y: clamp(5rem, 9vw, 8.5rem);
+
+  /* -- Motion ---------------------------------------------------------
+     One expressive curve and one micro curve. Anything that needs a third
+     is probably doing too much. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-micro: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-reveal: 620ms;
+  --dur-micro: 200ms;
+
+  /* -- Script-conditional typography ----------------------------------
+     Set once here for Latin and overridden wholesale for Arabic below, so
+     every rule in type.css can stay script-agnostic.
+
+     --ls-step multiplies Latin tracking, so RTL zeroes it: positive or
+     negative letter-spacing breaks the joins between Arabic letters (§6).
+     --lh-nudge adds leading, because Arabic ascenders and descenders need it.
+     --wt-step adds weight, because Alexandria's Arabic at 200 is too fragile
+     to sit next to the same size of Latin. */
+  --ls-step: 1;
+  --lh-nudge: 0;
+  --wt-step: 0;
+}
+
+[dir='rtl'] {
+  --ls-step: 0;
+  --lh-nudge: 0.12;
+  --wt-step: 100;
+}
