@@ -1,0 +1,37 @@
+import * as THREE from 'three';
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+export function mountScene(el){
+ if(reduced.matches)return;
+ let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});}catch{return}
+ const host=el.querySelector('.webgl');if(!host){renderer.dispose();return}
+ const kind=el.dataset.scene,scene=new THREE.Scene();scene.background=new THREE.Color('#eeefea');
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.9;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ const camera=new THREE.PerspectiveCamera(34,1,.1,100);camera.position.set(0,2.3,8.7);camera.lookAt(0,0,0);
+ scene.add(new THREE.HemisphereLight('#ffffff','#beb7ab',1.6));const light=new THREE.DirectionalLight('#fff9ea',2.4);light.position.set(-4,7,4);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.bias=-.001;scene.add(light);const fill=new THREE.DirectionalLight('#c8d6f3',.8);fill.position.set(5,2,-2);scene.add(fill);
+ const group=new THREE.Group();scene.add(group);const rockMat=new THREE.MeshStandardMaterial({color:'#e5e2d8',roughness:.93,metalness:0,flatShading:true});const blue=new THREE.MeshStandardMaterial({color:'#002c79',roughness:.6});
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(50,50),new THREE.MeshStandardMaterial({color:'#e9ebe6',roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.55;floor.receiveShadow=true;scene.add(floor);
+ let minerals=[],layers=[],flows=[];
+ const rockGeo=new THREE.IcosahedronGeometry(1,8);const pos=rockGeo.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i);const f=1+.09*Math.sin(x*13+y*7)*Math.cos(z*11)+.055*Math.sin(y*25+z*17);pos.setXYZ(i,x*f,y*f,z*f)}rockGeo.computeVertexNormals();
+ if(['hero','material','mineral'].includes(kind)){
+  const n=kind==='hero'?32:90;for(let i=0;i<n;i++){const mesh=new THREE.Mesh(rockGeo,rockMat);const angle=i*2.39996,rad=Math.sqrt(i/n)*1.5;const p=new THREE.Vector3(Math.cos(angle)*rad,(Math.sin(i*7.1)*.6),Math.sin(angle)*rad*.65);const s=i===0?1.25:.08+(Math.sin(i*23)+1)*.12;mesh.position.copy(p);mesh.scale.setScalar(s);mesh.rotation.set(i*.73,i*.32,i*.18);group.add(mesh);minerals.push({mesh,base:p.clone(),size:s})}minerals[0].base.set(0,.2,0);minerals[0].mesh.position.copy(minerals[0].base);group.rotation.y=-.3;
+ }else if(kind==='mining'){
+  const colors=['#d8d0bf','#eeeae0','#b8b2a3','#dedace','#a29e92'];for(let i=0;i<5;i++){const geometry=new THREE.BoxGeometry(3.7,.48,2.5,20,1,16);const points=geometry.attributes.position;for(let j=0;j<points.count;j++){const x=points.getX(j),z=points.getZ(j);points.setY(j,points.getY(j)+Math.sin(x*1.3+z)*.13)}geometry.computeVertexNormals();const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:colors[i],roughness:1,flatShading:true}));mesh.position.y=.95-i*.48;group.add(mesh);layers.push(mesh)}group.rotation.y=-.45;
+ }else if(kind==='solar'){
+  const positions=[],indices=[],cols=40,rows=8;for(let j=0;j<=rows;j++)for(let i=0;i<=cols;i++){const x=-1.6+i/cols*3.2;positions.push(x,x*x*.34-.6,(j/rows-.5)*3.4)}for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const a=j*(cols+1)+i,b=a+cols+1;indices.push(a,b,a+1,b,b+1,a+1)}const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setIndex(indices);geometry.computeVertexNormals();group.add(new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:'#bbc6cd',metalness:.72,roughness:.28,side:THREE.DoubleSide})));const receiver=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,3.8,16),blue);receiver.rotation.x=Math.PI/2;receiver.position.y=.135;group.add(receiver);for(let i=0;i<12;i++){const dot=new THREE.Mesh(new THREE.SphereGeometry(.045,8,6),new THREE.MeshBasicMaterial({color:'#8b6033'}));dot.position.set(0,.135,-1.7+i*.29);group.add(dot);flows.push(dot)}for(const z of [-1.4,1.4]){const leg=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,1.2,10),rockMat);leg.position.set(0,-.96,z);group.add(leg)}group.rotation.y=-.45;
+ }
+ group.traverse(o=>{if(o.isMesh)o.castShadow=true});host.appendChild(renderer.domElement);let disposed=false,visible=true,queued=false,progress=0;const baseRotation=group.rotation.y;
+ const texture=new THREE.TextureLoader().load('/images/calcium-hero-800.webp',()=>{if(disposed){texture.dispose();return}texture.colorSpace=THREE.SRGBColorSpace;rockMat.map=texture;rockMat.bumpMap=texture;rockMat.bumpScale=.16;rockMat.needsUpdate=true;invalidate()});
+ function render(){queued=false;if(disposed||!visible||document.hidden)return;try{const start=performance.now();renderer.render(scene,camera);if(performance.now()-start>150){dispose();return}el.classList.add('webgl-ready')}catch{dispose()}}
+ function invalidate(){if(!queued&&!disposed){queued=true;requestAnimationFrame(render)}}
+ function resize(){if(disposed)return;const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();invalidate()}
+ const observer=new ResizeObserver(resize);observer.observe(host);
+ const visibility=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)invalidate()});visibility.observe(el);
+ function update(){if(disposed||!visible)return;const rect=el.getBoundingClientRect();const local=THREE.MathUtils.clamp((innerHeight-rect.top)/(innerHeight+rect.height),0,1);group.rotation.y=baseRotation+(local-.5)*.25;if(kind==='mineral'){minerals.forEach(({mesh,base,size},i)=>{const spread=1+progress*1.8;mesh.position.set(base.x*spread,base.y*(1-progress)+Math.sin(i*3)*progress*.25,base.z*spread);mesh.scale.setScalar(i===0?size*(1-progress*.92):size*(1-progress*.45))})}if(kind==='mining')layers.forEach((l,i)=>l.position.y=.95-i*.48+(2-i)*progress*.2);if(kind==='solar')flows.forEach((d,i)=>{d.position.z=((i*.29+progress*1.5)%3.4)-1.7});camera.position.x=(local-.5)*.5;camera.lookAt(0,0,0);invalidate()}
+ function step(e){progress=e.detail.progress;update()}
+ function pointer(e){if(disposed)return;const r=el.getBoundingClientRect();group.rotation.y=baseRotation+(e.clientX-r.left-r.width/2)/r.width*.28;invalidate()}
+ function preference(){if(reduced.matches||innerWidth<850)dispose()}
+ const journey=el.closest('[data-journey]');journey?.addEventListener('journey:step',step);window.addEventListener('scroll',update,{passive:true});el.addEventListener('pointermove',pointer,{passive:true});reduced.addEventListener('change',preference);window.addEventListener('resize',preference);document.addEventListener('visibilitychange',invalidate);
+ renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();dispose()});
+ function dispose(){if(disposed)return;disposed=true;el.classList.remove('webgl-ready');observer.disconnect();visibility.disconnect();window.removeEventListener('scroll',update);el.removeEventListener('pointermove',pointer);journey?.removeEventListener('journey:step',step);reduced.removeEventListener('change',preference);window.removeEventListener('resize',preference);document.removeEventListener('visibilitychange',invalidate);scene.traverse(o=>{o.geometry?.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});renderer.dispose();renderer.domElement.remove()}
+ resize();update();window.addEventListener('pagehide',dispose,{once:true});
+}

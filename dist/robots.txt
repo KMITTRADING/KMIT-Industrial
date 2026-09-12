@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kmit-industrial.stormy-bean-3558.chatgpt.site/sitemap.xml
