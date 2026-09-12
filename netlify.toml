@@ -1,0 +1,8 @@
+# This site produces static HTML; the previous Next.js settings no longer apply.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Also skips an older Next.js plugin that remains enabled in the Netlify UI.
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
