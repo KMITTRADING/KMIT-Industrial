@@ -7,8 +7,8 @@ document.addEventListener('click',e=>{if(!e.target.closest('.header'))closeMenu(
 matchMedia('(min-width: 1051px)').addEventListener('change',closeMenu);
 const header=document.querySelector('.header');let scheduled=false;
 window.addEventListener('scroll',()=>{if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{header.classList.toggle('scrolled',scrollY>20);scheduled=false})},{passive:true});
-// Optional first-party integration: listen for kmit:analytics. No provider or identifier is installed.
-const emit=(name,detail={})=>window.dispatchEvent(new CustomEvent('kmit:analytics',{detail:{name,page:document.body.dataset.page,language:document.documentElement.lang,...detail}}));
+// Emit a local integration event and forward approved interactions to Google Analytics.
+const emit=(name,detail={})=>{const context={page:document.body.dataset.page,language:document.documentElement.lang,...detail};window.dispatchEvent(new CustomEvent('kmit:analytics',{detail:{name,...context}}));window.gtag?.('event',name,context)};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-event]');if(a)emit(a.dataset.event)});
 const engagement=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){emit('product_page_engagement',{section:e.target.id});engagement.unobserve(e.target)}},{threshold:.25});
 document.querySelectorAll('#applications,#technical').forEach(e=>engagement.observe(e));
