@@ -1,0 +1,57 @@
+[
+  {
+    "name": "industrial-overview",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. A meticulously engineered shell-and-tube heat exchanger cutaway on a clean white studio plinth, visible evenly spaced metal tubes and a single navy painted flange, 3/4 overhead view, physically plausible connections, not a cluttered factory.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "mining-overview",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. A geological material archive: six long cylindrical pale limestone drill core specimens in an open light grey core tray, macro variations of sedimentary bands, diagonal composition, pristine scientific editorial close-up, no writing.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "solar-overview",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. A tightly framed detail of a parabolic solar thermal collector's reflective curved mirror and straight dark absorber pipe, sunlight tracing a controlled line along polished metal, pale arid horizon far out of focus, no photovoltaic panels.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "consultation-hero",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. An expert material evaluation still life: open blank technical drawing sheets with fine geometric lines but absolutely no readable text, precision stainless caliper, three mineral sample cubes, a single navy binder edge on a long white architectural worktable, spacious oblique framing.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "about-hero",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. An architectural composition of limestone blocks, finely layered mineral slabs and a brushed stainless cylindrical sample on a broad pale stone gallery bench, daylight from a high side window, close confident editorial material portrait with deep photographic texture, no office or company facility.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "contact-hero",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. A serene architectural close detail of warm limestone facade fins with cool white sky in the gaps, a beautifully precise curved pale stone corner leading the eye into an open sunlit courtyard, no identifiable building or implied company office, Saudi light and mineral materiality, no signage.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "process-source",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. One large naturally fractured white limestone specimen with sharply resolved calcite grain and tiny pale grey seams on a cool grey scientific specimen stage, wider macro framing, fully natural geology, no fantasy crystal, no powder pile, focus stacked.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "process-granules",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. A close overhead macro of clean angular white limestone granules in three ordered shallow brushed stainless sample channels, progressively smaller crushed material from left to right, tactile sharp aggregate with subtle shadows, no text or scales.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "particle-study",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. Scientific photorealistic micrograph-style visualization of irregular micron-scale ground calcium carbonate particles, densely scattered angular off-white particles with subtly translucent edges, wide depth of field, restrained grey background, credible irregular particles not spheres or fantasy crystals, no labels, no numeric scale.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "thermal-storage",
+    "prompt": "Create a standalone premium photorealistic industrial editorial website image, landscape 1536x1024. Coherent art direction: mineral white, limestone beige, pale cool grey, tiny restrained navy #002C79 accents, soft directional daylight, extremely crisp physically realistic surfaces, architectural composition, medium format commercial photography. No text, labels, logos, watermark, people or company claims. Illustrative not an actual company facility. Center-safe composition usable on mobile. An elegant industrial thermal energy storage detail: two brushed stainless insulated vertical thermal tanks connected by a clearly organized navy pipe and polished plate heat exchanger, isolated three-quarter architectural studio section, physically plausible fittings, no buildings, logos or text.",
+    "tool": "ChatGPT built-in image generation"
+  },
+  {
+    "name": "application-materials",
+    "prompt": "Create one premium photorealistic industrial material editorial still life, landscape 1536x1024. On a broad mineral-white stone shelf arrange a short clean matte white polymer pipe segment, a tightly cropped white paper roll, a subtle paint-coated panel and one small rough natural limestone block. Coherent manufactured-material comparison, contemporary industrial brand campaign, immaculate precise geometry, soft directional daylight, pale grey stone and restrained navy accent in background, extraordinary tactile detail, depth of field keeping all primary materials sharp. No text, logos, people, factory or claimed company products. Wide editorial framing with center-safe mobile crop. These are illustrative material application categories.",
+    "tool": "ChatGPT built-in image generation"
+  }
+]

@@ -12,10 +12,9 @@ const emit=(name,detail={})=>window.dispatchEvent(new CustomEvent('kmit:analytic
 document.addEventListener('click',e=>{const a=e.target.closest('[data-event]');if(a)emit(a.dataset.event)});
 const engagement=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){emit('product_page_engagement',{section:e.target.id});engagement.unobserve(e.target)}},{threshold:.25});
 document.querySelectorAll('#applications,#technical').forEach(e=>engagement.observe(e));
-const canEnhance=()=>!reduced.matches&&!navigator.connection?.saveData&&!['slow-2g','2g','3g'].includes(navigator.connection?.effectiveType)&&(!navigator.hardwareConcurrency||navigator.hardwareConcurrency>=4)&&innerWidth>=850;
+const canEnhance=()=>!reduced.matches&&!navigator.connection?.saveData&&!['slow-2g','2g','3g'].includes(navigator.connection?.effectiveType)&&(!navigator.hardwareConcurrency||navigator.hardwareConcurrency>=4)&&innerWidth>=900;
 if(canEnhance()){
  const scenes=new IntersectionObserver(async entries=>{for(const entry of entries){if(entry.isIntersecting){scenes.unobserve(entry.target);try{const module=await import('./scenes.js');if(canEnhance())module.mountScene(entry.target)}catch{/* The generated image remains the accessible fallback. */}}}},{rootMargin:'150px'});
  document.querySelectorAll('[data-scene]').forEach(el=>scenes.observe(el));
 }
-if(!reduced.matches){import('gsap').then(async({gsap})=>{const {ScrollTrigger}=await import('gsap/ScrollTrigger');gsap.registerPlugin(ScrollTrigger);document.querySelectorAll('[data-journey]').forEach(j=>{const steps=[...j.querySelectorAll('[data-step]')],readout=j.querySelector('.journey-readout');steps.forEach((step,i)=>{ScrollTrigger.create({trigger:step,start:'top 65%',end:'bottom 65%',onEnter:()=>update(i),onEnterBack:()=>update(i)});function update(index){readout.querySelector('.num').textContent=`0${index+1} / 0${steps.length}`;readout.querySelector('strong').textContent=steps[index].querySelector('h3').textContent;j.dispatchEvent(new CustomEvent('journey:step',{detail:{index,progress:index/(steps.length-1)}}))}})});reduced.addEventListener('change',e=>{if(e.matches)ScrollTrigger.getAll().forEach(t=>t.kill())})}).catch(()=>{})}
-
+if(document.querySelector('[data-journey]')) import('./journeys.js').then(({mountJourneys})=>mountJourneys()).catch(()=>{});
