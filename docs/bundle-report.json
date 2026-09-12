@@ -22,7 +22,7 @@
       "format": "esm"
     },
     "src/scenes.js": {
-      "bytes": 7541,
+      "bytes": 4954,
       "imports": [
         {
           "path": "node_modules/.pnpm/three@0.180.0/node_modules/three/build/three.module.js",
@@ -80,8 +80,24 @@
       ],
       "format": "esm"
     },
+    "src/journeys.js": {
+      "bytes": 3496,
+      "imports": [
+        {
+          "path": "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/index.js",
+          "kind": "import-statement",
+          "original": "gsap"
+        },
+        {
+          "path": "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/ScrollTrigger.js",
+          "kind": "import-statement",
+          "original": "gsap/ScrollTrigger"
+        }
+      ],
+      "format": "esm"
+    },
     "src/client.js": {
-      "bytes": 3120,
+      "bytes": 2397,
       "imports": [
         {
           "path": "src/scenes.js",
@@ -89,14 +105,9 @@
           "original": "./scenes.js"
         },
         {
-          "path": "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/index.js",
+          "path": "src/journeys.js",
           "kind": "dynamic-import",
-          "original": "gsap"
-        },
-        {
-          "path": "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/ScrollTrigger.js",
-          "kind": "dynamic-import",
-          "original": "gsap/ScrollTrigger"
+          "original": "./journeys.js"
         }
       ],
       "format": "esm"
@@ -106,15 +117,11 @@
     "dist/assets/client.js": {
       "imports": [
         {
-          "path": "dist/assets/scenes-FVMCG4VA.js",
+          "path": "dist/assets/scenes-ADGUQ7TH.js",
           "kind": "dynamic-import"
         },
         {
-          "path": "dist/assets/gsap-JVT5556T.js",
-          "kind": "dynamic-import"
-        },
-        {
-          "path": "dist/assets/ScrollTrigger-7HRFA5A6.js",
+          "path": "dist/assets/journeys-74V64SDI.js",
           "kind": "dynamic-import"
         }
       ],
@@ -122,12 +129,12 @@
       "entryPoint": "src/client.js",
       "inputs": {
         "src/client.js": {
-          "bytesInOutput": 2490
+          "bytesInOutput": 1872
         }
       },
-      "bytes": 2491
+      "bytes": 1873
     },
-    "dist/assets/scenes-FVMCG4VA.js": {
+    "dist/assets/scenes-ADGUQ7TH.js": {
       "imports": [],
       "exports": [
         "mountScene"
@@ -135,76 +142,44 @@
       "entryPoint": "src/scenes.js",
       "inputs": {
         "node_modules/.pnpm/three@0.180.0/node_modules/three/build/three.core.js": {
-          "bytesInOutput": 173754
+          "bytesInOutput": 163365
         },
         "node_modules/.pnpm/three@0.180.0/node_modules/three/build/three.module.js": {
-          "bytesInOutput": 321251
+          "bytesInOutput": 321203
         },
         "src/scenes.js": {
-          "bytesInOutput": 5302
+          "bytesInOutput": 2685
         }
       },
-      "bytes": 500528
+      "bytes": 487474
     },
-    "dist/assets/gsap-JVT5556T.js": {
+    "dist/assets/journeys-74V64SDI.js": {
       "imports": [],
       "exports": [
-        "Back",
-        "Bounce",
-        "CSSPlugin",
-        "Circ",
-        "Cubic",
-        "Elastic",
-        "Expo",
-        "Linear",
-        "Power0",
-        "Power1",
-        "Power2",
-        "Power3",
-        "Power4",
-        "Quad",
-        "Quart",
-        "Quint",
-        "Sine",
-        "SteppedEase",
-        "Strong",
-        "TimelineLite",
-        "TimelineMax",
-        "TweenLite",
-        "TweenMax",
-        "default",
-        "gsap"
+        "mountJourneys"
       ],
-      "entryPoint": "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/index.js",
+      "entryPoint": "src/journeys.js",
       "inputs": {
         "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/gsap-core.js": {
-          "bytesInOutput": 51318
+          "bytesInOutput": 51616
         },
         "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/CSSPlugin.js": {
-          "bytesInOutput": 18778
+          "bytesInOutput": 18837
         },
         "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/index.js": {
-          "bytesInOutput": 48
-        }
-      },
-      "bytes": 71018
-    },
-    "dist/assets/ScrollTrigger-7HRFA5A6.js": {
-      "imports": [],
-      "exports": [
-        "ScrollTrigger",
-        "default"
-      ],
-      "entryPoint": "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/ScrollTrigger.js",
-      "inputs": {
+          "bytesInOutput": 50
+        },
         "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/Observer.js": {
-          "bytesInOutput": 9051
+          "bytesInOutput": 9057
         },
         "node_modules/.pnpm/gsap@3.15.0/node_modules/gsap/ScrollTrigger.js": {
-          "bytesInOutput": 34473
+          "bytesInOutput": 34566
+        },
+        "src/journeys.js": {
+          "bytesInOutput": 2036
         }
       },
-      "bytes": 44117
+      "bytes": 117239
     }
   }
 }
