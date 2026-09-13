@@ -125,3 +125,14 @@
 @media(min-width:1280px){.desktop-nav{display:flex}.mobile-nav:not([hidden]){display:none}}
 @media(max-width:1279px){.desktop-nav{display:none}.header .menu-toggle{display:flex}.header{height:88px}.mobile-nav{max-height:calc(100dvh - 88px)}}
 @media(max-width:600px){.header{height:80px;gap:16px;padding:14px 22px}.header>.brand{width:116px}.header-actions{gap:9px;padding-inline-start:10px}.header .header-wa{display:none}.header .menu-toggle{padding:8px 10px}.header .menu-toggle span{font-size:12px}.mobile-nav:not([hidden]){grid-template-columns:1fr}.mobile-nav{padding:10px 22px 22px;max-height:calc(100dvh - 80px)}.mobile-nav a{font-size:14px;min-height:58px}.mobile-nav .num{font-size:10px}}
+
+/* Direct introduction to the separate trading website. */
+.trading-nav{display:inline-flex;align-items:center;gap:7px;color:var(--blue)}
+.desktop-nav .trading-nav{padding-inline-start:16px;border-inline-start:1px solid var(--line)}
+.mobile-nav .trading-nav{color:var(--blue);font-weight:500}.mobile-nav .trading-nav>span{margin-inline-start:auto}
+.footer-navigation .trading-nav{justify-content:flex-start}
+.trading-section{display:grid;grid-template-columns:1fr 1.3fr;align-items:center;gap:clamp(35px,8vw,120px);border-top:1px solid var(--line);background:#f0f1ed}
+.trading-identity{display:flex;flex-direction:column;align-items:center;gap:25px;padding:40px 20px}
+.trading-identity img{width:min(100%,260px);height:auto}.trading-identity>span{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.trading-copy .eyebrow{margin-bottom:20px}.trading-copy>p:not(.eyebrow){margin-top:24px;max-width:610px}.trading-cta{margin-top:24px;gap:20px}
+@media(max-width:760px){.trading-section{grid-template-columns:1fr;gap:25px}.trading-identity{align-items:flex-start;padding:0 0 24px;border-bottom:1px solid var(--line)}.trading-identity img{width:180px}}
