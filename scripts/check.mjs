@@ -13,9 +13,11 @@ for(const lang of ['en','ar'])for(const slug of routes){const name=`${lang}/${sl
  if(lang==='ar')assert(footer.includes('صنع باتقان بواسطة شركة كميت المتميزة التجارية'));
  assert.equal(json['@graph'].find(x=>x['@type']==='Organization').address.addressLocality,'Jeddah');
 }
-const sitemap=fs.readFileSync('dist/sitemap.xml','utf8');assert.equal((sitemap.match(/<url>/g)||[]).length,20);
+const sitemap=fs.readFileSync('dist/sitemap.xml','utf8');assert.equal((sitemap.match(/<url>/g)||[]).length,routes.length*2);
 const original=fs.readFileSync('G:/My Drive/WORK/KMIT/Industrial/brand/logo.svg');assert(original.equals(fs.readFileSync('public/logo.svg')),'Official logo unchanged');
-const assets=fs.readdirSync('public/images').map(f=>({name:f,bytes:fs.statSync('public/images/'+f).size}));assert.equal(assets.length,57);assert(assets.every(x=>x.bytes<500000),'WebP image budget');
-for(const lang of ['en','ar']){const heroImages=new Set();for(const slug of routes.slice(0,8)){const html=fs.readFileSync(path.join('dist',lang,slug,'index.html'),'utf8');const hero=html.match(/<div class="hero-art">[\s\S]*?<img src="([^"]+)"/)[1];assert(!heroImages.has(hero),`${lang}/${slug}: unique hero image`);heroImages.add(hero)}}
-console.log(`PASS: 20 localized pages, unique heroes and SEO, language alternates, JSON-LD, ${links} local references, ${images} accessible image elements, supplied contact icons, Jeddah, footer rights/credit, sitemap, unchanged official logo, 57 optimized images.`);
+const assets=fs.readdirSync('public/images').map(f=>({name:f,bytes:fs.statSync('public/images/'+f).size}));assert.equal(assets.length,48);assert(assets.every(x=>x.bytes<500000),'WebP image budget');
+for(const lang of ['en','ar']){const heroImages=new Set();for(const slug of routes.slice(0,7)){const html=fs.readFileSync(path.join('dist',lang,slug,'index.html'),'utf8');const hero=html.match(/<div class="hero-art">[\s\S]*?<img src="([^"]+)"/)[1];assert(!heroImages.has(hero),`${lang}/${slug}: unique hero image`);heroImages.add(hero)}}
+console.log(`PASS: 18 localized pages, unique heroes and SEO, language alternates, JSON-LD, ${links} local references, ${images} accessible image elements, supplied contact icons, Jeddah, footer rights/credit, sitemap, unchanged official logo, 48 optimized images.`);
 console.log('Image bytes:',assets.reduce((a,b)=>a+b.bytes,0));
+
+for(const lang of ['en','ar']){assert(!fs.existsSync('dist/'+lang+'/solar-thermal-energy'));for(const slug of routes){const html=fs.readFileSync(path.join('dist',lang,slug,'index.html'),'utf8');assert(!/solar|شمسية|شمسي|<figcaption|Not a KMIT facility|لا يمثل منشأة|ليست مواصفات لمنتجات الشركة/i.test(html),'Removed solar content and image notices');}}

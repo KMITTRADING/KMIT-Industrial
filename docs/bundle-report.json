@@ -97,7 +97,7 @@
       "format": "esm"
     },
     "src/client.js": {
-      "bytes": 2446,
+      "bytes": 2466,
       "imports": [
         {
           "path": "src/scenes.js",
