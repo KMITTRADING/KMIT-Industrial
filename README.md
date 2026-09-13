@@ -21,8 +21,8 @@ Use Node 22 or newer and pnpm. Install with `pnpm install`, build with `pnpm bui
 
 `dist` is the complete static artifact. The canonical origin defaults to the registered Sites domain. For a custom domain, build with `SITE_URL` set to its HTTPS origin and redeploy so canonical URLs, hreflang, structured data and the sitemap all change together. Domain ownership is not inferred from the contact email.
 
-No forms, databases, tracking identifiers, invented product specifications, projects or customer claims are included. Organization schema uses only the supplied brand and contact details. No Product or LocalBusiness schema is asserted.
+No forms, databases, invented product specifications, projects or customer claims are included. The only tracking identifier is the documented Google Analytics measurement ID. Organization schema uses only the supplied brand and contact details. No Product or LocalBusiness schema is asserted.
 
-Listen for the `kmit:analytics` browser CustomEvent to connect a future approved analytics implementation. Events include WhatsApp, email, phone, language switch and calcium carbonate section engagement. No event data is transmitted by the present implementation.
+Google Analytics measurement ID `G-411Y4Y5BDL` records page views. WhatsApp, email, phone, language switch and calcium carbonate section engagement events are also forwarded to Google Analytics and emitted locally as `kmit:analytics` browser CustomEvents.
 
 Future verified product grades, technical documents, capabilities and availability should be added to the structured content only after confirmation. Industry concepts are not company specifications.

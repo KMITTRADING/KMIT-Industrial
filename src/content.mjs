@@ -370,7 +370,7 @@ export const pages={
       "sections": [
         [
           "Website interactions",
-          "This website does not include contact forms, account registration or newsletter subscriptions. No advertising or third-party analytics tracker is configured in the website code. The hosting provider may process technical request data needed to deliver and secure the website."
+          "This website does not include contact forms, account registration or newsletter subscriptions. Google Analytics is used to measure visits and selected interactions, such as contact and language links. Google may process device, browser, approximate location and usage data under its own privacy terms. The hosting provider may also process technical request data needed to deliver and secure the website."
         ],
         [
           "Direct communication",
@@ -596,7 +596,7 @@ export const pages={
       "sections": [
         [
           "استخدام الموقع",
-          "لا يتضمن الموقع نماذج تواصل أو تسجيل حسابات أو اشتراكات بريدية. ولا توجد أدوات إعلانية أو أدوات تحليلات خارجية مفعّلة في كود الموقع. قد يعالج مزوّد الاستضافة بيانات الطلبات التقنية اللازمة لتقديم الموقع وتأمينه."
+          "لا يتضمن الموقع نماذج تواصل أو تسجيل حسابات أو اشتراكات بريدية. يستخدم الموقع Google Analytics لقياس الزيارات وبعض التفاعلات، مثل روابط التواصل واللغة. وقد تعالج Google بيانات الجهاز والمتصفح والموقع التقريبي والاستخدام وفق شروط الخصوصية الخاصة بها. كما قد يعالج مزوّد الاستضافة بيانات الطلبات التقنية اللازمة لتقديم الموقع وتأمينه."
         ],
         [
           "التواصل المباشر",

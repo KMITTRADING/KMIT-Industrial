@@ -97,7 +97,7 @@
       "format": "esm"
     },
     "src/client.js": {
-      "bytes": 2397,
+      "bytes": 2466,
       "imports": [
         {
           "path": "src/scenes.js",
@@ -129,10 +129,10 @@
       "entryPoint": "src/client.js",
       "inputs": {
         "src/client.js": {
-          "bytesInOutput": 1872
+          "bytesInOutput": 1914
         }
       },
-      "bytes": 1873
+      "bytes": 1915
     },
     "dist/assets/scenes-ADGUQ7TH.js": {
       "imports": [],
