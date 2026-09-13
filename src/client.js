@@ -4,7 +4,7 @@ function closeMenu(){button?.setAttribute('aria-expanded','false');if(menu)menu.
 button?.addEventListener('click',()=>{const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));menu.hidden=!open});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeMenu();button.focus()}});
 document.addEventListener('click',e=>{if(!e.target.closest('.header'))closeMenu()});
-matchMedia('(min-width: 1051px)').addEventListener('change',closeMenu);
+matchMedia('(min-width: 1280px)').addEventListener('change',closeMenu);
 const header=document.querySelector('.header');let scheduled=false;
 window.addEventListener('scroll',()=>{if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{header.classList.toggle('scrolled',scrollY>20);scheduled=false})},{passive:true});
 // Emit a local integration event and forward approved interactions to Google Analytics.
