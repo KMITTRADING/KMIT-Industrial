@@ -97,3 +97,31 @@
 .maker-link:hover img,.maker-link:focus-visible img{transform:translateY(-2px);opacity:1}
 @media(max-width:600px){.maker-link{gap:9px}.maker-link img{width:56px}.maker-link span{max-width:250px}}
 @media(prefers-reduced-motion:reduce){.maker-link,.maker-link img{transition:none}.maker-link:hover img,.maker-link:focus-visible img{transform:none}}
+
+/* Header: clear brand, navigation and action zones in either direction. */
+.header{height:96px;padding:16px clamp(22px,3vw,60px);gap:32px;background:#fafaf8f5;backdrop-filter:blur(14px)}
+.header>.brand{width:138px}
+.desktop-nav{gap:clamp(14px,1.4vw,27px);justify-content:center}
+.desktop-nav a,[dir=rtl] .desktop-nav a{position:relative;display:flex;align-items:center;min-height:48px;max-width:none;white-space:nowrap;font-size:12px;line-height:1.5;text-decoration:none;color:#44515d}
+.desktop-nav a::after{content:'';position:absolute;inset-inline:0;bottom:3px;height:2px;background:var(--blue);transform:scaleX(0);transition:transform .2s ease}
+.desktop-nav a:hover,.desktop-nav a[aria-current],.desktop-nav a:focus-visible{color:var(--blue);text-decoration:none}
+.desktop-nav a:hover::after,.desktop-nav a[aria-current]::after{transform:scaleX(1)}
+.header-actions{gap:14px;margin-inline-start:auto;flex:none;padding-inline-start:20px;border-inline-start:1px solid var(--line)}
+.header .language{justify-content:center;min-width:44px;padding:0 5px;font-size:12px;line-height:1;color:var(--blue);border-radius:3px;transition:background .2s ease}
+.header .language:hover{background:#e9edf3}
+.header .header-wa{display:inline-flex;width:auto;min-height:44px;padding:9px 13px;gap:9px;white-space:nowrap;font-size:11px}
+.header .header-wa>span:not(.arrow){display:inline}
+.header .header-wa .icon-whatsapp{width:24px;height:24px}
+.header .header-wa:hover{transform:none}
+.header .menu-toggle{display:none;padding:8px 12px;border:1px solid var(--line);border-radius:3px;font-size:12px;gap:10px}
+.menu-mark{width:18px;height:14px;position:relative;display:block;border-top:1.5px solid currentColor;border-bottom:1.5px solid currentColor}
+.menu-mark::after{content:'';position:absolute;inset-inline:0;top:5px;height:1.5px;background:currentColor}
+.menu-toggle[aria-expanded=true]{background:var(--blue);color:white;border-color:var(--blue)}
+.mobile-nav{position:absolute;top:100%;inset-inline:0;background:var(--paper);padding:18px clamp(22px,3vw,60px) 26px;border-bottom:1px solid var(--line);box-shadow:0 18px 26px #1727350d;max-height:calc(100dvh - 96px);overflow-y:auto;overscroll-behavior:contain}
+.mobile-nav:not([hidden]){display:grid;grid-template-columns:1fr 1fr;gap:0 30px}
+.mobile-nav a{display:flex;align-items:center;gap:16px;min-height:62px;padding:13px 8px;font-size:15px;border-bottom:1px solid var(--line)}
+.mobile-nav a .arrow{margin-inline-start:auto;font-size:19px}
+.mobile-nav a[aria-current],.mobile-nav a:hover{color:var(--blue);background:#edf0f4}
+@media(min-width:1280px){.desktop-nav{display:flex}.mobile-nav:not([hidden]){display:none}}
+@media(max-width:1279px){.desktop-nav{display:none}.header .menu-toggle{display:flex}.header{height:88px}.mobile-nav{max-height:calc(100dvh - 88px)}}
+@media(max-width:600px){.header{height:80px;gap:16px;padding:14px 22px}.header>.brand{width:116px}.header-actions{gap:9px;padding-inline-start:10px}.header .header-wa{display:none}.header .menu-toggle{padding:8px 10px}.header .menu-toggle span{font-size:12px}.mobile-nav:not([hidden]){grid-template-columns:1fr}.mobile-nav{padding:10px 22px 22px;max-height:calc(100dvh - 80px)}.mobile-nav a{font-size:14px;min-height:58px}.mobile-nav .num{font-size:10px}}
