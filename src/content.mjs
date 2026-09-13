@@ -189,8 +189,7 @@ export const pages={
       "lead": "Calcium carbonate at the core. A connected perspective on materials, processes and industrial energy in Saudi Arabia.",
       "image": "home-hero",
       "eyebrow": "KMIT · INDUSTRIAL SOLUTIONS",
-      "sections": [],
-      "refs": []
+      "sections": []
     },
     "calcium-carbonate": {
       "title": "Calcium carbonate.\nA material of possibility.",
@@ -214,11 +213,6 @@ export const pages={
           "Consistency is an application question",
           "Purity, particle distribution, moisture and dispersion should be considered together. A finer powder is not automatically a better choice. Material evaluation and formulation trials establish suitability."
         ]
-      ],
-      "refs": [
-        "mineral",
-        "paper",
-        "coatings"
       ]
     },
     "industrial-solutions": {
@@ -251,9 +245,6 @@ export const pages={
           "Develop the next step",
           "Solution development can begin with a documented requirement, a shortlist of considerations and a plan for evaluation. Contact KMIT to discuss the appropriate scope."
         ]
-      ],
-      "refs": [
-        "process"
       ]
     },
     "mining": {
@@ -286,10 +277,6 @@ export const pages={
           "Saudi geological context",
           "Saudi Arabia’s National Geological Database provides a public starting point for geological information. Site-specific decisions require current data and the relevant professional and regulatory review."
         ]
-      ],
-      "refs": [
-        "mineral",
-        "saudi"
       ]
     },
     "consultation": {
@@ -322,9 +309,6 @@ export const pages={
           "Prepare for the conversation",
           "Share your application, the challenge and any non-confidential technical context through WhatsApp or email. The scope of any further work can then be discussed directly."
         ]
-      ],
-      "refs": [
-        "process"
       ]
     },
     "about": {
@@ -349,9 +333,6 @@ export const pages={
           "Saudi industrial context",
           "Material selection and process decisions are relevant to manufacturing in Saudi Arabia. The website provides a technical starting point; specific availability, scope and suitability should be discussed directly with KMIT."
         ]
-      ],
-      "refs": [
-        "saudi"
       ]
     },
     "contact": {
@@ -359,8 +340,7 @@ export const pages={
       "lead": "A direct conversation starts here. Contact KMIT about your material, process or industrial energy requirement.",
       "image": "consultation",
       "eyebrow": "CONTACT",
-      "sections": [],
-      "refs": []
+      "sections": []
     },
     "privacy": {
       "title": "Privacy",
@@ -384,8 +364,7 @@ export const pages={
           "Privacy enquiries",
           "For questions about information you have shared with KMIT, email mohanad@kmit.co. This page describes the current website implementation."
         ]
-      ],
-      "refs": []
+      ]
     },
     "terms": {
       "title": "Terms of use",
@@ -400,13 +379,8 @@ export const pages={
         [
           "Specific requirements",
           "Product availability, service scope, documentation, commercial terms and application suitability require direct confirmation. Validate material choices under the relevant operating conditions before use."
-        ],
-        [
-          "External references",
-          "External sources provide further reading. Linking does not imply partnership, endorsement or affiliation. For website enquiries, contact mohanad@kmit.co."
         ]
-      ],
-      "refs": []
+      ]
     }
   },
   "ar": {
@@ -415,8 +389,7 @@ export const pages={
       "lead": "كربونات الكالسيوم في صميم أعمالنا. ورؤية تربط المواد والعمليات والطاقة بمتطلبات الصناعة في المملكة العربية السعودية.",
       "image": "home-hero",
       "eyebrow": "KMIT · حلول صناعية",
-      "sections": [],
-      "refs": []
+      "sections": []
     },
     "calcium-carbonate": {
       "title": "كربونات الكالسيوم.\nإمكانات تبدأ من المادة.",
@@ -440,11 +413,6 @@ export const pages={
           "الثبات مرتبط بالاستخدام",
           "تُقيّم النقاوة وتوزيع أحجام الجسيمات والرطوبة وقابلية التشتت معاً. ولا تعني زيادة النعومة أن المادة أفضل بالضرورة؛ إذ تُحدّد الملاءمة من خلال التقييم وتجارب التركيبة."
         ]
-      ],
-      "refs": [
-        "mineral",
-        "paper",
-        "coatings"
       ]
     },
     "industrial-solutions": {
@@ -477,9 +445,6 @@ export const pages={
           "تحديد الخطوة التالية",
           "يمكن أن يبدأ تطوير الحل بتوثيق الاحتياج وحصر الاعتبارات ووضع خطة للتقييم. تواصل مع KMIT لمناقشة النطاق المناسب."
         ]
-      ],
-      "refs": [
-        "process"
       ]
     },
     "mining": {
@@ -512,10 +477,6 @@ export const pages={
           "السياق الجيولوجي السعودي",
           "تتيح قاعدة المعلومات الجيولوجية الوطنية السعودية نقطة انطلاق للاطلاع على المعلومات الجيولوجية. وتتطلب قرارات المواقع بيانات حديثة ومراجعة مهنية وتنظيمية مناسبة."
         ]
-      ],
-      "refs": [
-        "mineral",
-        "saudi"
       ]
     },
     "consultation": {
@@ -548,9 +509,6 @@ export const pages={
           "الاستعداد للحوار",
           "شارك التطبيق والتحدي والسياق التقني غير السري عبر واتساب أو البريد الإلكتروني. ثم يمكن مناقشة نطاق أي عمل إضافي بصورة مباشرة."
         ]
-      ],
-      "refs": [
-        "process"
       ]
     },
     "about": {
@@ -575,9 +533,6 @@ export const pages={
           "السياق الصناعي السعودي",
           "يمثّل اختيار المواد وقرارات العمليات جانباً مهماً للتصنيع في المملكة. يقدّم الموقع مدخلاً تقنياً للنقاش، على أن يُؤكّد التوافر والنطاق والملاءمة مباشرة مع KMIT."
         ]
-      ],
-      "refs": [
-        "saudi"
       ]
     },
     "contact": {
@@ -585,8 +540,7 @@ export const pages={
       "lead": "تواصل مباشرة مع KMIT لمناقشة احتياجك في المواد أو العمليات أو الطاقة الصناعية.",
       "image": "consultation",
       "eyebrow": "تواصل معنا",
-      "sections": [],
-      "refs": []
+      "sections": []
     },
     "privacy": {
       "title": "الخصوصية",
@@ -610,8 +564,7 @@ export const pages={
           "استفسارات الخصوصية",
           "للاستفسار عن معلومات شاركتها مع KMIT، راسل mohanad@kmit.co. تصف هذه الصفحة آلية الموقع الحالية."
         ]
-      ],
-      "refs": []
+      ]
     },
     "terms": {
       "title": "شروط الاستخدام",
@@ -626,13 +579,8 @@ export const pages={
         [
           "المتطلبات المحددة",
           "يحتاج توافر المنتجات ونطاق الخدمات والوثائق والشروط التجارية وملاءمة التطبيق إلى تأكيد مباشر. تحقّق من اختيار المادة في ظروف التشغيل المناسبة قبل الاستخدام."
-        ],
-        [
-          "المراجع الخارجية",
-          "توفر المصادر الخارجية قراءات إضافية. ولا يعني إدراجها وجود شراكة أو تأييد أو انتساب. للاستفسار عن الموقع، تواصل عبر mohanad@kmit.co."
         ]
-      ],
-      "refs": []
+      ]
     }
   }
 };
@@ -647,28 +595,6 @@ export const routes=[
   "privacy",
   "terms"
 ];
-export const sources={
-  "mineral": [
-    "USGS · Limestone",
-    "https://www.usgs.gov/publications/limestone-a-crucial-and-versatile-industrial-mineral-commodity"
-  ],
-  "paper": [
-    "Omya · Calcium carbonate in paper",
-    "https://www.omya.com/global/en/industries/pulp-and-paper/graphic-paper"
-  ],
-  "coatings": [
-    "Omya · Decorative paints",
-    "https://prod.aem.omya.com/en/omya-specialty-materials/industries/paints-coatings/decorative-paints"
-  ],
-  "process": [
-    "US Department of Energy · Process heating",
-    "https://www.energy.gov/cmei/ito/process-heating-systems"
-  ],
-  "saudi": [
-    "Saudi Geological Survey · National Geological Database",
-    "https://ngp.sgs.gov.sa/"
-  ]
-};
 export const technical={
   "en": [
     [
@@ -760,7 +686,6 @@ export const ui={
     "skip": "Skip to content",
     "home": "Home",
     "related": "Connected expertise",
-    "references": "Technical reading",
     "journey": "From mineral to possibility.",
     "journeySub": "A general ground calcium carbonate journey. Each stage connects the source material to the needs of the final application.",
     "applications": "One mineral. Many applications.",
@@ -808,7 +733,6 @@ export const ui={
     "skip": "انتقل إلى المحتوى",
     "home": "الرئيسية",
     "related": "مجالات مترابطة",
-    "references": "مراجع تقنية",
     "journey": "من أصل معدني إلى قيمة صناعية.",
     "journeySub": "رحلة عامة لإنتاج كربونات الكالسيوم المطحونة، تربط خصائص الخام بمتطلبات الاستخدام النهائي.",
     "applications": "معدن واحد. تطبيقات متعددة.",

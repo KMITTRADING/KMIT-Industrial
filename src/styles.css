@@ -88,3 +88,12 @@
 @media(max-width:899px){.journey-steps{grid-template-columns:1fr;gap:18px}.journey-steps li{scroll-margin-top:95px}.journey-sticky{display:none}.journey-steps h3{margin-block:14px}.step-image{aspect-ratio:4/3}.footer-top{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}.footer-brand>p{max-width:none}.footer-brand .back-top{display:inline-flex;margin-inline-start:20px}.footer-navigation{grid-column:1}.footer-details{grid-column:2}}
 @media(max-width:600px){.business-card{padding:25px 15px}.card-copy .num{font-size:39px;margin-bottom:12px}.card-copy h3{font-size:16px}.business-card>p{font-size:13px}.footer{padding:50px var(--pad) 90px}.footer-top{grid-template-columns:1fr;gap:36px;padding-bottom:30px}.footer-brand,.footer-navigation,.footer-details{grid-column:1}.footer-navigation nav{grid-template-columns:1fr 1fr;gap:13px 20px;font-size:13px}.footer h2{margin-bottom:20px}.footer-contact{gap:20px}.footer-bottom{font-size:11px;gap:16px}.footer-bottom>span{width:100%;line-height:1.9}.footer-bottom>div{gap:23px}.footer .footer-credit{font-size:11px;margin-top:24px}.floating-wa .icon-whatsapp{width:32px;height:32px}.hero .visual figcaption{font-size:9px}.footer-brand .back-top{margin-inline-start:12px}}
 @media(prefers-reduced-motion:reduce){.journey.is-enhanced .journey-layout{display:block}.journey.is-enhanced .journey-sticky{display:none}.journey.is-enhanced .step-image{display:block}.journey.is-enhanced .journey-steps li{min-height:0;opacity:1}.scene.webgl-ready>picture{opacity:1}}
+
+/* Linked maker signature: preserve the supplied logo's proportions. */
+.maker-link{display:inline-flex;align-items:center;justify-content:center;gap:12px;max-width:100%;min-height:44px;padding:6px 4px;color:inherit;transition:color .2s ease}
+.maker-link img{width:68px;height:auto;flex:none;transition:transform .2s ease,opacity .2s ease;opacity:.8}
+.maker-link:hover,.maker-link:focus-visible{color:var(--blue)}
+.maker-link:hover span,.maker-link:focus-visible span{text-decoration:underline;text-underline-offset:4px}
+.maker-link:hover img,.maker-link:focus-visible img{transform:translateY(-2px);opacity:1}
+@media(max-width:600px){.maker-link{gap:9px}.maker-link img{width:56px}.maker-link span{max-width:250px}}
+@media(prefers-reduced-motion:reduce){.maker-link,.maker-link img{transition:none}.maker-link:hover img,.maker-link:focus-visible img{transform:none}}
